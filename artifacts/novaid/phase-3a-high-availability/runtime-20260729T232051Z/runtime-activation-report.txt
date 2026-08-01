@@ -1,0 +1,146 @@
+
+1. Host information
+------------------------------------------------------------
+UTC: 2026-07-29T23:20:51Z
+Darwin djumas-MacBook-Air.local 25.5.0 Darwin Kernel Version 25.5.0: Tue Jun  9 22:26:46 PDT 2026; root:xnu-12377.121.10~1/RELEASE_ARM64_T8103 arm64
+ProductName:		macOS
+ProductVersion:		26.5.2
+BuildVersion:		25F84
+
+Available memory:
+8.00 GB
+
+Available disk:
+/dev/disk3s1s1   460Gi    12Gi    17Gi    41%    459k  183M    0%   /
+
+2. Docker installation
+------------------------------------------------------------
+Docker CLI: /usr/local/bin/docker
+Docker version 29.5.3, build d1c06ef
+
+3. Docker daemon state
+------------------------------------------------------------
+Docker daemon is not currently available.
+Docker Desktop found.
+Starting Docker Desktop...
+
+Waiting for Docker daemon for up to 180 seconds...
+Waiting... 1/36
+
+Docker daemon: READY
+
+4. Docker runtime details
+------------------------------------------------------------
+Client=29.5.3 Server=29.5.3
+
+CPUs=8
+Memory=4108632064
+StorageDriver=overlayfs
+OperatingSystem=Docker Desktop
+Architecture=aarch64
+
+5. Existing containers
+------------------------------------------------------------
+NAMES                               IMAGE                                           STATUS                            PORTS
+novaride-operational-api-a-1        novaride-operational-api-a                      Created
+novaride-operational-api-b-1        novaride-operational-api-b                      Created
+novaride-operational-migrations-1   postgres:16-alpine                              Exited (3) 7 days ago
+novaride-operational-postgres-1     postgres:16-alpine                              Up 2 seconds (health: starting)   5432/tcp
+novaride-operational-redis-1        redis:7.4-alpine                                Up 2 seconds (health: starting)   6379/tcp
+novaride-operational-kafka-1        apache/kafka:3.9.1                              Up 2 seconds (health: starting)   9092/tcp
+production-afritech-api-1           production-afritech-api                         Exited (127) 6 days ago
+production-afritech-api-cert        7d875c85a018                                    Exited (255) 7 days ago           127.0.0.1:8003->8000/tcp
+production-afritech-api-secondary   7d875c85a018                                    Exited (255) 7 days ago           127.0.0.1:8002->8000/tcp
+production-nginx-exporter-1         nginx/nginx-prometheus-exporter:1.1.0           Up 2 seconds
+production-nginx-1                  nginx:1.27-alpine                               Exited (127) 6 days ago
+production-grafana-1                grafana/grafana:11.2.2                          Up 2 seconds                      127.0.0.1:3000->3000/tcp
+production-prometheus-1             prom/prometheus:v2.54.1                         Up Less than a second             9090/tcp
+production-novacodepro-portal-1     production-novacodepro-portal                   Up 2 seconds (health: starting)   4174/tcp
+production-afritech-dashboard-1     production-afritech-dashboard                   Up 2 seconds (health: starting)   4173/tcp
+production-public-web-1             production-public-web                           Up 2 seconds (health: starting)   4175/tcp
+production-postgres-exporter-1      prometheuscommunity/postgres-exporter:v0.15.0   Up 2 seconds                      9187/tcp
+production-otel-collector-1         otel/opentelemetry-collector-contrib:0.109.0    Exited (127) 6 days ago
+production-cadvisor-1               gcr.io/cadvisor/cadvisor:v0.49.1                Up 2 seconds (health: starting)   8080/tcp
+production-postgres-1               postgres:16-alpine                              Up 2 seconds (health: starting)   5432/tcp
+production-alertmanager-1           prom/alertmanager:v0.27.0                       Exited (127) 6 days ago
+production-redis-1                  redis:7.4-alpine                                Up 2 seconds (health: starting)   6379/tcp
+production-kafka-1                  redpandadata/redpanda:v24.1.5                   Up 2 seconds (health: starting)   8081-8082/tcp, 9092/tcp, 9644/tcp
+production-node-exporter-1          prom/node-exporter:v1.8.2                       Up 2 seconds                      9100/tcp
+welcome-to-docker                   docker/welcome-to-docker:latest                 Exited (255) 10 days ago          0.0.0.0:8088->80/tcp
+
+6. Existing Docker networks
+------------------------------------------------------------
+NETWORK ID     NAME                   DRIVER    SCOPE
+d6ef52c4fa56   bridge                 bridge    local
+02db268e03a2   host                   host      local
+cf739b69a148   none                   null      local
+9b15cd185adb   novaride-operational   bridge    local
+5b7135b222e9   production_default     bridge    local
+99c2e5f48fcd   production_infra       bridge    local
+
+7. Existing Docker volumes
+------------------------------------------------------------
+DRIVER    VOLUME NAME
+local     7a817669a53b0d35366e07bb4760998869e021825a90c8b7a2ce2b68bef3fe13
+local     47d37a90b96e876e25c7ecbd7f732f3dab420972a4d762afba105692ae8b8c88
+local     afritelematics-live-pilot-001_certbot_certs
+local     f619937807753295a5df4d71ad8c0828624018664c9448ddffcfa1abb4efb213
+local     novaride-operational_kafka_data
+local     novaride-operational_postgres_data
+local     novaride-operational_redis_data
+local     production_afritech_anchor_index
+local     production_alertmanager_data
+local     production_certbot_certs
+local     production_certbot_www
+local     production_grafana_data
+local     production_kafka_data
+local     production_postgres_data
+local     production_prometheus_data
+local     production_redis_data
+
+8. Port availability
+------------------------------------------------------------
+PORT 5432: IN USE
+postgres 44809 ostrinov    7u  IPv6 0xc4e931b936ff2f2f      0t0  TCP [::1]:5432 (LISTEN)
+postgres 44809 ostrinov    8u  IPv4 0xcaac5555a22e91d1      0t0  TCP 127.0.0.1:5432 (LISTEN)
+PORT 5433: AVAILABLE
+PORT 5434: AVAILABLE
+PORT 8000: AVAILABLE
+PORT 8001: AVAILABLE
+PORT 9090: AVAILABLE
+PORT 9093: AVAILABLE
+PORT 3000: IN USE
+com.docke 83758 ostrinov   78u  IPv4 0xef7804686e52352e      0t0  TCP 127.0.0.1:3000 (LISTEN)
+
+9. Docker smoke test
+------------------------------------------------------------
+Unable to find image 'alpine:3.22' locally
+3.22: Pulling from library/alpine
+738128faa30f: Pulling fs layer
+738128faa30f: Download complete
+738128faa30f: Pull complete
+a0bf7fcddd4c: Download complete
+6da8c403a7d9: Download complete
+Digest: sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
+Status: Downloaded newer image for alpine:3.22
+Container runtime smoke test: PASS
+uid=0(root) gid=0(root) groups=0(root),0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy),20(dialout),26(tape),27(video)
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.22.5
+
+10. Repository identity
+------------------------------------------------------------
+Branch: feature/product-factory-enterprise-sdlc
+Commit: 9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+
+11. Evidence manifest
+------------------------------------------------------------
+Evidence directory: artifacts/novaid/phase-3a-high-availability/runtime-20260729T232051Z
+Report SHA-256: 142ff212af9359dcd90e7e0f2581c4a1bec6b940d805498775190fb706bcaa55
+
+============================================================
+PHASE 3A.2 RUNTIME ACTIVATION: PASS
+No HA infrastructure was created.
+No failover was performed.
+============================================================

@@ -1,0 +1,14 @@
+{
+  "phase": "3A.3C2A",
+  "exercise": "validator-path-confirmation",
+  "timestamp_utc": "20260730T003017Z",
+  "repository_branch": "feature/product-factory-enterprise-sdlc",
+  "repository_commit": "9cbb1d8b656119c39bbd047e6f9c299de51e0f61",
+  "repository_import_failure": 0,
+  "operations_direct_exit": 1,
+  "operations_root_path_exit": 0,
+  "binding_direct_exit": 1,
+  "binding_root_path_exit": 0,
+  "classification": "CONFIRMED_SCRIPT_PATH_BOOTSTRAP_REQUIRED",
+  "report_sha256": "e7f0f208155522e44b4a225f3227fdb9f896443c2079c9361759f970767b23f0"
+}

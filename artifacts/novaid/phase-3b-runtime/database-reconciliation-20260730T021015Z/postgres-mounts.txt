@@ -1,0 +1,2 @@
+volume | production_postgres_data | /var/lib/docker/volumes/production_postgres_data/_data | /var/lib/postgresql/data
+

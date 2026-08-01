@@ -1,0 +1,26 @@
+============================================================
+PHASE 3B.3A4 — NOVAID PRODUCTION SECURITY PROVISIONING
+============================================================
+
+1. Repository identity
+------------------------------------------------------------
+Repository: /Users/ostrinov/afritelematics
+Branch:     feature/product-factory-enterprise-sdlc
+Commit:     9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+UTC:        2026-07-30T03:14:48Z
+
+2. Required deployment files
+------------------------------------------------------------
+Present: deploy/production/.env.production.trust-node
+Present: deploy/production/docker-compose.trust-node.yml
+Present: scripts/preflight_production_deployment.py
+Present: afritech/novaid/runtime.py
+
+3. Protected environment backup
+------------------------------------------------------------
+Backup created: deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak
+Backup mode:    600
+
+4. Resolve non-secret production configuration
+------------------------------------------------------------
+error while interpolating services.afritech-api.environment.NOVAID_ACTIVE_SIGNING_KEY_ID: required variable NOVAID_ACTIVE_SIGNING_KEY_ID is missing a value: NovaID active signing key required

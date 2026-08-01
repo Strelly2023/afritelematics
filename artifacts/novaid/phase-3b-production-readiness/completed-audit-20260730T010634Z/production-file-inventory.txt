@@ -1,0 +1,11 @@
+deploy/production/.env.production
+deploy/production/.env.production.example
+deploy/production/.env.production.save
+deploy/production/.env.production.tls.example
+deploy/production/.env.production.trust-node
+deploy/production/.env.production.trust-node.example
+deploy/production/docker-compose.production.tls.yml
+deploy/production/docker-compose.production.yml
+deploy/production/docker-compose.region.yml
+deploy/production/docker-compose.trust-node.yml
+deploy/production/monitoring/prometheus.yml

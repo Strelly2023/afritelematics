@@ -1,0 +1,273 @@
+
+1. Repository identity
+------------------------------------------------------------
+Repository: /Users/ostrinov/afritelematics
+Branch:     feature/product-factory-enterprise-sdlc
+Commit:     9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+UTC:        2026-07-30T02:10:15Z
+
+2. Docker runtime availability
+------------------------------------------------------------
+Docker daemon: READY
+
+3. Compose project status
+------------------------------------------------------------
+NAME                             IMAGE                                           COMMAND                  SERVICE             CREATED          STATUS                          PORTS
+production-afritech-api-1        production-afritech-api                         "uvicorn afritech.ap…"   afritech-api        22 minutes ago   Restarting (1) 2 minutes ago    
+production-cadvisor-1            gcr.io/cadvisor/cadvisor:v0.49.1                "/usr/bin/cadvisor -…"   cadvisor            10 days ago      Up 3 hours (healthy)            8080/tcp
+production-grafana-1             grafana/grafana:11.2.2                          "/run.sh"                grafana             10 days ago      Up 3 hours                      127.0.0.1:3000->3000/tcp
+production-kafka-1               redpandadata/redpanda:v24.1.5                   "/entrypoint.sh redp…"   kafka               10 days ago      Up 3 hours (healthy)            8081-8082/tcp, 9092/tcp, 9644/tcp
+production-nginx-exporter-1      nginx/nginx-prometheus-exporter:1.1.0           "/usr/bin/nginx-prom…"   nginx-exporter      10 days ago      Up 3 hours                      
+production-node-exporter-1       prom/node-exporter:v1.8.2                       "/bin/node_exporter …"   node-exporter       10 days ago      Up 3 hours                      9100/tcp
+production-postgres-1            postgres:16-alpine                              "docker-entrypoint.s…"   postgres            10 days ago      Up 3 hours (healthy)            5432/tcp
+production-postgres-exporter-1   prometheuscommunity/postgres-exporter:v0.15.0   "/bin/postgres_expor…"   postgres-exporter   10 days ago      Up 3 hours                      9187/tcp
+production-prometheus-1          prom/prometheus:v2.54.1                         "/bin/prometheus --c…"   prometheus          10 days ago      Restarting (2) 40 seconds ago   
+production-redis-1               redis:7.4-alpine                                "docker-entrypoint.s…"   redis               10 days ago      Up 3 hours (healthy)            6379/tcp
+Compose status: PASS
+
+4. PostgreSQL container discovery
+------------------------------------------------------------
+novaride-operational-migrations-1|postgres:16-alpine|Exited (3) 8 days ago
+novaride-operational-postgres-1|postgres:16-alpine|Up 3 hours (healthy)
+production-postgres-exporter-1|prometheuscommunity/postgres-exporter:v0.15.0|Up 3 hours
+production-postgres-1|postgres:16-alpine|Up 3 hours (healthy)
+PostgreSQL candidates: 4
+Selected PostgreSQL container: production-postgres-1
+
+5. API container discovery
+------------------------------------------------------------
+production-afritech-api-1|production-afritech-api|Restarting (1) 2 minutes ago
+production-afritech-api-cert|7d875c85a018|Exited (255) 8 days ago
+production-afritech-api-secondary|7d875c85a018|Exited (255) 8 days ago
+API candidates: 3
+Selected API container: production-afritech-api-1
+
+6. Active environment database URLs
+------------------------------------------------------------
+DATABASE_URL:
+  scheme=postgresql
+  username=afritech
+  hostname=postgres
+  port=5432
+  database=afritech
+  password_fingerprint=b3fa3fd6532a
+NOVATECH_CORE_DATABASE_URL:
+  scheme=postgresql
+  username=afritech
+  hostname=postgres
+  port=5432
+  database=afritech
+  password_fingerprint=b3fa3fd6532a
+
+7. PostgreSQL container configuration metadata
+------------------------------------------------------------
+PostgreSQL environment variable names:
+
+DOCKER_PG_LLVM_DEPS
+GOSU_VERSION
+LANG
+PATH
+PGDATA
+PG_MAJOR
+PG_SHA256
+PG_VERSION
+POSTGRES_DB
+POSTGRES_PASSWORD
+POSTGRES_USER
+
+Configured PostgreSQL metadata:
+  POSTGRES_USER=afritech
+  POSTGRES_DB=afritech
+  POSTGRES_PASSWORD fingerprint=ccf98521a4e8
+  image=postgres:16-alpine
+  created=2026-07-19T06:03:03.061553718Z
+
+8. PostgreSQL readiness and database inventory
+------------------------------------------------------------
+/var/run/postgresql:5432 - accepting connections
+pg_isready exit code: 0
+Container-local PostgreSQL identity check exit code: 0
+afritech|afritech
+Role inventory exit code: 0
+Database roles:
+afritech
+pg_checkpoint
+pg_create_subscription
+pg_database_owner
+pg_execute_server_program
+pg_monitor
+pg_read_all_data
+pg_read_all_settings
+pg_read_all_stats
+pg_read_server_files
+pg_signal_backend
+pg_stat_scan_tables
+pg_use_reserved_connections
+pg_write_all_data
+pg_write_server_files
+Database inventory exit code: 0
+Databases:
+afritech
+afritech_restore_validation_20260719145440
+postgres
+
+9. Credential fingerprint comparison
+------------------------------------------------------------
+DATABASE_URL password fingerprint:              b3fa3fd6532a
+NOVATECH_CORE_DATABASE_URL password fingerprint: b3fa3fd6532a
+PostgreSQL container password fingerprint:       ccf98521a4e8
+Credential fingerprints: MISMATCH
+
+10. Docker network topology
+------------------------------------------------------------
+
+production-postgres-1:
+
+production_infra
+
+production-afritech-api-1:
+
+production_default
+production_infra
+
+Common networks:
+
+production_infra
+
+11. Network provenance
+------------------------------------------------------------
+bridge|bridge|local
+host|host|local
+none|null|local
+novaride-operational|bridge|local
+production_default|bridge|local
+production_infra|bridge|local
+
+production_infra metadata:
+name=production_infra driver=bridge scope=local internal=false attachable=false labels={"com.docker.compose.config-hash":"8915880e9e0419d9387c4e0766422e3a9c6d70e45cde45e6909049a90c629632","com.docker.compose.network":"infra","com.docker.compose.project":"production","com.docker.compose.version":"5.1.4"}
+
+12. Compose network declarations
+------------------------------------------------------------
+Top-level networks:
+Service network bindings:
+  afritech-api: <default>
+  afritech-dashboard: <default>
+  alertmanager: <default>
+  cadvisor: <default>
+  certbot: <default>
+  grafana: <default>
+  nginx: <default>
+  nginx-exporter: <default>
+  node-exporter: <default>
+  novacodepro-portal: <default>
+  otel-collector: <default>
+  postgres-exporter: <default>
+  prometheus: <default>
+  public-web: <default>
+
+13. API database environment metadata
+------------------------------------------------------------
+DATABASE_URL:
+  username=afritech
+  hostname=postgres
+  port=5432
+  database=afritech
+  password_fingerprint=b3fa3fd6532a
+NOVATECH_CORE_DATABASE_URL:
+  username=afritech
+  hostname=postgres
+  port=5432
+  database=afritech
+  password_fingerprint=b3fa3fd6532a
+
+14. API health and recent logs
+------------------------------------------------------------
+API state:  restarting
+API health: unhealthy
+
+Sanitized API error indicators:
+    raise last_ex.with_traceback(None)
+psycopg.OperationalError: connection failed: connection to server at "172.18.0.13", port 5432 failed: FATAL:  password authentication failed for user "afritech"
+Traceback (most recent call last):
+    return NovaCodeProPlatform(NovaCodeProRepository(path, database_url=database_url))
+    connection = psycopg.connect(self.database_url, row_factory=dict_row)
+    raise last_ex.with_traceback(None)
+psycopg.OperationalError: connection failed: connection to server at "172.18.0.13", port 5432 failed: FATAL:  password authentication failed for user "afritech"
+Traceback (most recent call last):
+    return NovaCodeProPlatform(NovaCodeProRepository(path, database_url=database_url))
+    connection = psycopg.connect(self.database_url, row_factory=dict_row)
+    raise last_ex.with_traceback(None)
+psycopg.OperationalError: connection failed: connection to server at "172.18.0.13", port 5432 failed: FATAL:  password authentication failed for user "afritech"
+
+15. Persistent volume provenance
+------------------------------------------------------------
+volume | production_postgres_data | /var/lib/docker/volumes/production_postgres_data/_data | /var/lib/postgresql/data
+
+
+Volume: production_postgres_data
+Destination: /var/lib/postgresql/data
+name=production_postgres_data created=2026-07-19T05:38:58Z mountpoint=/var/lib/docker/volumes/production_postgres_data/_data labels={"com.docker.compose.config-hash":"5b4d18c6bde98f9962009dbfc54d873aa8f8596821609451f3d230c6b063d37c","com.docker.compose.project":"production","com.docker.compose.version":"5.1.4","com.docker.compose.volume":"postgres_data"}
+
+16. Repository topology references
+------------------------------------------------------------
+deploy/novacodepro/production/production-completion-profile.yml:42:    - NOVACODEPRO_DATABASE_URL
+deploy/afripay/docker-compose.afripay.yml:9:      DATABASE_URL: "postgresql://afripay:<redacted>@postgres:5432/afripay"
+deploy/afripay/docker-compose.afripay.yml:24:      DATABASE_URL: "postgresql://afripay:<redacted>@postgres:5432/afripay"
+deploy/afripay/docker-compose.afripay.yml:37:      POSTGRES_PASSWORD: afripay
+deploy/afripay/kubernetes/postgres-statefulset.yaml:27:            - name: POSTGRES_PASSWORD
+deploy/afripay/kubernetes/postgres-statefulset.yaml:31:                  key: POSTGRES_PASSWORD
+deploy/afripay/kubernetes/secret.example.yaml:11:  DATABASE_URL: "postgresql://afripay:<redacted>@afripay-postgres:5432/afripay"
+deploy/afripay/kubernetes/secret.example.yaml:13:  POSTGRES_PASSWORD: "replace-me"
+deploy/production/docker-compose.trust-node.yml:14:      NOVACODEPRO_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaCodePro PostgreSQL URL required}
+deploy/production/.env.production.trust-node.example:21:DATABASE_URL=postgresql://novatech:<redacted>@managed-postgres:5432/novatech
+deploy/production/.env.production.trust-node.example:22:NOVATECH_CORE_DATABASE_URL=postgresql://novatech:<redacted>@managed-postgres:5432/novatech
+deploy/production/.env.production.trust-node:15:DATABASE_URL=postgresql://afritech:<redacted>@postgres:5432/afritech
+deploy/production/.env.production.trust-node:16:NOVATECH_CORE_DATABASE_URL=postgresql://afritech:<redacted>@postgres:5432/afritech
+deploy/phase0/docker-compose.phase0.yml:8:      NOVAPROGRAMMING_DATABASE_URL: postgresql://novaride:<redacted>@novaride-postgres:5432/novaride_phase0
+deploy/phase0/docker-compose.phase0.yml:34:      POSTGRES_PASSWORD: novaride
+deploy/novaride/compose.operational.yml:5:  NOVARIDE_POSTGRES_DSN: postgresql://novaride:<redacted>@postgres:5432/novaride
+deploy/novaride/compose.operational.yml:6:  NOVATECH_POSTGRES_DSN: postgresql://novaride:<redacted>@postgres:5432/novaride
+deploy/novaride/compose.operational.yml:36:      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+deploy/novaride/compose.operational.yml:49:      PGPASSWORD: ${POSTGRES_PASSWORD:?required}
+deploy/novaride/docker-compose.realtime.yml:9:      AFRIRIDE_DATABASE_URL: postgresql://novaride:<redacted>@postgres:5432/novaride
+deploy/novaride/docker-compose.realtime.yml:25:      AFRIRIDE_DATABASE_URL: postgresql://novaride:<redacted>@postgres:5432/novaride
+deploy/novaride/docker-compose.realtime.yml:49:      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+deploy/novaride/.env.example:1:POSTGRES_PASSWORD=replace-with-local-secret
+scripts/novatech_core_apply_migrations.py:12:    dsn = os.environ.get("DATABASE_URL")
+scripts/novatech_core_apply_migrations.py:14:        raise SystemExit("DATABASE_URL is required")
+scripts/preflight_production_deployment.py:25:    "DATABASE_URL",
+scripts/preflight_production_deployment.py:26:    "NOVATECH_CORE_DATABASE_URL",
+scripts/afriride_postgres_cutover_runbook.sh:113:  psql "$AFRIRIDE_DATABASE_URL" -f "$SCHEMA_SQL" \
+scripts/afriride_postgres_cutover_runbook.sh:122:  psql "$AFRIRIDE_DATABASE_URL" -Atc "
+scripts/afriride_postgres_cutover_runbook.sh:150:    --postgres-url "$AFRIRIDE_DATABASE_URL" \
+scripts/afriride_postgres_cutover_runbook.sh:163:    --target "$AFRIRIDE_DATABASE_URL" \
+scripts/afriride_postgres_cutover_runbook.sh:173:  AFRIRIDE_DATABASE_URL="$AFRIRIDE_DATABASE_URL" \
+scripts/afriride_postgres_cutover_runbook.sh:191:  require_env AFRIRIDE_DATABASE_URL
+scripts/afriride_postgres_cutover_runbook.sh:278:  psql "$AFRIRIDE_DATABASE_URL" -At -F $'\t' -c "
+scripts/afriride_postgres_cutover_runbook.sh:311:    --target "$AFRIRIDE_DATABASE_URL" \
+scripts/novaid/certify_postgres_production.py:64:        NOVAID_DATABASE_URL=dsn,
+scripts/novaid/phase6f_operational_verify.py:111:        self.dsn = os.getenv("NOVAID_DATABASE_URL", "")
+scripts/novaride/start_operational_environment.sh:5:: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD without printing it}"
+scripts/run_phase1_setup.sh:105:    [[ -n "${AFRIRIDE_DATABASE_URL:-}" ]] || fail "AFRIRIDE_DATABASE_URL is required for --with-postgres"
+scripts/run_phase1_setup.sh:107:    psql "$AFRIRIDE_DATABASE_URL" -c '\conninfo'
+scripts/run_phase1_setup.sh:109:    psql "$AFRIRIDE_DATABASE_URL" -f "$ROOT_DIR/scripts/sql/afriride_postgres_schema_v1.sql" >/tmp/phase1_setup_schema.log
+
+17. Classification
+------------------------------------------------------------
+PostgreSQL runtime:   PASS
+Credential alignment: MISMATCH
+Network topology:     PASS
+API runtime:          PASS
+Compose status:       PASS
+Classification:       BLOCKED_DATABASE_CREDENTIAL_RECONCILIATION
+
+Evidence directory: artifacts/novaid/phase-3b-runtime/database-reconciliation-20260730T021015Z
+Report SHA-256: e923a98271352968e071198e26c149f1dcd5eb464ea328a8f8b9e082a4087d61
+
+============================================================
+PHASE 3B.2D1 COMPLETE
+Classification: BLOCKED_DATABASE_CREDENTIAL_RECONCILIATION
+No credentials were printed or modified.
+No database roles were changed.
+No containers, networks, or volumes were removed.
+============================================================

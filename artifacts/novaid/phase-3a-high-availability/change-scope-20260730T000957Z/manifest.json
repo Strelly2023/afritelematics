@@ -1,0 +1,15 @@
+{
+  "phase": "3A.3C0",
+  "exercise": "change-scope-and-secret-safety",
+  "timestamp_utc": "20260730T000957Z",
+  "repository_branch": "feature/product-factory-enterprise-sdlc",
+  "repository_commit": "9cbb1d8b656119c39bbd047e6f9c299de51e0f61",
+  "modified_or_staged_paths": 26,
+  "untracked_paths": 269,
+  "suspicious_generated_paths": 1,
+  "secret_like_paths": 15,
+  "potential_credential_files": 2,
+  "tracked_required_secrets": 0,
+  "classification": "REVIEW_CREDENTIAL_CONTENT",
+  "report_sha256": "1e556a1a8a5b3ed41c1e6331c3fbd8ee776e3ec9fd1daacd8d6974275f6daefc"
+}

@@ -1,0 +1,11 @@
+NAME                             IMAGE                                           COMMAND                  SERVICE             CREATED          STATUS                          PORTS
+production-afritech-api-1        production-afritech-api                         "uvicorn afritech.ap…"   afritech-api        22 minutes ago   Restarting (1) 2 minutes ago    
+production-cadvisor-1            gcr.io/cadvisor/cadvisor:v0.49.1                "/usr/bin/cadvisor -…"   cadvisor            10 days ago      Up 3 hours (healthy)            8080/tcp
+production-grafana-1             grafana/grafana:11.2.2                          "/run.sh"                grafana             10 days ago      Up 3 hours                      127.0.0.1:3000->3000/tcp
+production-kafka-1               redpandadata/redpanda:v24.1.5                   "/entrypoint.sh redp…"   kafka               10 days ago      Up 3 hours (healthy)            8081-8082/tcp, 9092/tcp, 9644/tcp
+production-nginx-exporter-1      nginx/nginx-prometheus-exporter:1.1.0           "/usr/bin/nginx-prom…"   nginx-exporter      10 days ago      Up 3 hours                      
+production-node-exporter-1       prom/node-exporter:v1.8.2                       "/bin/node_exporter …"   node-exporter       10 days ago      Up 3 hours                      9100/tcp
+production-postgres-1            postgres:16-alpine                              "docker-entrypoint.s…"   postgres            10 days ago      Up 3 hours (healthy)            5432/tcp
+production-postgres-exporter-1   prometheuscommunity/postgres-exporter:v0.15.0   "/bin/postgres_expor…"   postgres-exporter   10 days ago      Up 3 hours                      9187/tcp
+production-prometheus-1          prom/prometheus:v2.54.1                         "/bin/prometheus --c…"   prometheus          10 days ago      Restarting (2) 40 seconds ago   
+production-redis-1               redis:7.4-alpine                                "docker-entrypoint.s…"   redis               10 days ago      Up 3 hours (healthy)            6379/tcp

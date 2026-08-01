@@ -1,0 +1,9 @@
+{
+  "phase": "3B.3A3",
+  "classification": "SIGNING_SCHEMA_INSPECTION_COMPLETE",
+  "repository_commit": "9cbb1d8b656119c39bbd047e6f9c299de51e0f61",
+  "report": "signing-key-schema-inspection.txt",
+  "report_sha256": "945ed7453a47631ed6cbea6efcc2ad7e8b2c6b90c81ac68fb1a889da424f538b",
+  "generated_at_utc": "2026-07-30T03:05:32Z",
+  "mutations_performed": false
+}

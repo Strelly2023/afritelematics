@@ -1,0 +1,22 @@
+deploy/afripay/kubernetes/secret.example.yaml:14:  NOVAPAY_PAYID_LIVE_ENABLED: "false"
+deploy/afripay/kubernetes/secret.example.yaml:29:  NOVAPAY_MPESA_KE_LIVE_MODE: "false"
+deploy/production/.env.production.trust-node.example:39:STRIPE_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:43:NOVAPAY_PAYID_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.example:55:NOVAPAY_MPESA_KE_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:64:NOVAPAY_AIRTEL_KE_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:72:NOVAPAY_LUMICASH_BI_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:79:NOVAPAY_ECOCASH_BI_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:87:NOVAPAY_ORANGE_CD_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:94:NOVAPAY_AIRTEL_CD_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:101:NOVAPAY_MPESA_CD_LIVE_MODE=false
+afritech/afriprogramming/phase2.py:81:    # Live execution remains gated by NOVAPAY_PAYID_LIVE_ENABLED.
+afritech/afriprogramming/phase2.py:88:        return os.environ.get("STRIPE_LIVE_MODE", "").lower() in {"1", "true", "yes"}
+afritech/afriprogramming/phase2.py:90:        return os.environ.get("NOVAPAY_PAYID_LIVE_ENABLED", "").lower() in {"1", "true", "yes"}
+afritech/tests/core_platform/test_mobile_money.py:146:    monkeypatch.setenv("NOVAPAY_MPESA_KE_LIVE_MODE", "true")
+afritech/tests/core_platform/test_core_platform_layers.py:300:    monkeypatch.setenv("NOVAPAY_PAYID_LIVE_ENABLED", "true")
+afritech/tests/governance/test_novatech_core_platform_production_guide_doc.py:17:        "STRIPE_LIVE_MODE=true",
+afritech/core_platform/payments/providers.py:34:        self.live = live and _env_bool("NOVAPAY_PAYID_LIVE_ENABLED")
+afritech/core_platform/payments/providers.py:126:        self.live = live or os.environ.get("STRIPE_LIVE_MODE", "").lower() in {"1", "true", "yes"}
+afritech/core_platform/payments/providers.py:138:                    "requires": "STRIPE_API_KEY and STRIPE_LIVE_MODE=true for network execution",
+afritech/core_platform/payments/providers.py:323:    live_enabled = _env_bool("NOVAPAY_PAYID_LIVE_ENABLED")
+afritech/api/core_platform_api.py:909:        stripe_live = os.environ.get("STRIPE_LIVE_MODE", "").lower() in {

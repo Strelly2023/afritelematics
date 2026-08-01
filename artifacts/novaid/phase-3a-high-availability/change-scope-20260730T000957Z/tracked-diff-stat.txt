@@ -1,0 +1,27 @@
+ .../ci/novatech_platform_operations_validator.py   | 49 +++++++++++++
+ afritech/docker/Dockerfile.api                     |  6 +-
+ afritech/novaid/persistence/migrations.py          | 83 +++++++++++++++++++++-
+ .../persistence/migrations/0002_novaid_runtime.sql |  1 +
+ .../migrations/0009_canonical_identity_profile.sql |  4 ++
+ .../migrations/0010_tenant_authorization.sql       | 16 ++---
+ afritech/novaid/persistence/postgres.py            | 64 +++++++++++++++++
+ afritech/novaid/runtime.py                         | 43 +++++++++--
+ afritech/novaid/tokens.py                          | 60 ++++++++++++++--
+ afritech/platform_operations/operations.yaml       | 15 ++++
+ .../release/manifests/release-manifest.json        |  8 +--
+ .../release/manifests/release-manifest.yaml        |  8 +--
+ deploy/novaride/monitoring/alerts-production.yml   | 20 ++++++
+ .../production/.env.production.trust-node.example  |  6 ++
+ .../production/docker-compose.production.tls.yml   |  8 ++-
+ deploy/production/docker-compose.production.yml    |  8 ++-
+ deploy/production/docker-compose.trust-node.yml    | 17 ++++-
+ deploy/staging/Dockerfile.api                      | 58 +++++++--------
+ docs/release/release-artifact-inventory.json       |  6 +-
+ pyproject.toml                                     |  2 +
+ requirements-dev.txt                               |  2 +
+ requirements.txt                                   |  2 +
+ scripts/novaride/backup_runtime.sh                 | 69 +++++++++++++++++-
+ scripts/novaride/restore_runtime.sh                | 67 ++++++++++++++++-
+ scripts/setup_production_trust_node.sh             | 13 +++-
+ tests/novaid/test_phase5c_startup.py               | 30 +++++++-
+ 26 files changed, 586 insertions(+), 79 deletions(-)

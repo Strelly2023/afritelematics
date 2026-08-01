@@ -1,0 +1,285 @@
+
+1. Repository identity
+------------------------------------------------------------
+Repository: /Users/ostrinov/afritelematics
+Branch:     feature/product-factory-enterprise-sdlc
+Commit:     9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+Python:     /Users/ostrinov/afritelematics/venv/bin/python
+Version:    Python 3.11.8
+UTC:        2026-07-30T00:30:17Z
+
+2. Required package files
+------------------------------------------------------------
+FOUND: afritech/__init__.py
+FOUND: afritech/platform_operations/__init__.py
+FOUND: afritech/platform_operations/policy.py
+FOUND: afritech/novaid/__init__.py
+FOUND: afritech/novaid/runtime.py
+FOUND: afritech/novaid/persistence/postgres.py
+FOUND: afritech/novaid/persistence/sqlite.py
+FOUND: afritech/ci/novatech_platform_operations_validator.py
+FOUND: afritech/ci/novatech_product_binding_validator.py
+
+3. Repository-root import test
+------------------------------------------------------------
+cwd=/Users/ostrinov/afritelematics
+sys.path[0]=''
+PASS: afritech: /Users/ostrinov/afritelematics/afritech/__init__.py
+PASS: afritech.platform_operations: /Users/ostrinov/afritelematics/afritech/platform_operations/__init__.py
+PASS: afritech.platform_operations.policy: /Users/ostrinov/afritelematics/afritech/platform_operations/policy.py
+PASS: afritech.novaid: /Users/ostrinov/afritelematics/afritech/novaid/__init__.py
+PASS: afritech.novaid.runtime: /Users/ostrinov/afritelematics/afritech/novaid/runtime.py
+PASS: afritech.novaid.persistence.postgres: /Users/ostrinov/afritelematics/afritech/novaid/persistence/postgres.py
+PASS: afritech.novaid.persistence.sqlite: /Users/ostrinov/afritelematics/afritech/novaid/persistence/sqlite.py
+Repository-root imports: PASS
+
+4. Direct validator execution
+------------------------------------------------------------
+
+Operations validator — direct execution
+Exit code: 1
+Result: FAIL
+Traceback (most recent call last):
+  File "/Users/ostrinov/afritelematics/afritech/ci/novatech_platform_operations_validator.py", line 10, in <module>
+    from afritech.platform_operations.policy import PolicyInput, VersionedPolicyEngine
+ModuleNotFoundError: No module named 'afritech.platform_operations'
+
+Product-binding validator — direct execution
+Exit code: 1
+Result: FAIL
+NovaTech product binding validation FAILED: unresolved NovaID modules: ['afritech.novaid', 'afritech.novaid.runtime', 'afritech.api.novaid_api', 'afritech.api.novaid_audit_replay_api', 'afritech.novaid.persistence.postgres', 'afritech.novaid.persistence.sqlite']
+
+5. Repository-root PYTHONPATH execution
+------------------------------------------------------------
+
+Operations validator — repository-root PYTHONPATH
+Exit code: 0
+Result: PASS
+NovaTech platform operations validation PASSED
+
+Product-binding validator — repository-root PYTHONPATH
+Exit code: 0
+Result: PASS
+NovaTech product binding validation PASSED
+
+6. Validator source headers
+------------------------------------------------------------
+
+### afritech/ci/novatech_platform_operations_validator.py
+     1	"""Validate NovaTech operational excellence contracts and runtime controls."""
+     2
+     3	from __future__ import annotations
+     4
+     5	from pathlib import Path
+     6	from typing import Any
+     7
+     8	import yaml
+     9
+    10	from afritech.platform_operations.policy import PolicyInput, VersionedPolicyEngine
+    11	from afritech.platform_operations.registry import operations_readiness
+    12	from afritech.platform_operations.reliability import evaluate_error_budget
+    13	from afritech.platform_operations.rollout import RolloutPlan, evaluate_rollout
+    14	from afritech.platform_operations.registry import service_objectives
+    15
+    16
+    17	ROOT = Path(__file__).resolve().parents[2]
+    18	CONTRACT = ROOT / "afritech/platform_operations/operations.yaml"
+    19
+    20
+    21	class PlatformOperationsViolation(RuntimeError):
+    22	    pass
+    23
+    24
+    25	def validate() -> bool:
+    26	    payload = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
+    27	    if not isinstance(payload, dict):
+    28	        raise PlatformOperationsViolation("operations contract must be an object")
+    29	    if payload.get("schema") != "novatech.platform.operations.v1":
+    30	        raise PlatformOperationsViolation("operations contract schema mismatch")
+    31	    _validate_implementation_binding(payload)
+    32	    _validate_policy(payload)
+    33	    _validate_workflow(payload)
+    34	    _validate_objectives(payload)
+    35	    _validate_rollout(payload)
+    36	    _validate_data_governance(payload)
+    37	    _validate_developer_assets(payload)
+    38	    if operations_readiness()["ready"] is not True:
+    39	        raise PlatformOperationsViolation("operations readiness is incomplete")
+    40	    return True
+    41
+    42
+    43	def _validate_implementation_binding(payload: dict[str, Any]) -> None:
+    44	    binding = payload.get("implementation_binding", {})
+    45	    expected = {
+    46	        "runtime_package": "afritech.platform_operations",
+    47	        "operator_surface": "apps/novaride-operations",
+    48	        "api_surface": "afritech.api.runtime_operations_api",
+    49	        "binding": "afritech/governance/bindings/BIND-PLATFORM-OPERATIONS-TOOLING.yaml",
+    50	    }
+    51	    mismatched = [
+    52	        name
+    53	        for name, expected_value in expected.items()
+    54	        if binding.get(name) != expected_value
+    55	    ]
+    56	    if mismatched:
+    57	        raise PlatformOperationsViolation(
+    58	            f"operations implementation binding is incomplete: {mismatched}"
+    59	        )
+    60	    runtime = ROOT / "afritech/platform_operations"
+    61	    required_paths = (
+    62	        runtime,
+    63	        ROOT / binding["operator_surface"],
+    64	        ROOT / "afritech/api/runtime_operations_api.py",
+    65	        ROOT / binding["binding"],
+    66	    )
+    67	    if not all(path.exists() for path in required_paths):
+    68	        raise PlatformOperationsViolation("operations implementation path is unresolved")
+    69	    missing_modules = [
+    70	        name
+    71	        for name in binding.get("required_modules", [])
+    72	        if not (runtime / f"{name}.py").is_file()
+    73	    ]
+    74	    if missing_modules:
+    75	        raise PlatformOperationsViolation(
+    76	            f"operations runtime modules are missing: {missing_modules}"
+    77	        )
+    78	    if binding.get("execution_authority") is not False:
+    79	        raise PlatformOperationsViolation(
+    80	            "operations tooling must not claim domain execution authority"
+    81	        )
+    82	    governed_binding = yaml.safe_load((ROOT / binding["binding"]).read_text(encoding="utf-8"))
+    83	    if (
+    84	        not isinstance(governed_binding, dict)
+    85	        or governed_binding.get("schema") != "novatech.operations_binding.v1"
+    86	        or governed_binding.get("status") != "active"
+    87	    ):
+    88	        raise PlatformOperationsViolation("operations governance binding is not active")
+    89
+    90
+    91	def _validate_policy(payload: dict[str, Any]) -> None:
+    92	    policy = payload["policy"]
+    93	    orders = [rule["order"] for rule in policy["rules"]]
+    94	    if orders != sorted(set(orders)):
+    95	        raise PlatformOperationsViolation("policy rules must have unique canonical order")
+    96	    decision = VersionedPolicyEngine().evaluate(
+    97	        PolicyInput(
+    98	            tenant_id="tenant-a",
+    99	            identity_tenant_id="tenant-b",
+   100	            actor_id="actor",
+
+### afritech/ci/novatech_product_binding_validator.py
+     1	"""Fail-closed validation for governed NovaTech product bindings."""
+     2
+     3	from __future__ import annotations
+     4
+     5	import importlib.util
+     6	from pathlib import Path
+     7	from typing import Any
+     8
+     9	import yaml
+    10
+    11
+    12	ROOT = Path(__file__).resolve().parents[2]
+    13	NOVAID_BINDING = ROOT / "afritech/governance/bindings/BIND-NOVAID-PRODUCT.yaml"
+    14
+    15
+    16	class ProductBindingViolation(RuntimeError):
+    17	    """Raised when a product binding is incomplete or cannot resolve."""
+    18
+    19
+    20	def _load(path: Path) -> dict[str, Any]:
+    21	    payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    22	    if not isinstance(payload, dict):
+    23	        raise ProductBindingViolation(f"{path}: binding must be an object")
+    24	    return payload
+    25
+    26
+    27	def _module_resolves(module_name: str) -> bool:
+    28	    try:
+    29	        return importlib.util.find_spec(module_name) is not None
+    30	    except (ImportError, ModuleNotFoundError, AttributeError):
+    31	        return False
+    32
+    33
+    34	def validate_novaid_binding(path: Path = NOVAID_BINDING) -> bool:
+    35	    payload = _load(path)
+    36	    if payload.get("schema") != "novatech.product_binding.v1":
+    37	        raise ProductBindingViolation("NovaID binding schema mismatch")
+    38	    if payload.get("status") != "active" or payload.get("product") != "NovaID":
+    39	        raise ProductBindingViolation("NovaID binding is not active")
+    40
+    41	    authority = payload.get("authority", {})
+    42	    required = {
+    43	        "identity",
+    44	        "authentication",
+    45	        "verification",
+    46	        "authorization_claims",
+    47	        "device_trust",
+    48	        "session_risk",
+    49	    }
+    50	    if required - set(authority.get("capabilities", [])):
+    51	        raise ProductBindingViolation("NovaID authority capabilities are incomplete")
+    52	    forbidden = {"payment_execution", "ride_dispatch"}
+    53	    if forbidden - set(authority.get("forbidden_capabilities", [])):
+    54	        raise ProductBindingViolation("NovaID forbidden authority is incomplete")
+    55
+    56	    runtime = payload.get("runtime", {})
+    57	    modules = [
+    58	        runtime.get("canonical_package"),
+    59	        runtime.get("composition_root"),
+    60	        *runtime.get("api_surfaces", []),
+    61	        *runtime.get("persistence", []),
+    62	    ]
+    63	    unresolved = [name for name in modules if not isinstance(name, str) or not _module_resolves(name)]
+    64	    if unresolved:
+    65	        raise ProductBindingViolation(f"unresolved NovaID modules: {unresolved}")
+    66
+    67	    contracts = payload.get("contracts", {})
+    68	    missing = [
+    69	        relative
+    70	        for relative in contracts.values()
+    71	        if not isinstance(relative, str) or not (ROOT / relative).is_file()
+    72	    ]
+    73	    if missing:
+    74	        raise ProductBindingViolation(f"missing NovaID contracts: {missing}")
+    75
+    76	    tests = payload.get("enforcement", {}).get("tests", [])
+    77	    missing_tests = [relative for relative in tests if not (ROOT / relative).is_file()]
+    78	    if missing_tests:
+    79	        raise ProductBindingViolation(f"missing NovaID enforcement tests: {missing_tests}")
+    80	    if payload.get("failure_policy") != "HARD_FAILURE":
+    81	        raise ProductBindingViolation("NovaID binding must fail closed")
+    82	    return True
+    83
+    84
+    85	def main() -> int:
+    86	    try:
+    87	        validate_novaid_binding()
+    88	    except Exception as exc:
+    89	        print(f"NovaTech product binding validation FAILED: {exc}")
+    90	        return 1
+    91	    print("NovaTech product binding validation PASSED")
+    92	    return 0
+    93
+    94
+    95	if __name__ == "__main__":
+    96	    raise SystemExit(main())
+    97
+
+7. Classification
+------------------------------------------------------------
+Repository-root imports:          PASS
+Operations direct exit:           1
+Operations root-path exit:        0
+Product binding direct exit:      1
+Product binding root-path exit:   0
+Classification:                   CONFIRMED_SCRIPT_PATH_BOOTSTRAP_REQUIRED
+
+Evidence directory: /Users/ostrinov/afritelematics/artifacts/novaid/phase-3a-high-availability/validator-path-20260730T003017Z
+Report SHA-256: e7f0f208155522e44b4a225f3227fdb9f896443c2079c9361759f970767b23f0
+
+============================================================
+PHASE 3A.3C2A COMPLETE
+Classification: CONFIRMED_SCRIPT_PATH_BOOTSTRAP_REQUIRED
+No repository source files were modified.
+============================================================

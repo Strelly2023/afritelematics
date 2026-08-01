@@ -1,0 +1,3 @@
+production-afritech-api-1|production-afritech-api|Restarting (1) 2 minutes ago
+production-afritech-api-cert|7d875c85a018|Exited (255) 8 days ago
+production-afritech-api-secondary|7d875c85a018|Exited (255) 8 days ago

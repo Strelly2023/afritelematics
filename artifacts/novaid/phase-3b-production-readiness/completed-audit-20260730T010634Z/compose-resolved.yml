@@ -1,0 +1,738 @@
+name: production
+services:
+  afritech-api:
+    build:
+      context: /Users/ostrinov/afritelematics
+      dockerfile: deploy/staging/Dockerfile.api
+    command:
+      - uvicorn
+      - afritech.api.app:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "1"
+      - --proxy-headers
+    environment:
+      AFRIRIDE_AUDIT_API_KEY: replace-with-production-audit-api-key
+      AFRIRIDE_DB_PATH: /var/lib/afritech/pilot_state.sqlite3
+      AFRIRIDE_DJANGO_SECRET_KEY: replace-with-production-django-secret
+      AFRIRIDE_EVENT_INGESTION_SECRET: replace-with-production-afriride-event-secret
+      AFRIRIDE_JWT_SECRET: replace-with-production-afriride-jwt-secret
+      AFRITECH_AGENT_MINIMUM_CONFIDENCE: "0.85"
+      AFRITECH_AGENT_STATE_PATH: /var/lib/afritech/agents/production.sqlite3
+      AFRITECH_ALLOW_PILOT_TOKEN_ISSUANCE: "false"
+      AFRITECH_AUTH_BOOTSTRAP_SECRET: replace-only-if-controlled-bootstrap-is-required
+      AFRITECH_CHAIN_ADDRESS_CHECKSUM: 0xYOUR_FUNDED_PUBLIC_LEDGER_WALLET
+      AFRITECH_CHAIN_AUTO_PUBLISH_ON_PROOF: "false"
+      AFRITECH_CHAIN_CONTRACT_ADDRESS: 0xYOUR_DEPLOYED_ARCHITECTURE_ANCHOR
+      AFRITECH_CHAIN_CONTRACT_DEPLOYMENT_BLOCK: "11064832"
+      AFRITECH_CHAIN_ENABLE_PUBLISH: "true"
+      AFRITECH_CHAIN_ETHERSCAN_VERIFIED: "false"
+      AFRITECH_CHAIN_EVENT_BACKFILL_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_RECONNECT_DELAY_SECONDS: "5"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_TRANSPORT: websocket
+      AFRITECH_CHAIN_GAS_PRICE_GWEI: "2"
+      AFRITECH_CHAIN_ID: "11155111"
+      AFRITECH_CHAIN_INDEX_BACKEND: file
+      AFRITECH_CHAIN_INDEX_FILE: /var/lib/afritech/anchor-index.json
+      AFRITECH_CHAIN_MODE: sepolia
+      AFRITECH_CHAIN_NETWORK: sepolia
+      AFRITECH_CHAIN_PRIVATE_KEY_PATH: /run/secrets/eth_private_key
+      AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA: https://base-sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_MAINNET: https://mainnet.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_SEPOLIA: https://sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_TX_TIMEOUT: "120"
+      AFRITECH_CHAIN_WS_URL_BASE_SEPOLIA: wss://base-sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_MAINNET: wss://mainnet.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_SEPOLIA: wss://sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_DOMAIN: trust.afritech.example
+      AFRITECH_ECOSYSTEM_LIVE_RECEIPT_FILE: /var/lib/afritech/ecosystem-live-anchor.json
+      AFRITECH_ENV: production
+      AFRITECH_EVENT_INGESTION_SECRET: replace-with-production-event-secret
+      AFRITECH_JWT_SECRET: replace-with-production-jwt-secret
+      AFRITECH_OTEL_ENABLED: "true"
+      AFRITECH_RUNTIME_ENVIRONMENT: production
+      AFRITECH_SIGNING_PRIVATE_KEY_PATH: /run/secrets/afritech_private_key.pem
+      AFRITECH_SIGNING_PUBLIC_KEY_PATH: /run/secrets/afritech_public_key.pem
+      AFRITECH_TLS_EMAIL: ops@afritech.example
+      DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVAPAY_AIRTEL_CD_API_TOKEN: ""
+      NOVAPAY_AIRTEL_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_CD_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_CD_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_CD_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_KE_API_TOKEN: ""
+      NOVAPAY_AIRTEL_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_KE_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_KE_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_KE_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_AIRTEL_MONEY_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ECOCASH_BI_API_TOKEN: ""
+      NOVAPAY_ECOCASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ECOCASH_BI_COLLECTION_URL: ""
+      NOVAPAY_ECOCASH_BI_LIVE_MODE: "false"
+      NOVAPAY_ECOCASH_BI_MERCHANT_ID: ""
+      NOVAPAY_ECOCASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_LUMICASH_BI_API_TOKEN: ""
+      NOVAPAY_LUMICASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_LUMICASH_BI_COLLECTION_URL: ""
+      NOVAPAY_LUMICASH_BI_LIVE_MODE: "false"
+      NOVAPAY_LUMICASH_BI_MERCHANT_ID: ""
+      NOVAPAY_LUMICASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_MOBILE_MONEY_LIVE_ENABLED: "false"
+      NOVAPAY_MPESA_CD_API_TOKEN: ""
+      NOVAPAY_MPESA_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_CD_COLLECTION_URL: ""
+      NOVAPAY_MPESA_CD_LIVE_MODE: "false"
+      NOVAPAY_MPESA_CD_MERCHANT_ID: ""
+      NOVAPAY_MPESA_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_MPESA_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_KE_CONSUMER_KEY: ""
+      NOVAPAY_MPESA_KE_CONSUMER_SECRET: ""
+      NOVAPAY_MPESA_KE_LIVE_MODE: "false"
+      NOVAPAY_MPESA_KE_PASSKEY: ""
+      NOVAPAY_MPESA_KE_SHORT_CODE: ""
+      NOVAPAY_MPESA_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ORANGE_CD_API_TOKEN: ""
+      NOVAPAY_ORANGE_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ORANGE_CD_COLLECTION_URL: ""
+      NOVAPAY_ORANGE_CD_LIVE_MODE: "false"
+      NOVAPAY_ORANGE_CD_MERCHANT_ID: ""
+      NOVAPAY_ORANGE_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_PAYID_API_TOKEN: ""
+      NOVAPAY_PAYID_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_PAYID_COLLECTION_URL: ""
+      NOVAPAY_PAYID_LIVE_ENABLED: "false"
+      NOVAPAY_PAYID_MERCHANT_ID: ""
+      NOVAPAY_PAYID_REFERENCE_FIELD: transaction_id
+      NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON: ""
+      NOVAPAY_WEBHOOK_SECRET: replace-with-provider-webhook-secret
+      NOVATECH_CORE_DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVATRUST_ED25519_PRIVATE_KEY_B64: replace-with-base64-encoded-32-byte-private-key
+      NOVATRUST_FEDERATION_HEALTHY_NODES: "1"
+      NOVATRUST_FEDERATION_NODE_KEYS_JSON: '{"validator-melbourne-001":"base64-ed25519-public-key"}'
+      NOVATRUST_FEDERATION_NODES: "1"
+      NOVATRUST_KEY_ROTATION_DAYS: "90"
+      NOVATRUST_KEY_ROTATION_ENABLED: "true"
+      NOVATRUST_SIGNING_KEY_ID: novatrust-prod-001
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_RESOURCE_ATTRIBUTES: deployment.environment=production,service.version=0.7.0
+      OTEL_SERVICE_NAME: afritech-api
+      OTEL_SERVICE_NAMESPACE: afritech
+      STRIPE_API_KEY: ""
+      STRIPE_LIVE_MODE: "false"
+      VITE_AFRIRIDE_API_URL: https://trust.afritech.example
+      VITE_AFRIRIDE_APP_VERSION: trust-node-1
+    expose:
+      - "8000"
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -fsS
+        - http://127.0.0.1:8000/health
+      timeout: 5s
+      interval: 30s
+      retries: 5
+      start_period: 30s
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 8000
+        published: "8001"
+        protocol: tcp
+    restart: unless-stopped
+    secrets:
+      - source: eth_private_key
+        target: /run/secrets/eth_private_key
+      - source: afritech_private_key
+        target: afritech_private_key.pem
+      - source: afritech_public_key
+        target: afritech_public_key.pem
+    volumes:
+      - type: volume
+        source: afritech_anchor_index
+        target: /var/lib/afritech
+        volume: {}
+  afritech-dashboard:
+    build:
+      context: /Users/ostrinov/afritelematics
+      dockerfile: deploy/staging/Dockerfile.dashboard
+      args:
+        VITE_AFRIRIDE_API_URL: https://trust.afritech.example
+        VITE_AFRIRIDE_APP_VERSION: trust-node-1
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+        required: true
+    environment:
+      AFRIRIDE_AUDIT_API_KEY: replace-with-production-audit-api-key
+      AFRIRIDE_DJANGO_SECRET_KEY: replace-with-production-django-secret
+      AFRIRIDE_EVENT_INGESTION_SECRET: replace-with-production-afriride-event-secret
+      AFRIRIDE_JWT_SECRET: replace-with-production-afriride-jwt-secret
+      AFRITECH_ALLOW_PILOT_TOKEN_ISSUANCE: "false"
+      AFRITECH_AUTH_BOOTSTRAP_SECRET: replace-only-if-controlled-bootstrap-is-required
+      AFRITECH_CHAIN_ADDRESS_CHECKSUM: 0xYOUR_FUNDED_PUBLIC_LEDGER_WALLET
+      AFRITECH_CHAIN_AUTO_PUBLISH_ON_PROOF: "false"
+      AFRITECH_CHAIN_CONTRACT_ADDRESS: 0xYOUR_DEPLOYED_ARCHITECTURE_ANCHOR
+      AFRITECH_CHAIN_CONTRACT_DEPLOYMENT_BLOCK: "11064832"
+      AFRITECH_CHAIN_ENABLE_PUBLISH: "true"
+      AFRITECH_CHAIN_ETHERSCAN_VERIFIED: "false"
+      AFRITECH_CHAIN_EVENT_BACKFILL_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_RECONNECT_DELAY_SECONDS: "5"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_TRANSPORT: websocket
+      AFRITECH_CHAIN_GAS_PRICE_GWEI: "2"
+      AFRITECH_CHAIN_ID: "11155111"
+      AFRITECH_CHAIN_INDEX_BACKEND: file
+      AFRITECH_CHAIN_INDEX_FILE: /var/lib/afritech/anchor-index.json
+      AFRITECH_CHAIN_MODE: sepolia
+      AFRITECH_CHAIN_NETWORK: sepolia
+      AFRITECH_CHAIN_PRIVATE_KEY_PATH: /run/secrets/eth_private_key
+      AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA: https://base-sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_MAINNET: https://mainnet.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_SEPOLIA: https://sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_TX_TIMEOUT: "120"
+      AFRITECH_CHAIN_WS_URL_BASE_SEPOLIA: wss://base-sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_MAINNET: wss://mainnet.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_SEPOLIA: wss://sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_DOMAIN: trust.afritech.example
+      AFRITECH_ECOSYSTEM_LIVE_RECEIPT_FILE: /var/lib/afritech/ecosystem-live-anchor.json
+      AFRITECH_ENV: production
+      AFRITECH_EVENT_INGESTION_SECRET: replace-with-production-event-secret
+      AFRITECH_JWT_SECRET: replace-with-production-jwt-secret
+      AFRITECH_SIGNING_PRIVATE_KEY_PATH: /run/secrets/afritech_private_key.pem
+      AFRITECH_SIGNING_PUBLIC_KEY_PATH: /run/secrets/afritech_public_key.pem
+      AFRITECH_TLS_EMAIL: ops@afritech.example
+      DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVAPAY_AIRTEL_CD_API_TOKEN: ""
+      NOVAPAY_AIRTEL_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_CD_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_CD_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_CD_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_KE_API_TOKEN: ""
+      NOVAPAY_AIRTEL_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_KE_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_KE_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_KE_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_AIRTEL_MONEY_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ECOCASH_BI_API_TOKEN: ""
+      NOVAPAY_ECOCASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ECOCASH_BI_COLLECTION_URL: ""
+      NOVAPAY_ECOCASH_BI_LIVE_MODE: "false"
+      NOVAPAY_ECOCASH_BI_MERCHANT_ID: ""
+      NOVAPAY_ECOCASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_LUMICASH_BI_API_TOKEN: ""
+      NOVAPAY_LUMICASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_LUMICASH_BI_COLLECTION_URL: ""
+      NOVAPAY_LUMICASH_BI_LIVE_MODE: "false"
+      NOVAPAY_LUMICASH_BI_MERCHANT_ID: ""
+      NOVAPAY_LUMICASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_MOBILE_MONEY_LIVE_ENABLED: "false"
+      NOVAPAY_MPESA_CD_API_TOKEN: ""
+      NOVAPAY_MPESA_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_CD_COLLECTION_URL: ""
+      NOVAPAY_MPESA_CD_LIVE_MODE: "false"
+      NOVAPAY_MPESA_CD_MERCHANT_ID: ""
+      NOVAPAY_MPESA_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_MPESA_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_KE_CONSUMER_KEY: ""
+      NOVAPAY_MPESA_KE_CONSUMER_SECRET: ""
+      NOVAPAY_MPESA_KE_LIVE_MODE: "false"
+      NOVAPAY_MPESA_KE_PASSKEY: ""
+      NOVAPAY_MPESA_KE_SHORT_CODE: ""
+      NOVAPAY_MPESA_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ORANGE_CD_API_TOKEN: ""
+      NOVAPAY_ORANGE_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ORANGE_CD_COLLECTION_URL: ""
+      NOVAPAY_ORANGE_CD_LIVE_MODE: "false"
+      NOVAPAY_ORANGE_CD_MERCHANT_ID: ""
+      NOVAPAY_ORANGE_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_PAYID_API_TOKEN: ""
+      NOVAPAY_PAYID_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_PAYID_COLLECTION_URL: ""
+      NOVAPAY_PAYID_LIVE_ENABLED: "false"
+      NOVAPAY_PAYID_MERCHANT_ID: ""
+      NOVAPAY_PAYID_REFERENCE_FIELD: transaction_id
+      NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON: ""
+      NOVAPAY_WEBHOOK_SECRET: replace-with-provider-webhook-secret
+      NOVATECH_CORE_DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVATRUST_ED25519_PRIVATE_KEY_B64: replace-with-base64-encoded-32-byte-private-key
+      NOVATRUST_FEDERATION_HEALTHY_NODES: "1"
+      NOVATRUST_FEDERATION_NODE_KEYS_JSON: '{"validator-melbourne-001":"base64-ed25519-public-key"}'
+      NOVATRUST_FEDERATION_NODES: "1"
+      NOVATRUST_KEY_ROTATION_DAYS: "90"
+      NOVATRUST_KEY_ROTATION_ENABLED: "true"
+      NOVATRUST_SIGNING_KEY_ID: novatrust-prod-001
+      STRIPE_API_KEY: ""
+      STRIPE_LIVE_MODE: "false"
+      VITE_AFRIRIDE_API_URL: https://trust.afritech.example
+      VITE_AFRIRIDE_APP_VERSION: trust-node-1
+    expose:
+      - "4173"
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -qO-
+        - http://127.0.0.1:4173/
+      timeout: 5s
+      interval: 30s
+      retries: 5
+      start_period: 20s
+    networks:
+      default: null
+    restart: unless-stopped
+  nginx:
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+        required: true
+      afritech-dashboard:
+        condition: service_started
+        required: true
+      novacodepro-portal:
+        condition: service_started
+        required: true
+      public-web:
+        condition: service_started
+        required: true
+    environment:
+      AFRIRIDE_AUDIT_API_KEY: replace-with-production-audit-api-key
+      AFRIRIDE_DJANGO_SECRET_KEY: replace-with-production-django-secret
+      AFRIRIDE_EVENT_INGESTION_SECRET: replace-with-production-afriride-event-secret
+      AFRIRIDE_JWT_SECRET: replace-with-production-afriride-jwt-secret
+      AFRITECH_ALLOW_PILOT_TOKEN_ISSUANCE: "false"
+      AFRITECH_AUTH_BOOTSTRAP_SECRET: replace-only-if-controlled-bootstrap-is-required
+      AFRITECH_CHAIN_ADDRESS_CHECKSUM: 0xYOUR_FUNDED_PUBLIC_LEDGER_WALLET
+      AFRITECH_CHAIN_AUTO_PUBLISH_ON_PROOF: "false"
+      AFRITECH_CHAIN_CONTRACT_ADDRESS: 0xYOUR_DEPLOYED_ARCHITECTURE_ANCHOR
+      AFRITECH_CHAIN_CONTRACT_DEPLOYMENT_BLOCK: "11064832"
+      AFRITECH_CHAIN_ENABLE_PUBLISH: "true"
+      AFRITECH_CHAIN_ETHERSCAN_VERIFIED: "false"
+      AFRITECH_CHAIN_EVENT_BACKFILL_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_RECONNECT_DELAY_SECONDS: "5"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_TRANSPORT: websocket
+      AFRITECH_CHAIN_GAS_PRICE_GWEI: "2"
+      AFRITECH_CHAIN_ID: "11155111"
+      AFRITECH_CHAIN_INDEX_BACKEND: file
+      AFRITECH_CHAIN_INDEX_FILE: /var/lib/afritech/anchor-index.json
+      AFRITECH_CHAIN_MODE: sepolia
+      AFRITECH_CHAIN_NETWORK: sepolia
+      AFRITECH_CHAIN_PRIVATE_KEY_PATH: /run/secrets/eth_private_key
+      AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA: https://base-sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_MAINNET: https://mainnet.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_SEPOLIA: https://sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_TX_TIMEOUT: "120"
+      AFRITECH_CHAIN_WS_URL_BASE_SEPOLIA: wss://base-sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_MAINNET: wss://mainnet.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_SEPOLIA: wss://sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_DOMAIN: trust.afritech.example
+      AFRITECH_ECOSYSTEM_LIVE_RECEIPT_FILE: /var/lib/afritech/ecosystem-live-anchor.json
+      AFRITECH_ENV: production
+      AFRITECH_EVENT_INGESTION_SECRET: replace-with-production-event-secret
+      AFRITECH_JWT_SECRET: replace-with-production-jwt-secret
+      AFRITECH_SIGNING_PRIVATE_KEY_PATH: /run/secrets/afritech_private_key.pem
+      AFRITECH_SIGNING_PUBLIC_KEY_PATH: /run/secrets/afritech_public_key.pem
+      AFRITECH_TLS_EMAIL: ops@afritech.example
+      DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVAPAY_AIRTEL_CD_API_TOKEN: ""
+      NOVAPAY_AIRTEL_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_CD_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_CD_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_CD_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_KE_API_TOKEN: ""
+      NOVAPAY_AIRTEL_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_KE_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_KE_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_KE_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_AIRTEL_MONEY_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ECOCASH_BI_API_TOKEN: ""
+      NOVAPAY_ECOCASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ECOCASH_BI_COLLECTION_URL: ""
+      NOVAPAY_ECOCASH_BI_LIVE_MODE: "false"
+      NOVAPAY_ECOCASH_BI_MERCHANT_ID: ""
+      NOVAPAY_ECOCASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_LUMICASH_BI_API_TOKEN: ""
+      NOVAPAY_LUMICASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_LUMICASH_BI_COLLECTION_URL: ""
+      NOVAPAY_LUMICASH_BI_LIVE_MODE: "false"
+      NOVAPAY_LUMICASH_BI_MERCHANT_ID: ""
+      NOVAPAY_LUMICASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_MOBILE_MONEY_LIVE_ENABLED: "false"
+      NOVAPAY_MPESA_CD_API_TOKEN: ""
+      NOVAPAY_MPESA_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_CD_COLLECTION_URL: ""
+      NOVAPAY_MPESA_CD_LIVE_MODE: "false"
+      NOVAPAY_MPESA_CD_MERCHANT_ID: ""
+      NOVAPAY_MPESA_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_MPESA_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_KE_CONSUMER_KEY: ""
+      NOVAPAY_MPESA_KE_CONSUMER_SECRET: ""
+      NOVAPAY_MPESA_KE_LIVE_MODE: "false"
+      NOVAPAY_MPESA_KE_PASSKEY: ""
+      NOVAPAY_MPESA_KE_SHORT_CODE: ""
+      NOVAPAY_MPESA_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ORANGE_CD_API_TOKEN: ""
+      NOVAPAY_ORANGE_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ORANGE_CD_COLLECTION_URL: ""
+      NOVAPAY_ORANGE_CD_LIVE_MODE: "false"
+      NOVAPAY_ORANGE_CD_MERCHANT_ID: ""
+      NOVAPAY_ORANGE_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_PAYID_API_TOKEN: ""
+      NOVAPAY_PAYID_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_PAYID_COLLECTION_URL: ""
+      NOVAPAY_PAYID_LIVE_ENABLED: "false"
+      NOVAPAY_PAYID_MERCHANT_ID: ""
+      NOVAPAY_PAYID_REFERENCE_FIELD: transaction_id
+      NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON: ""
+      NOVAPAY_WEBHOOK_SECRET: replace-with-provider-webhook-secret
+      NOVATECH_CORE_DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVATRUST_ED25519_PRIVATE_KEY_B64: replace-with-base64-encoded-32-byte-private-key
+      NOVATRUST_FEDERATION_HEALTHY_NODES: "1"
+      NOVATRUST_FEDERATION_NODE_KEYS_JSON: '{"validator-melbourne-001":"base64-ed25519-public-key"}'
+      NOVATRUST_FEDERATION_NODES: "1"
+      NOVATRUST_KEY_ROTATION_DAYS: "90"
+      NOVATRUST_KEY_ROTATION_ENABLED: "true"
+      NOVATRUST_SIGNING_KEY_ID: novatrust-prod-001
+      STRIPE_API_KEY: ""
+      STRIPE_LIVE_MODE: "false"
+      VITE_AFRIRIDE_API_URL: https://trust.afritech.example
+      VITE_AFRIRIDE_APP_VERSION: trust-node-1
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -qO-
+        - http://127.0.0.1/healthz
+      timeout: 5s
+      interval: 30s
+      retries: 5
+      start_period: 20s
+    image: nginx:1.27-alpine
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 80
+        published: "80"
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        published: "443"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /Users/ostrinov/afritelematics/deploy/production/nginx/15-novacodepro-cert.envsh
+        target: /docker-entrypoint.d/15-novacodepro-cert.envsh
+        read_only: true
+        bind: {}
+      - type: bind
+        source: /Users/ostrinov/afritelematics/deploy/production/nginx/afritechnology-platform.conf.template
+        target: /etc/nginx/templates/default.conf.template
+        read_only: true
+        bind: {}
+      - type: bind
+        source: /Users/ostrinov/afritelematics/apk
+        target: /var/www/afritech-apk
+        read_only: true
+        bind: {}
+      - type: bind
+        source: /Users/ostrinov/afritelematics/apk-public
+        target: /var/www/afritechnology-downloads
+        read_only: true
+        bind: {}
+      - type: volume
+        source: certbot_www
+        target: /var/www/certbot
+        volume: {}
+      - type: volume
+        source: certbot_certs
+        target: /etc/letsencrypt
+        volume: {}
+  novacodepro-portal:
+    build:
+      context: /Users/ostrinov/afritelematics
+      dockerfile: deploy/staging/Dockerfile.novacodepro_portal
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+        required: true
+    environment:
+      AFRIRIDE_AUDIT_API_KEY: replace-with-production-audit-api-key
+      AFRIRIDE_DJANGO_SECRET_KEY: replace-with-production-django-secret
+      AFRIRIDE_EVENT_INGESTION_SECRET: replace-with-production-afriride-event-secret
+      AFRIRIDE_JWT_SECRET: replace-with-production-afriride-jwt-secret
+      AFRITECH_ALLOW_PILOT_TOKEN_ISSUANCE: "false"
+      AFRITECH_AUTH_BOOTSTRAP_SECRET: replace-only-if-controlled-bootstrap-is-required
+      AFRITECH_CHAIN_ADDRESS_CHECKSUM: 0xYOUR_FUNDED_PUBLIC_LEDGER_WALLET
+      AFRITECH_CHAIN_AUTO_PUBLISH_ON_PROOF: "false"
+      AFRITECH_CHAIN_CONTRACT_ADDRESS: 0xYOUR_DEPLOYED_ARCHITECTURE_ANCHOR
+      AFRITECH_CHAIN_CONTRACT_DEPLOYMENT_BLOCK: "11064832"
+      AFRITECH_CHAIN_ENABLE_PUBLISH: "true"
+      AFRITECH_CHAIN_ETHERSCAN_VERIFIED: "false"
+      AFRITECH_CHAIN_EVENT_BACKFILL_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_RECONNECT_DELAY_SECONDS: "5"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_TRANSPORT: websocket
+      AFRITECH_CHAIN_GAS_PRICE_GWEI: "2"
+      AFRITECH_CHAIN_ID: "11155111"
+      AFRITECH_CHAIN_INDEX_BACKEND: file
+      AFRITECH_CHAIN_INDEX_FILE: /var/lib/afritech/anchor-index.json
+      AFRITECH_CHAIN_MODE: sepolia
+      AFRITECH_CHAIN_NETWORK: sepolia
+      AFRITECH_CHAIN_PRIVATE_KEY_PATH: /run/secrets/eth_private_key
+      AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA: https://base-sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_MAINNET: https://mainnet.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_SEPOLIA: https://sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_TX_TIMEOUT: "120"
+      AFRITECH_CHAIN_WS_URL_BASE_SEPOLIA: wss://base-sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_MAINNET: wss://mainnet.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_SEPOLIA: wss://sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_DOMAIN: trust.afritech.example
+      AFRITECH_ECOSYSTEM_LIVE_RECEIPT_FILE: /var/lib/afritech/ecosystem-live-anchor.json
+      AFRITECH_ENV: production
+      AFRITECH_EVENT_INGESTION_SECRET: replace-with-production-event-secret
+      AFRITECH_JWT_SECRET: replace-with-production-jwt-secret
+      AFRITECH_SIGNING_PRIVATE_KEY_PATH: /run/secrets/afritech_private_key.pem
+      AFRITECH_SIGNING_PUBLIC_KEY_PATH: /run/secrets/afritech_public_key.pem
+      AFRITECH_TLS_EMAIL: ops@afritech.example
+      DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVAPAY_AIRTEL_CD_API_TOKEN: ""
+      NOVAPAY_AIRTEL_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_CD_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_CD_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_CD_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_KE_API_TOKEN: ""
+      NOVAPAY_AIRTEL_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_KE_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_KE_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_KE_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_AIRTEL_MONEY_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ECOCASH_BI_API_TOKEN: ""
+      NOVAPAY_ECOCASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ECOCASH_BI_COLLECTION_URL: ""
+      NOVAPAY_ECOCASH_BI_LIVE_MODE: "false"
+      NOVAPAY_ECOCASH_BI_MERCHANT_ID: ""
+      NOVAPAY_ECOCASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_LUMICASH_BI_API_TOKEN: ""
+      NOVAPAY_LUMICASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_LUMICASH_BI_COLLECTION_URL: ""
+      NOVAPAY_LUMICASH_BI_LIVE_MODE: "false"
+      NOVAPAY_LUMICASH_BI_MERCHANT_ID: ""
+      NOVAPAY_LUMICASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_MOBILE_MONEY_LIVE_ENABLED: "false"
+      NOVAPAY_MPESA_CD_API_TOKEN: ""
+      NOVAPAY_MPESA_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_CD_COLLECTION_URL: ""
+      NOVAPAY_MPESA_CD_LIVE_MODE: "false"
+      NOVAPAY_MPESA_CD_MERCHANT_ID: ""
+      NOVAPAY_MPESA_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_MPESA_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_KE_CONSUMER_KEY: ""
+      NOVAPAY_MPESA_KE_CONSUMER_SECRET: ""
+      NOVAPAY_MPESA_KE_LIVE_MODE: "false"
+      NOVAPAY_MPESA_KE_PASSKEY: ""
+      NOVAPAY_MPESA_KE_SHORT_CODE: ""
+      NOVAPAY_MPESA_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ORANGE_CD_API_TOKEN: ""
+      NOVAPAY_ORANGE_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ORANGE_CD_COLLECTION_URL: ""
+      NOVAPAY_ORANGE_CD_LIVE_MODE: "false"
+      NOVAPAY_ORANGE_CD_MERCHANT_ID: ""
+      NOVAPAY_ORANGE_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_PAYID_API_TOKEN: ""
+      NOVAPAY_PAYID_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_PAYID_COLLECTION_URL: ""
+      NOVAPAY_PAYID_LIVE_ENABLED: "false"
+      NOVAPAY_PAYID_MERCHANT_ID: ""
+      NOVAPAY_PAYID_REFERENCE_FIELD: transaction_id
+      NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON: ""
+      NOVAPAY_WEBHOOK_SECRET: replace-with-provider-webhook-secret
+      NOVATECH_CORE_DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVATRUST_ED25519_PRIVATE_KEY_B64: replace-with-base64-encoded-32-byte-private-key
+      NOVATRUST_FEDERATION_HEALTHY_NODES: "1"
+      NOVATRUST_FEDERATION_NODE_KEYS_JSON: '{"validator-melbourne-001":"base64-ed25519-public-key"}'
+      NOVATRUST_FEDERATION_NODES: "1"
+      NOVATRUST_KEY_ROTATION_DAYS: "90"
+      NOVATRUST_KEY_ROTATION_ENABLED: "true"
+      NOVATRUST_SIGNING_KEY_ID: novatrust-prod-001
+      STRIPE_API_KEY: ""
+      STRIPE_LIVE_MODE: "false"
+      VITE_AFRIRIDE_API_URL: https://trust.afritech.example
+      VITE_AFRIRIDE_APP_VERSION: trust-node-1
+    expose:
+      - "4174"
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -qO-
+        - http://127.0.0.1:4174/
+      timeout: 5s
+      interval: 30s
+      retries: 5
+      start_period: 20s
+    networks:
+      default: null
+    restart: unless-stopped
+  public-web:
+    build:
+      context: /Users/ostrinov/afritelematics
+      dockerfile: deploy/public-web/Dockerfile
+      args:
+        VITE_AFRITECH_PUBLIC_API_URL: ""
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+        required: true
+    environment:
+      AFRIRIDE_AUDIT_API_KEY: replace-with-production-audit-api-key
+      AFRIRIDE_DJANGO_SECRET_KEY: replace-with-production-django-secret
+      AFRIRIDE_EVENT_INGESTION_SECRET: replace-with-production-afriride-event-secret
+      AFRIRIDE_JWT_SECRET: replace-with-production-afriride-jwt-secret
+      AFRITECH_ALLOW_PILOT_TOKEN_ISSUANCE: "false"
+      AFRITECH_AUTH_BOOTSTRAP_SECRET: replace-only-if-controlled-bootstrap-is-required
+      AFRITECH_CHAIN_ADDRESS_CHECKSUM: 0xYOUR_FUNDED_PUBLIC_LEDGER_WALLET
+      AFRITECH_CHAIN_AUTO_PUBLISH_ON_PROOF: "false"
+      AFRITECH_CHAIN_CONTRACT_ADDRESS: 0xYOUR_DEPLOYED_ARCHITECTURE_ANCHOR
+      AFRITECH_CHAIN_CONTRACT_DEPLOYMENT_BLOCK: "11064832"
+      AFRITECH_CHAIN_ENABLE_PUBLISH: "true"
+      AFRITECH_CHAIN_ETHERSCAN_VERIFIED: "false"
+      AFRITECH_CHAIN_EVENT_BACKFILL_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_RECONNECT_DELAY_SECONDS: "5"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_ENABLED: "true"
+      AFRITECH_CHAIN_EVENT_SUBSCRIBER_TRANSPORT: websocket
+      AFRITECH_CHAIN_GAS_PRICE_GWEI: "2"
+      AFRITECH_CHAIN_ID: "11155111"
+      AFRITECH_CHAIN_INDEX_BACKEND: file
+      AFRITECH_CHAIN_INDEX_FILE: /var/lib/afritech/anchor-index.json
+      AFRITECH_CHAIN_MODE: sepolia
+      AFRITECH_CHAIN_NETWORK: sepolia
+      AFRITECH_CHAIN_PRIVATE_KEY_PATH: /run/secrets/eth_private_key
+      AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA: https://base-sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_MAINNET: https://mainnet.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_RPC_URL_SEPOLIA: https://sepolia.infura.io/v3/replace-with-provider-key
+      AFRITECH_CHAIN_TX_TIMEOUT: "120"
+      AFRITECH_CHAIN_WS_URL_BASE_SEPOLIA: wss://base-sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_MAINNET: wss://mainnet.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_CHAIN_WS_URL_SEPOLIA: wss://sepolia.infura.io/ws/v3/replace-with-provider-key
+      AFRITECH_DOMAIN: trust.afritech.example
+      AFRITECH_ECOSYSTEM_LIVE_RECEIPT_FILE: /var/lib/afritech/ecosystem-live-anchor.json
+      AFRITECH_ENV: production
+      AFRITECH_EVENT_INGESTION_SECRET: replace-with-production-event-secret
+      AFRITECH_JWT_SECRET: replace-with-production-jwt-secret
+      AFRITECH_SIGNING_PRIVATE_KEY_PATH: /run/secrets/afritech_private_key.pem
+      AFRITECH_SIGNING_PUBLIC_KEY_PATH: /run/secrets/afritech_public_key.pem
+      AFRITECH_TLS_EMAIL: ops@afritech.example
+      DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVAPAY_AIRTEL_CD_API_TOKEN: ""
+      NOVAPAY_AIRTEL_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_CD_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_CD_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_CD_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_KE_API_TOKEN: ""
+      NOVAPAY_AIRTEL_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_AIRTEL_KE_COLLECTION_URL: ""
+      NOVAPAY_AIRTEL_KE_LIVE_MODE: "false"
+      NOVAPAY_AIRTEL_KE_MERCHANT_ID: ""
+      NOVAPAY_AIRTEL_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_AIRTEL_MONEY_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ECOCASH_BI_API_TOKEN: ""
+      NOVAPAY_ECOCASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ECOCASH_BI_COLLECTION_URL: ""
+      NOVAPAY_ECOCASH_BI_LIVE_MODE: "false"
+      NOVAPAY_ECOCASH_BI_MERCHANT_ID: ""
+      NOVAPAY_ECOCASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_LUMICASH_BI_API_TOKEN: ""
+      NOVAPAY_LUMICASH_BI_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_LUMICASH_BI_COLLECTION_URL: ""
+      NOVAPAY_LUMICASH_BI_LIVE_MODE: "false"
+      NOVAPAY_LUMICASH_BI_MERCHANT_ID: ""
+      NOVAPAY_LUMICASH_BI_WEBHOOK_SECRET: ""
+      NOVAPAY_MOBILE_MONEY_LIVE_ENABLED: "false"
+      NOVAPAY_MPESA_CD_API_TOKEN: ""
+      NOVAPAY_MPESA_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_CD_COLLECTION_URL: ""
+      NOVAPAY_MPESA_CD_LIVE_MODE: "false"
+      NOVAPAY_MPESA_CD_MERCHANT_ID: ""
+      NOVAPAY_MPESA_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_MPESA_KE_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_MPESA_KE_CONSUMER_KEY: ""
+      NOVAPAY_MPESA_KE_CONSUMER_SECRET: ""
+      NOVAPAY_MPESA_KE_LIVE_MODE: "false"
+      NOVAPAY_MPESA_KE_PASSKEY: ""
+      NOVAPAY_MPESA_KE_SHORT_CODE: ""
+      NOVAPAY_MPESA_KE_WEBHOOK_SECRET: ""
+      NOVAPAY_ORANGE_CD_API_TOKEN: ""
+      NOVAPAY_ORANGE_CD_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_ORANGE_CD_COLLECTION_URL: ""
+      NOVAPAY_ORANGE_CD_LIVE_MODE: "false"
+      NOVAPAY_ORANGE_CD_MERCHANT_ID: ""
+      NOVAPAY_ORANGE_MONEY_CD_WEBHOOK_SECRET: ""
+      NOVAPAY_PAYID_API_TOKEN: ""
+      NOVAPAY_PAYID_CALLBACK_URL: https://trust.afritech.example/webhooks/payments
+      NOVAPAY_PAYID_COLLECTION_URL: ""
+      NOVAPAY_PAYID_LIVE_ENABLED: "false"
+      NOVAPAY_PAYID_MERCHANT_ID: ""
+      NOVAPAY_PAYID_REFERENCE_FIELD: transaction_id
+      NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON: ""
+      NOVAPAY_WEBHOOK_SECRET: replace-with-provider-webhook-secret
+      NOVATECH_CORE_DATABASE_URL: postgresql://novatech:replace-me@managed-postgres:5432/novatech
+      NOVATRUST_ED25519_PRIVATE_KEY_B64: replace-with-base64-encoded-32-byte-private-key
+      NOVATRUST_FEDERATION_HEALTHY_NODES: "1"
+      NOVATRUST_FEDERATION_NODE_KEYS_JSON: '{"validator-melbourne-001":"base64-ed25519-public-key"}'
+      NOVATRUST_FEDERATION_NODES: "1"
+      NOVATRUST_KEY_ROTATION_DAYS: "90"
+      NOVATRUST_KEY_ROTATION_ENABLED: "true"
+      NOVATRUST_SIGNING_KEY_ID: novatrust-prod-001
+      STRIPE_API_KEY: ""
+      STRIPE_LIVE_MODE: "false"
+      VITE_AFRIRIDE_API_URL: https://trust.afritech.example
+      VITE_AFRIRIDE_APP_VERSION: trust-node-1
+    expose:
+      - "4175"
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -qO-
+        - http://127.0.0.1:4175/
+      timeout: 5s
+      interval: 30s
+      retries: 5
+      start_period: 20s
+    networks:
+      default: null
+    restart: unless-stopped
+networks:
+  default:
+    name: production_default
+volumes:
+  afritech_anchor_index:
+    name: production_afritech_anchor_index
+  certbot_certs:
+    name: production_certbot_certs
+  certbot_www:
+    name: production_certbot_www
+secrets:
+  afritech_private_key:
+    name: production_afritech_private_key
+    file: /Users/ostrinov/afritelematics/deploy/production/secrets/afritech_private_key.pem
+  afritech_public_key:
+    name: production_afritech_public_key
+    file: /Users/ostrinov/afritelematics/deploy/production/secrets/afritech_public_key.pem
+  eth_private_key:
+    name: production_eth_private_key
+    file: /Users/ostrinov/afritelematics/deploy/production/secrets/eth_private_key

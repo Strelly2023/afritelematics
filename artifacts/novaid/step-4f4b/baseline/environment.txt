@@ -1,0 +1,42 @@
+Generated at:
+2026-07-29T01:47:23Z
+
+Repository root:
+/Users/ostrinov/afritelematics
+
+Branch:
+feature/product-factory-enterprise-sdlc
+
+Commit:
+1e52049e9ab342c01776c7e3ddb413b2b185a6b9
+
+Python:
+Python 3.11.8
+
+Relevant worktree state:
+ M afritech/novaid/persistence/sqlite.py
+ M tests/novaid/test_identity_verification_service.py
+?? afritech/novaid/persistence/biometric_codec.py
+?? afritech/novaid/persistence/biometric_sqlite_repository.py
+?? afritech/novaid/persistence/identity_verification_codec.py
+?? afritech/novaid/persistence/identity_verification_repository.py
+?? tests/novaid/test_biometric_codec.py
+?? tests/novaid/test_biometric_domain_foundation.py
+?? tests/novaid/test_biometric_sqlite_repository.py
+?? tests/novaid/test_biometric_sqlite_schema.py
+?? tests/novaid/test_canonical_tenant_aggregate.py
+?? tests/novaid/test_document_authenticity_service.py
+?? tests/novaid/test_document_domain_foundation.py
+?? tests/novaid/test_document_ocr_service.py
+?? tests/novaid/test_document_selfie_match_service.py
+?? tests/novaid/test_face_authentication_service.py
+?? tests/novaid/test_face_enrollment_service.py
+?? tests/novaid/test_face_verification_service.py
+?? tests/novaid/test_identity_verification_codec.py
+?? tests/novaid/test_identity_verification_models.py
+?? tests/novaid/test_identity_verification_sqlite_schema.py
+?? tests/novaid/test_liveness_assessment_service.py
+?? tests/novaid/test_tenant_lifecycle_service.py
+?? tests/novaid/test_tenant_security_policy.py
+?? tests/novaid/test_tenant_settings.py
+?? tests/novaid/test_tenant_value_objects.py

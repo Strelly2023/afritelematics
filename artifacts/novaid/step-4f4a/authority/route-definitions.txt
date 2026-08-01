@@ -1,0 +1,35 @@
+# Framework route declarations related to NovaID
+
+./afritech/security/device_identity.py:26:    def register(self, identity: DeviceIdentity) -> None:
+./afritech/network/node_registry.py:97:    def register(self, identity: NodeIdentity) -> None:
+./afritech/tests/novaid/test_novaid_ecosystem.py:21:    app.include_router(build_novaid_router(service))
+./afritech/api/auth/jwt_device_auth.py:173:        self.registry.register(identity)
+./afritech/api/novacodepro_platform_api.py:2293:    @router.get("/identity/roles/{role}/normalize")
+./afritech/api/afriprogramming_control_api.py:945:    @router.post("/identity/bind")
+./afritech/api/afriprogramming_control_api.py:959:    @router.get("/identity/bindings")
+./afritech/api/afriride_next_gen_mobile_api.py:2758:    @router.get("/novaride/novaid")
+./afritech/api/afriride_next_gen_mobile_api.py:2762:    @router.get("/novaride/novaid/gen-sovereign")
+./afritech/api/afriride_next_gen_mobile_api.py:2766:    @router.get("/novaride/novaid/digital-nation")
+./afritech/api/core_platform_api.py:607:    @router.get("/identity/me")
+./afritech/api/app.py:477:app.include_router(build_novaid_router())
+./afritech/api/app.py:479:app.include_router(build_novaid_audit_replay_router())
+./afritech/api/novaid_audit_replay_api.py:52:    router = APIRouter(prefix="/api/v1/audit", tags=["novaid-audit"])
+./afritech/api/novaid_api.py:177:    router = APIRouter(prefix="/v1/novaid", tags=["novaid"])
+./afritech/api/novaid_api.py:222:    @router.get("/identities/{identity_id}")
+./afritech/api/urls.py:299:    path("novaprogramming/identity/bind", novaprogramming_identity_bind),
+./afritech/api/urls.py:300:    path("novaprogramming/identity/bindings", novaprogramming_identity_bindings),
+./afritech/novaid/server.py:52:app.include_router(build_novaid_audit_replay_router())
+./afritech/novaid/server.py:78:    return router.novaid_metrics.prometheus()
+./afritech/novaid/api.py:135:    router = APIRouter(prefix="/v1/novaid", tags=["novaid-authentication"])
+./tests/novaid/test_phase5d_postgres_runtime.py:40:    pool = router.novaid_postgres_pool
+./tests/novaid/test_phase5c_authoritative_router.py:115:    assert "app.include_router(build_novaid_router())" in app_source
+./tests/novaid/test_phase6f_audit_replay.py:148:    app.include_router(build_novaid_audit_replay_router(service))
+./afriride_system/api/internal_qa_contract_routes.py:40:@router.get("/novaid/profile")
+./afriride_system/api/internal_qa_contract_routes.py:45:@router.post("/novaid/verify/personal")
+./afriride_system/api/internal_qa_contract_routes.py:50:@router.post("/novaid/verify/business")
+./afriride_system/api/internal_qa_contract_routes.py:55:@router.post("/novaid/verify/employee")
+./afriride_system/api/internal_qa_contract_routes.py:60:@router.post("/novaid/verify/partner")
+./afriride_system/api/internal_qa_contract_routes.py:65:@router.post("/novaid/verify/inspector")
+./afriride_system/api/internal_qa_contract_routes.py:70:@router.post("/novaid/documents/upload")
+./afriride_system/api/internal_qa_contract_routes.py:75:@router.get("/novaid/activity")
+./afriride_system/api/internal_qa_contract_routes.py:80:@router.get("/novaid/audit")

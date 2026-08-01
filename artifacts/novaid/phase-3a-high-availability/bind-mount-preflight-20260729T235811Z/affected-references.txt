@@ -1,0 +1,25 @@
+/Users/ostrinov/afritelematics/deploy/production/.env.production:29:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production:30:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production:52:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+/Users/ostrinov/afritelematics/deploy/production/.env.production.save:8:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.save:9:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.example:8:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.example:9:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.example:26:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:20:      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:21:      - ./secrets/afritech_private_key.pem:/run/secrets/afritech_private_key.pem:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:22:      - ./secrets/afritech_public_key.pem:/run/secrets/afritech_public_key.pem:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:160:      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:162:      - --config.file=/etc/alertmanager/alertmanager.yml
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:206:      - ./monitoring/opentelemetry/config.yaml:/etc/otelcol-contrib/config.yaml:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.production.tls.yml:10:      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.production.yml:10:      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node.example:102:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node.example:103:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node.example:117:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node:102:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node:103:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node:117:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+/Users/ostrinov/afritelematics/deploy/production/.env.production.tls.example:8:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.tls.example:9:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.tls.example:23:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key

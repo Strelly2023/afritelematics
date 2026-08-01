@@ -1,0 +1,9 @@
+usage: preflight_production_deployment.py [-h] [--env-file ENV_FILE]
+                                          [--compose-file COMPOSE_FILES]
+                                          [--check-compose]
+
+options:
+  -h, --help            show this help message and exit
+  --env-file ENV_FILE
+  --compose-file COMPOSE_FILES
+  --check-compose

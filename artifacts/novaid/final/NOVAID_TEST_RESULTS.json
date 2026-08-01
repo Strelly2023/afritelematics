@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "executed_at": "2026-07-18",
+  "python": "3.11.8",
+  "results": {"passed": 9, "failed": 0, "skipped": 0, "blocked": 0},
+  "suites": [
+    {"path": "tests/novaid/test_security_invariants.py", "passed": 3, "failed": 0},
+    {"path": "afritech/tests/novaid/test_novaid_ecosystem.py", "passed": 6, "failed": 0}
+  ],
+  "checks": {"compileall_afritech_novaid": "PASS", "ruff_focused": "PASS", "git_diff_check": "PASS"},
+  "scope_note": "Focused results only; they do not certify the full platform."
+}

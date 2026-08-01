@@ -1,0 +1,85 @@
+ M afritech/novaid/domain/__init__.py
+ M afritech/novaid/domain/models.py
+ M afritech/novaid/persistence/sqlite.py
+ M artifacts/ga-readiness/release/manifests/release-manifest.json
+ M artifacts/ga-readiness/release/manifests/release-manifest.yaml
+ M docs/release/release-artifact-inventory.json
+ M tests/novaid/test_identity_verification_service.py
+?? afritech/novaid/domain/biometric_events.py
+?? afritech/novaid/domain/biometric_models.py
+?? afritech/novaid/domain/biometric_verification_events.py
+?? afritech/novaid/domain/biometric_verification_models.py
+?? afritech/novaid/domain/document_authenticity_events.py
+?? afritech/novaid/domain/document_authenticity_models.py
+?? afritech/novaid/domain/document_authenticity_service.py
+?? afritech/novaid/domain/document_models.py
+?? afritech/novaid/domain/document_ocr_events.py
+?? afritech/novaid/domain/document_ocr_models.py
+?? afritech/novaid/domain/document_ocr_service.py
+?? afritech/novaid/domain/document_selfie_match_events.py
+?? afritech/novaid/domain/document_selfie_match_models.py
+?? afritech/novaid/domain/document_selfie_match_service.py
+?? afritech/novaid/domain/face_authentication_events.py
+?? afritech/novaid/domain/face_authentication_models.py
+?? afritech/novaid/domain/face_authentication_service.py
+?? afritech/novaid/domain/face_enrollment_service.py
+?? afritech/novaid/domain/face_verification_service.py
+?? afritech/novaid/domain/identity_verification_events.py
+?? afritech/novaid/domain/identity_verification_models.py
+?? afritech/novaid/domain/identity_verification_service.py
+?? afritech/novaid/domain/liveness_events.py
+?? afritech/novaid/domain/liveness_models.py
+?? afritech/novaid/domain/liveness_service.py
+?? afritech/novaid/domain/tenant_events.py
+?? afritech/novaid/domain/tenant_service.py
+?? afritech/novaid/persistence/biometric_codec.py
+?? afritech/novaid/persistence/biometric_sqlite_repository.py
+?? afritech/novaid/persistence/identity_verification_codec.py
+?? artifacts/novacodepro/studio-upgrade/
+?? artifacts/novaid/
+?? artifacts/novaride/completion-matrix/
+?? artifacts/novaride/database/
+?? artifacts/novaride/docker-recovery/
+?? artifacts/novaride/e2e/
+?? artifacts/novaride/final/
+?? artifacts/novaride/ga/
+?? artifacts/novaride/mobile/
+?? artifacts/novaride/native-identity-audit/
+?? artifacts/novaride/observability/
+?? artifacts/novaride/operational/
+?? artifacts/novaride/performance/
+?? artifacts/novaride/pilot/
+?? artifacts/novaride/prr/
+?? artifacts/novaride/public-pilot/
+?? artifacts/novaride/quality/
+?? artifacts/novaride/runtime/
+?? artifacts/novaride/security/
+?? artifacts/novaride/storage-recovery/
+?? artifacts/product-factory-enterprise/
+?? artifacts/release-baseline/
+?? csv.py
+?? deployment-evidence/
+?? docs/reviews/AFRITECH_COMPLETE_HONEST_REVIEW.md
+?? docs/reviews/NOVAID_SENIOR_ARCHITECTURE_HONEST_REVIEW.md
+?? novacodepro_portal/test-results/
+?? scripts/novaride/completion_generator_matrix_report.py
+?? tests/novaid/test_biometric_codec.py
+?? tests/novaid/test_biometric_domain_foundation.py
+?? tests/novaid/test_biometric_sqlite_repository.py
+?? tests/novaid/test_biometric_sqlite_schema.py
+?? tests/novaid/test_canonical_tenant_aggregate.py
+?? tests/novaid/test_document_authenticity_service.py
+?? tests/novaid/test_document_domain_foundation.py
+?? tests/novaid/test_document_ocr_service.py
+?? tests/novaid/test_document_selfie_match_service.py
+?? tests/novaid/test_face_authentication_service.py
+?? tests/novaid/test_face_enrollment_service.py
+?? tests/novaid/test_face_verification_service.py
+?? tests/novaid/test_identity_verification_codec.py
+?? tests/novaid/test_identity_verification_models.py
+?? tests/novaid/test_identity_verification_sqlite_schema.py
+?? tests/novaid/test_liveness_assessment_service.py
+?? tests/novaid/test_tenant_lifecycle_service.py
+?? tests/novaid/test_tenant_security_policy.py
+?? tests/novaid/test_tenant_settings.py
+?? tests/novaid/test_tenant_value_objects.py

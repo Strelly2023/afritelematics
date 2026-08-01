@@ -1,0 +1,10 @@
+{
+  "phase": "3B.3A1",
+  "classification": "DISCOVERY_COMPLETE_PENDING_SCHEMA_REVIEW",
+  "repository_commit": "9cbb1d8b656119c39bbd047e6f9c299de51e0f61",
+  "preflight_exit_code": 1,
+  "report": "security-contract-discovery.txt",
+  "report_sha256": "bc9522caf566f2b57924abcaf40f770e00b97fcc17a65344ff889a1cb994cad9",
+  "generated_at_utc": "2026-07-30T02:48:04Z",
+  "mutations_performed": false
+}

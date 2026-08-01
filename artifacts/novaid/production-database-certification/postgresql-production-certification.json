@@ -1,0 +1,60 @@
+{
+  "authority_gate": {
+    "postgres_configuration_accepted": true,
+    "production_backend": "postgres",
+    "sqlite_rejected": true
+  },
+  "database": {
+    "engine": "PostgreSQL",
+    "in_recovery": false,
+    "server_version": "16.14",
+    "version_detail_sha256": "a342bafec61b606ac26f501984b2e809e0609f1afd38fd3ab32c60b72e8d6fa5"
+  },
+  "executed_at": "2026-07-29T11:25:44.667331+00:00",
+  "migration": {
+    "bootstrap_ms": 289.977,
+    "checksums_present": true,
+    "constraint_count": 586,
+    "revision_count": 10,
+    "revisions": [
+      "0001_identity_core.sql",
+      "0002_novaid_runtime.sql",
+      "0003_novaid_session_lifecycle.sql",
+      "0004_novaid_webauthn.sql",
+      "0005_novaid_webauthn_sessions_recovery.sql",
+      "0006_novaid_webauthn_recovery_policy_distribution.sql",
+      "0007_novaid_webauthn_distributed_runtime.sql",
+      "0008_novaid_governed_audit_replay.sql",
+      "0009_canonical_identity_profile.sql",
+      "0010_tenant_authorization.sql"
+    ],
+    "table_count": 43
+  },
+  "rollback": {
+    "failure_injected": true,
+    "partial_ledger_absent": true,
+    "partial_schema_absent": true,
+    "transactional_rollback": "PASS"
+  },
+  "run_id": "da197b65a344",
+  "schema": "afritech.novaid.production_database_certification.v1",
+  "verdict": "PASS",
+  "workload": {
+    "committed_audit_events": 1200,
+    "committed_version_increments": 1200,
+    "elapsed_seconds": 3.795,
+    "identities": 300,
+    "latency_ms": {
+      "maximum": 124.849,
+      "median": 34.345,
+      "p95": 67.273,
+      "p99": 84.771
+    },
+    "lost_writes": 0,
+    "operations": 1200,
+    "tenant_integrity_violations": 0,
+    "tenants": 12,
+    "throughput_transactions_per_second": 316.23,
+    "workers": 12
+  }
+}

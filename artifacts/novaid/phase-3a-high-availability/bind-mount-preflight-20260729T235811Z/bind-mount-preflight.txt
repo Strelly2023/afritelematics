@@ -1,0 +1,205 @@
+
+1. Repository identity
+------------------------------------------------------------
+Repository: /Users/ostrinov/afritelematics
+Branch:     feature/product-factory-enterprise-sdlc
+Commit:     9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+UTC:        2026-07-29T23:58:11Z
+
+2. Expected bind-mount sources
+------------------------------------------------------------
+
+### deploy/production/monitoring/alertmanager/alertmanager.yml
+ACTIVE:      /Users/ostrinov/afritelematics/deploy/production/monitoring/alertmanager/alertmanager.yml
+  state: FILE
+  mode:  -rw-r--r--
+  size:  150 bytes
+  sha256: f594f4fcbae0cf533ec3f561104464a70fd64c9fe159030aa220a0e8824ff925
+OLD-TMP:     /private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/alertmanager/alertmanager.yml
+  state: DIRECTORY — INVALID FOR FILE BIND MOUNT
+  mode:  drwxr-xr-x
+  entries:
+
+### deploy/production/monitoring/opentelemetry/config.yaml
+ACTIVE:      /Users/ostrinov/afritelematics/deploy/production/monitoring/opentelemetry/config.yaml
+  state: FILE
+  mode:  -rw-r--r--
+  size:  748 bytes
+  sha256: 999fbe8403d1d2b736f5ca1b8e37fbdd1762e73d33c6dcd646fcf22e987cf9e4
+OLD-TMP:     /private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/config.yaml
+  state: DIRECTORY — INVALID FOR FILE BIND MOUNT
+  mode:  drwxr-xr-x
+  entries:
+
+### deploy/production/monitoring/opentelemetry/pipelines.yaml
+ACTIVE:      /Users/ostrinov/afritelematics/deploy/production/monitoring/opentelemetry/pipelines.yaml
+  state: FILE
+  mode:  -rw-r--r--
+  size:  335 bytes
+  sha256: 706bd149a604147fb2de49a1e293a205be1c771a5f0be4856fe5f4de3849acfe
+OLD-TMP:     /private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/pipelines.yaml
+  state: DIRECTORY — INVALID FOR FILE BIND MOUNT
+  mode:  drwxr-xr-x
+  entries:
+
+### deploy/production/monitoring/opentelemetry/exporters.yaml
+ACTIVE:      /Users/ostrinov/afritelematics/deploy/production/monitoring/opentelemetry/exporters.yaml
+  state: FILE
+  mode:  -rw-r--r--
+  size:  82 bytes
+  sha256: d3f5fff3781797f1d9f1ee34c6cfec4afe841b878512b4e9bb6af9ce4f50da0e
+OLD-TMP:     /private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/exporters.yaml
+  state: DIRECTORY — INVALID FOR FILE BIND MOUNT
+  mode:  drwxr-xr-x
+  entries:
+
+### deploy/production/monitoring/opentelemetry/otel-collector.yml
+ACTIVE:      /Users/ostrinov/afritelematics/deploy/production/monitoring/opentelemetry/otel-collector.yml
+  state: FILE
+  mode:  -rw-r--r--
+  size:  748 bytes
+  sha256: 999fbe8403d1d2b736f5ca1b8e37fbdd1762e73d33c6dcd646fcf22e987cf9e4
+OLD-TMP:     /private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/otel-collector.yml
+  state: DIRECTORY — INVALID FOR FILE BIND MOUNT
+  mode:  drwxr-xr-x
+  entries:
+
+### deploy/production/secrets/afritech_private_key.pem
+ACTIVE:      /Users/ostrinov/afritelematics/deploy/production/secrets/afritech_private_key.pem
+  state: MISSING
+OLD-TMP:     /private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_private_key.pem
+  state: DIRECTORY — INVALID FOR FILE BIND MOUNT
+  mode:  drwxr-xr-x
+  entries:
+
+### deploy/production/secrets/afritech_public_key.pem
+ACTIVE:      /Users/ostrinov/afritelematics/deploy/production/secrets/afritech_public_key.pem
+  state: MISSING
+OLD-TMP:     /private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_public_key.pem
+  state: DIRECTORY — INVALID FOR FILE BIND MOUNT
+  mode:  drwxr-xr-x
+  entries:
+
+### deploy/production/secrets/eth_private_key
+ACTIVE:      /Users/ostrinov/afritelematics/deploy/production/secrets/eth_private_key
+  state: MISSING
+OLD-TMP:     /private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/eth_private_key
+  state: DIRECTORY — INVALID FOR FILE BIND MOUNT
+  mode:  drwxr-xr-x
+  entries:
+
+3. Active Compose files
+------------------------------------------------------------
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.production.tls.yml
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.production.yml
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.region.yml
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml
+
+4. Compose references to affected paths
+------------------------------------------------------------
+/Users/ostrinov/afritelematics/deploy/production/.env.production:29:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production:30:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production:52:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+/Users/ostrinov/afritelematics/deploy/production/.env.production.save:8:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.save:9:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.example:8:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.example:9:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.example:26:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:20:      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:21:      - ./secrets/afritech_private_key.pem:/run/secrets/afritech_private_key.pem:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:22:      - ./secrets/afritech_public_key.pem:/run/secrets/afritech_public_key.pem:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:160:      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:162:      - --config.file=/etc/alertmanager/alertmanager.yml
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.trust-node.yml:206:      - ./monitoring/opentelemetry/config.yaml:/etc/otelcol-contrib/config.yaml:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.production.tls.yml:10:      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
+/Users/ostrinov/afritelematics/deploy/production/docker-compose.production.yml:10:      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node.example:102:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node.example:103:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node.example:117:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node:102:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node:103:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node:117:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+/Users/ostrinov/afritelematics/deploy/production/.env.production.tls.example:8:AFRITECH_SIGNING_PRIVATE_KEY_PATH=/run/secrets/afritech_private_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.tls.example:9:AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+/Users/ostrinov/afritelematics/deploy/production/.env.production.tls.example:23:AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+
+5. Existing container bind mounts
+------------------------------------------------------------
+
+### production-afritech-api-1
+SOURCE=/host_mnt/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/eth_private_key DEST=/run/secrets/eth_private_key MODE=ro
+SOURCE=/host_mnt/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_private_key.pem DEST=/run/secrets/afritech_private_key.pem MODE=ro
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_public_key.pem DEST=/run/secrets/afritech_public_key.pem MODE=ro
+
+
+### production-alertmanager-1
+SOURCE=/host_mnt/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/alertmanager/alertmanager.yml DEST=/etc/alertmanager/alertmanager.yml MODE=ro
+
+
+### production-otel-collector-1
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/config.yaml DEST=/etc/otelcol-contrib/config.yaml MODE=ro
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/exporters.yaml DEST=/etc/otelcol-contrib/exporters.yaml MODE=ro
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/otel-collector.yml DEST=/etc/otelcol-contrib/otel-collector.yml MODE=ro
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/pipelines.yaml DEST=/etc/otelcol-contrib/pipelines.yaml MODE=ro
+
+
+### production-nginx-1
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/nginx/afritechnology-platform.conf.template DEST=/etc/nginx/templates/default.conf.template MODE=ro
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/apk DEST=/var/www/afritech-apk MODE=ro
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/apk-public DEST=/var/www/afritechnology-downloads MODE=ro
+SOURCE=/private/tmp/afritelematics-live-pilot-001/deploy/production/nginx/15-novacodepro-cert.envsh DEST=/docker-entrypoint.d/15-novacodepro-cert.envsh MODE=ro
+
+
+6. Compose project provenance
+------------------------------------------------------------
+
+### production-afritech-api-1
+working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production
+config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml
+environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node
+service=afritech-api
+
+### production-alertmanager-1
+working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production
+config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml
+environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node
+service=alertmanager
+
+### production-otel-collector-1
+working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production
+config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml
+environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node
+service=otel-collector
+
+### production-nginx-1
+working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production
+config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml
+environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node
+service=nginx
+
+7. Docker Compose configuration validation
+------------------------------------------------------------
+Checking combined Compose syntax without printing environment values...
+error while interpolating services.afritech-api.environment.AFRIRIDE_REGION_CELL: required variable AFRIRIDE_REGION_CELL is missing a value: regional cell name required
+Compose syntax: FAIL
+
+8. Preflight classification
+------------------------------------------------------------
+MISSING FILE: /Users/ostrinov/afritelematics/deploy/production/secrets/afritech_private_key.pem
+MISSING FILE: /Users/ostrinov/afritelematics/deploy/production/secrets/afritech_public_key.pem
+MISSING FILE: /Users/ostrinov/afritelematics/deploy/production/secrets/eth_private_key
+
+Missing active files: 3
+Invalid active directories: 0
+Classification: REPAIR_REQUIRED
+
+9. Evidence manifest
+------------------------------------------------------------
+Evidence directory: /Users/ostrinov/afritelematics/artifacts/novaid/phase-3a-high-availability/bind-mount-preflight-20260729T235811Z
+Report SHA-256: 8bebfeee26342f84b60098e7e96c4373f3c760834b9dc96833da7001b11a53c5
+
+============================================================
+PHASE 3A.3B1 COMPLETE
+Classification: REPAIR_REQUIRED
+No files or containers were modified.
+============================================================

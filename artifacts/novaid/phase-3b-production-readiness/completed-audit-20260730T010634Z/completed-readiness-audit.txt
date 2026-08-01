@@ -1,0 +1,218 @@
+
+1. Repository identity
+------------------------------------------------------------
+Repository: /Users/ostrinov/afritelematics
+Branch:     feature/product-factory-enterprise-sdlc
+Commit:     9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+Python:     /Users/ostrinov/afritelematics/venv/bin/python
+UTC:        2026-07-30T01:06:34Z
+
+2. Production deployment inventory
+------------------------------------------------------------
+deploy/production/.env.production
+deploy/production/.env.production.example
+deploy/production/.env.production.save
+deploy/production/.env.production.tls.example
+deploy/production/.env.production.trust-node
+deploy/production/.env.production.trust-node.example
+deploy/production/docker-compose.production.tls.yml
+deploy/production/docker-compose.production.yml
+deploy/production/docker-compose.region.yml
+deploy/production/docker-compose.trust-node.yml
+deploy/production/monitoring/prometheus.yml
+
+Regional overlay candidates:
+deploy/production/docker-compose.region.yml
+
+3. Required core assets
+------------------------------------------------------------
+FOUND: deploy/production/.env.production.trust-node.example
+FOUND: deploy/production/.env.production.trust-node
+FOUND: deploy/production/docker-compose.trust-node.yml
+FOUND: scripts/preflight_production_deployment.py
+FOUND: scripts/setup_production_trust_node.sh
+
+4. Active environment file safety
+------------------------------------------------------------
+Permissions: 600
+Environment permissions: PASS
+Environment tracking: PASS — active environment is untracked
+Environment ignore rule: PASS
+
+5. Environment variable-name comparison
+------------------------------------------------------------
+Missing variable names:    4
+Additional variable names: 0
+
+Missing names:
+AFRIRIDE_DATA_RESIDENCY
+AFRIRIDE_DEFAULT_REGION
+AFRIRIDE_REGION_CELL
+AFRIRIDE_TENANT_CONFIG_JSON
+
+6. Missing-variable usage locations
+------------------------------------------------------------
+
+### AFRIRIDE_DATA_RESIDENCY
+deploy/production/.env.production.example:14:AFRIRIDE_DATA_RESIDENCY=africa-east
+deploy/production/.env.production.trust-node.example:8:AFRIRIDE_DATA_RESIDENCY=AU
+deploy/production/docker-compose.region.yml:8:      AFRIRIDE_DATA_RESIDENCY: ${AFRIRIDE_DATA_RESIDENCY:?data residency required}
+deploy/production/docker-compose.region.yml:13:      afriride.data-residency: ${AFRIRIDE_DATA_RESIDENCY}
+scripts/preflight_production_deployment.py:33:    "AFRIRIDE_DATA_RESIDENCY",
+
+### AFRIRIDE_DEFAULT_REGION
+deploy/production/.env.production.example:12:AFRIRIDE_DEFAULT_REGION=ug-kla
+deploy/production/.env.production.trust-node.example:6:AFRIRIDE_DEFAULT_REGION=au-melbourne
+deploy/production/docker-compose.region.yml:6:      AFRIRIDE_DEFAULT_REGION: ${AFRIRIDE_DEFAULT_REGION:?regional cell id required}
+deploy/production/docker-compose.region.yml:11:      afriride.region: ${AFRIRIDE_DEFAULT_REGION}
+scripts/preflight_production_deployment.py:31:    "AFRIRIDE_DEFAULT_REGION",
+
+### AFRIRIDE_REGION_CELL
+deploy/production/.env.production.example:13:AFRIRIDE_REGION_CELL=africa-east-1
+deploy/production/.env.production.trust-node.example:7:AFRIRIDE_REGION_CELL=melbourne-primary
+deploy/production/docker-compose.region.yml:7:      AFRIRIDE_REGION_CELL: ${AFRIRIDE_REGION_CELL:?regional cell name required}
+deploy/production/docker-compose.region.yml:12:      afriride.cell: ${AFRIRIDE_REGION_CELL}
+scripts/preflight_production_deployment.py:32:    "AFRIRIDE_REGION_CELL",
+
+### AFRIRIDE_TENANT_CONFIG_JSON
+deploy/production/.env.production.example:15:AFRIRIDE_TENANT_CONFIG_JSON={}
+deploy/production/.env.production.trust-node.example:9:AFRIRIDE_TENANT_CONFIG_JSON={}
+deploy/production/docker-compose.region.yml:9:      AFRIRIDE_TENANT_CONFIG_JSON: ${AFRIRIDE_TENANT_CONFIG_JSON:-{}}
+
+7. Provider enablement and optionality discovery
+------------------------------------------------------------
+deploy/afripay/kubernetes/secret.example.yaml:14:  NOVAPAY_PAYID_LIVE_ENABLED: "false"
+deploy/afripay/kubernetes/secret.example.yaml:29:  NOVAPAY_MPESA_KE_LIVE_MODE: "false"
+deploy/production/.env.production.trust-node.example:39:STRIPE_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:43:NOVAPAY_PAYID_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.example:55:NOVAPAY_MPESA_KE_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:64:NOVAPAY_AIRTEL_KE_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:72:NOVAPAY_LUMICASH_BI_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:79:NOVAPAY_ECOCASH_BI_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:87:NOVAPAY_ORANGE_CD_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:94:NOVAPAY_AIRTEL_CD_LIVE_MODE=false
+deploy/production/.env.production.trust-node.example:101:NOVAPAY_MPESA_CD_LIVE_MODE=false
+afritech/afriprogramming/phase2.py:81:    # Live execution remains gated by NOVAPAY_PAYID_LIVE_ENABLED.
+afritech/afriprogramming/phase2.py:88:        return os.environ.get("STRIPE_LIVE_MODE", "").lower() in {"1", "true", "yes"}
+afritech/afriprogramming/phase2.py:90:        return os.environ.get("NOVAPAY_PAYID_LIVE_ENABLED", "").lower() in {"1", "true", "yes"}
+afritech/tests/core_platform/test_mobile_money.py:146:    monkeypatch.setenv("NOVAPAY_MPESA_KE_LIVE_MODE", "true")
+afritech/tests/core_platform/test_core_platform_layers.py:300:    monkeypatch.setenv("NOVAPAY_PAYID_LIVE_ENABLED", "true")
+afritech/tests/governance/test_novatech_core_platform_production_guide_doc.py:17:        "STRIPE_LIVE_MODE=true",
+afritech/core_platform/payments/providers.py:34:        self.live = live and _env_bool("NOVAPAY_PAYID_LIVE_ENABLED")
+afritech/core_platform/payments/providers.py:126:        self.live = live or os.environ.get("STRIPE_LIVE_MODE", "").lower() in {"1", "true", "yes"}
+afritech/core_platform/payments/providers.py:138:                    "requires": "STRIPE_API_KEY and STRIPE_LIVE_MODE=true for network execution",
+afritech/core_platform/payments/providers.py:323:    live_enabled = _env_bool("NOVAPAY_PAYID_LIVE_ENABLED")
+afritech/api/core_platform_api.py:909:        stripe_live = os.environ.get("STRIPE_LIVE_MODE", "").lower() in {
+
+8. Placeholder classification
+------------------------------------------------------------
+Placeholder or empty values: 34
+SENSITIVE: STRIPE_API_KEY
+CONFIGURATION: NOVAPAY_PAYID_COLLECTION_URL
+SENSITIVE: NOVAPAY_PAYID_API_TOKEN
+CONFIGURATION: NOVAPAY_PAYID_MERCHANT_ID
+CONFIGURATION: NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON
+SENSITIVE: NOVAPAY_MPESA_KE_CONSUMER_KEY
+SENSITIVE: NOVAPAY_MPESA_KE_CONSUMER_SECRET
+CONFIGURATION: NOVAPAY_MPESA_KE_SHORT_CODE
+SENSITIVE: NOVAPAY_MPESA_KE_PASSKEY
+SENSITIVE: NOVAPAY_MPESA_KE_WEBHOOK_SECRET
+CONFIGURATION: NOVAPAY_AIRTEL_KE_COLLECTION_URL
+SENSITIVE: NOVAPAY_AIRTEL_KE_API_TOKEN
+CONFIGURATION: NOVAPAY_AIRTEL_KE_MERCHANT_ID
+SENSITIVE: NOVAPAY_AIRTEL_MONEY_KE_WEBHOOK_SECRET
+CONFIGURATION: NOVAPAY_LUMICASH_BI_COLLECTION_URL
+SENSITIVE: NOVAPAY_LUMICASH_BI_API_TOKEN
+CONFIGURATION: NOVAPAY_LUMICASH_BI_MERCHANT_ID
+SENSITIVE: NOVAPAY_LUMICASH_BI_WEBHOOK_SECRET
+CONFIGURATION: NOVAPAY_ECOCASH_BI_COLLECTION_URL
+SENSITIVE: NOVAPAY_ECOCASH_BI_API_TOKEN
+CONFIGURATION: NOVAPAY_ECOCASH_BI_MERCHANT_ID
+SENSITIVE: NOVAPAY_ECOCASH_BI_WEBHOOK_SECRET
+CONFIGURATION: NOVAPAY_ORANGE_CD_COLLECTION_URL
+SENSITIVE: NOVAPAY_ORANGE_CD_API_TOKEN
+CONFIGURATION: NOVAPAY_ORANGE_CD_MERCHANT_ID
+SENSITIVE: NOVAPAY_ORANGE_MONEY_CD_WEBHOOK_SECRET
+CONFIGURATION: NOVAPAY_AIRTEL_CD_COLLECTION_URL
+SENSITIVE: NOVAPAY_AIRTEL_CD_API_TOKEN
+CONFIGURATION: NOVAPAY_AIRTEL_CD_MERCHANT_ID
+SENSITIVE: NOVAPAY_AIRTEL_MONEY_CD_WEBHOOK_SECRET
+CONFIGURATION: NOVAPAY_MPESA_CD_COLLECTION_URL
+SENSITIVE: NOVAPAY_MPESA_CD_API_TOKEN
+CONFIGURATION: NOVAPAY_MPESA_CD_MERCHANT_ID
+SENSITIVE: NOVAPAY_MPESA_CD_WEBHOOK_SECRET
+Placeholder check exit code: 1
+Placeholder validation: BLOCKED
+
+9. Compose secret inventory
+------------------------------------------------------------
+Declared secrets: 3
+MISSING: afritech_private_key: /Users/ostrinov/afritelematics/deploy/production/secrets/afritech_private_key.pem
+MISSING: afritech_public_key: /Users/ostrinov/afritelematics/deploy/production/secrets/afritech_public_key.pem
+MISSING: eth_private_key: /Users/ostrinov/afritelematics/deploy/production/secrets/eth_private_key
+Compose secret check exit code: 1
+Compose secret readiness: BLOCKED
+
+10. Production preflight interface
+------------------------------------------------------------
+Preflight help exit code: 0
+usage: preflight_production_deployment.py [-h] [--env-file ENV_FILE]
+                                          [--compose-file COMPOSE_FILES]
+                                          [--check-compose]
+
+options:
+  -h, --help            show this help message and exit
+  --env-file ENV_FILE
+  --compose-file COMPOSE_FILES
+  --check-compose
+
+11. Production preflight execution
+------------------------------------------------------------
+Preflight exit code: 1
+
+Preflight stdout:
+
+Preflight stderr:
+Production deployment preflight FAILED: placeholder environment values: AFRIRIDE_AUDIT_API_KEY, AFRIRIDE_DJANGO_SECRET_KEY, AFRIRIDE_EVENT_INGESTION_SECRET, AFRIRIDE_JWT_SECRET, AFRITECH_CHAIN_ADDRESS_CHECKSUM, AFRITECH_CHAIN_CONTRACT_ADDRESS, AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA, AFRITECH_CHAIN_RPC_URL_MAINNET, AFRITECH_CHAIN_RPC_URL_SEPOLIA, AFRITECH_CHAIN_WS_URL_BASE_SEPOLIA, AFRITECH_CHAIN_WS_URL_MAINNET, AFRITECH_CHAIN_WS_URL_SEPOLIA, AFRITECH_DOMAIN, AFRITECH_EVENT_INGESTION_SECRET, AFRITECH_JWT_SECRET, DATABASE_URL, NOVAPAY_AIRTEL_CD_CALLBACK_URL, NOVAPAY_AIRTEL_KE_CALLBACK_URL, NOVAPAY_ECOCASH_BI_CALLBACK_URL, NOVAPAY_LUMICASH_BI_CALLBACK_URL, NOVAPAY_MPESA_CD_CALLBACK_URL, NOVAPAY_MPESA_KE_CALLBACK_URL, NOVAPAY_ORANGE_CD_CALLBACK_URL, NOVAPAY_PAYID_CALLBACK_URL, NOVAPAY_WEBHOOK_SECRET, NOVATECH_CORE_DATABASE_URL, NOVATRUST_ED25519_PRIVATE_KEY_B64, VITE_AFRIRIDE_API_URL
+Production preflight: BLOCKED
+
+12. Docker Compose resolution
+------------------------------------------------------------
+Docker daemon: READY
+Compose config exit code: 0
+Compose resolution: PASS
+
+13. Secret-path Git safety
+------------------------------------------------------------
+PASS: untracked secret path: deploy/production/secrets/eth_private_key
+PASS: ignored secret path: deploy/production/secrets/eth_private_key
+PASS: untracked secret path: deploy/production/secrets/afritech_private_key.pem
+PASS: ignored secret path: deploy/production/secrets/afritech_private_key.pem
+PASS: untracked secret path: deploy/production/secrets/afritech_public_key.pem
+PASS: ignored secret path: deploy/production/secrets/afritech_public_key.pem
+
+14. Repository hygiene
+------------------------------------------------------------
+Git diff hygiene: PASS
+
+15. Final classification
+------------------------------------------------------------
+Assets:               PASS
+Repository safety:    PASS
+Environment names:    BLOCKED
+Placeholder values:   BLOCKED
+Secret files:         BLOCKED
+Production preflight: BLOCKED
+Compose runtime:      PASS
+Classification:       BLOCKED_REQUIRED_ENVIRONMENT_CONFIGURATION
+
+Evidence directory: /Users/ostrinov/afritelematics/artifacts/novaid/phase-3b-production-readiness/completed-audit-20260730T010634Z
+Report SHA-256: f1b9c6d20dfe1bfabd9df08504a1d2cd45c326931a18adfa8323792a95546cfa
+
+============================================================
+PHASE 3B.1A COMPLETE
+Classification: BLOCKED_REQUIRED_ENVIRONMENT_CONFIGURATION
+No environment values were changed.
+No secret values were printed.
+No containers were modified.
+============================================================

@@ -1,0 +1,12 @@
+{
+  "phase": "3A.3B1",
+  "exercise": "bind-mount-preflight",
+  "timestamp_utc": "20260729T235811Z",
+  "repository_branch": "feature/product-factory-enterprise-sdlc",
+  "repository_commit": "9cbb1d8b656119c39bbd047e6f9c299de51e0f61",
+  "classification": "REPAIR_REQUIRED",
+  "missing_active_files": 3,
+  "invalid_active_directories": 0,
+  "report": "bind-mount-preflight.txt",
+  "report_sha256": "8bebfeee26342f84b60098e7e96c4373f3c760834b9dc96833da7001b11a53c5"
+}

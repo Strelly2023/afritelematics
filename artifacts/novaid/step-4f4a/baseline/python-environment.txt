@@ -1,0 +1,14 @@
+Python:
+Python 3.11.8
+
+Executable:
+/Users/ostrinov/afritelematics/venv/bin/python3
+
+Platform:
+macOS-26.5.2-arm64-arm-64bit
+
+Django:
+5.2.14
+
+pytest:
+pytest 9.0.3

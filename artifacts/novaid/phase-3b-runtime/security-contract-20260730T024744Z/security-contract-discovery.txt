@@ -1,0 +1,2272 @@
+============================================================
+PHASE 3B.3A1 â€” NOVAID PRODUCTION SECURITY CONTRACT DISCOVERY
+============================================================
+
+1. Repository identity
+------------------------------------------------------------
+Repository: /Users/ostrinov/afritelematics
+Branch:     feature/product-factory-enterprise-sdlc
+Commit:     9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+UTC:        2026-07-30T02:47:44Z
+
+2. Required production variables
+------------------------------------------------------------
+NOVAID_JWT_ISSUER
+NOVAID_JWT_AUDIENCE
+NOVAID_SIGNING_KEYS_JSON
+NOVAID_ACTIVE_SIGNING_KEY_ID
+NOVAID_TOKEN_PEPPER
+NOVAID_REDIS_URL
+
+3. Repository references
+------------------------------------------------------------
+
+### NOVAID_JWT_ISSUER
+afritech/tests/governance/test_production_deployment_preflight.py:26:        "NOVAID_JWT_ISSUER: ${NOVAID_JWT_ISSUER:?NovaID JWT issuer required}",
+afritech/novaid/config.py:22:            jwt_issuer=os.getenv("NOVAID_JWT_ISSUER", ""),
+afritech/novaid/runtime.py:46:    issuer, audience = os.getenv("NOVAID_JWT_ISSUER", ""), os.getenv("NOVAID_JWT_AUDIENCE", "")
+deploy/production/docker-compose.trust-node.yml:17:      NOVAID_JWT_ISSUER: ${NOVAID_JWT_ISSUER:?NovaID JWT issuer required}
+deploy/production/.env.production.trust-node.example:27:NOVAID_JWT_ISSUER=https://trust.afritech.example/novaid
+scripts/preflight_production_deployment.py:29:    "NOVAID_JWT_ISSUER",
+scripts/novaid/certify_postgres_production.py:65:        NOVAID_JWT_ISSUER="https://identity.afritech.example",
+tests/novaid/test_phase3_revocation_config.py:18:    monkeypatch.delenv("NOVAID_JWT_ISSUER", raising=False)
+tests/novaid/test_phase5c_startup.py:10:    "NOVAID_JWT_ISSUER": "novaid",
+tests/novaid/test_phase5c_startup.py:30:        ("NOVAID_JWT_ISSUER", "", "missing_novaid_issuer"),
+
+### NOVAID_JWT_AUDIENCE
+afritech/novaid/config.py:23:            jwt_audience=os.getenv("NOVAID_JWT_AUDIENCE", ""),
+afritech/novaid/runtime.py:46:    issuer, audience = os.getenv("NOVAID_JWT_ISSUER", ""), os.getenv("NOVAID_JWT_AUDIENCE", "")
+deploy/production/docker-compose.trust-node.yml:18:      NOVAID_JWT_AUDIENCE: ${NOVAID_JWT_AUDIENCE:?NovaID JWT audience required}
+deploy/production/.env.production.trust-node.example:28:NOVAID_JWT_AUDIENCE=novatech-production
+scripts/preflight_production_deployment.py:30:    "NOVAID_JWT_AUDIENCE",
+scripts/novaid/certify_postgres_production.py:66:        NOVAID_JWT_AUDIENCE="afritech-production",
+tests/novaid/test_phase3_revocation_config.py:19:    monkeypatch.delenv("NOVAID_JWT_AUDIENCE", raising=False)
+tests/novaid/test_phase5c_startup.py:11:    "NOVAID_JWT_AUDIENCE": "novaid-clients",
+tests/novaid/test_phase5c_startup.py:31:        ("NOVAID_JWT_AUDIENCE", "", "missing_novaid_audience"),
+tests/novaid/test_phase5c_startup.py:32:        ("NOVAID_JWT_AUDIENCE", "*", "wildcard_novaid_audience"),
+
+### NOVAID_SIGNING_KEYS_JSON
+afritech/tests/governance/test_production_deployment_preflight.py:27:        "NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}",
+afritech/novaid/runtime.py:227:    encoded_registry = os.getenv("NOVAID_SIGNING_KEYS_JSON", "")
+deploy/production/docker-compose.trust-node.yml:19:      NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}
+deploy/production/.env.production.trust-node.example:29:NOVAID_SIGNING_KEYS_JSON={"previous":"replace-with-32-byte-minimum-key","active":"replace-with-independent-32-byte-minimum-key"}
+scripts/preflight_production_deployment.py:31:    "NOVAID_SIGNING_KEYS_JSON",
+scripts/novaid/certify_postgres_production.py:67:        NOVAID_SIGNING_KEYS_JSON=json.dumps(
+tests/novaid/test_phase5c_startup.py:12:    "NOVAID_SIGNING_KEYS_JSON": json.dumps(
+tests/novaid/test_phase5c_startup.py:33:        ("NOVAID_SIGNING_KEYS_JSON", "{}", "invalid_novaid_signing_key_registry"),
+tests/novaid/test_phase5c_startup.py:59:    monkeypatch.delenv("NOVAID_SIGNING_KEYS_JSON")
+
+### NOVAID_ACTIVE_SIGNING_KEY_ID
+afritech/novaid/runtime.py:228:    active_key_id = os.getenv("NOVAID_ACTIVE_SIGNING_KEY_ID", "")
+deploy/production/docker-compose.trust-node.yml:20:      NOVAID_ACTIVE_SIGNING_KEY_ID: ${NOVAID_ACTIVE_SIGNING_KEY_ID:?NovaID active signing key required}
+deploy/production/.env.production.trust-node.example:30:NOVAID_ACTIVE_SIGNING_KEY_ID=active
+scripts/preflight_production_deployment.py:32:    "NOVAID_ACTIVE_SIGNING_KEY_ID",
+scripts/novaid/certify_postgres_production.py:73:        NOVAID_ACTIVE_SIGNING_KEY_ID="certification-active",
+tests/novaid/test_phase5c_startup.py:18:    "NOVAID_ACTIVE_SIGNING_KEY_ID": "2026-q3",
+tests/novaid/test_phase5c_startup.py:35:            "NOVAID_ACTIVE_SIGNING_KEY_ID",
+tests/novaid/test_phase5c_startup.py:60:    monkeypatch.delenv("NOVAID_ACTIVE_SIGNING_KEY_ID")
+
+### NOVAID_TOKEN_PEPPER
+afritech/tests/governance/test_production_deployment_preflight.py:28:        "NOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}",
+afritech/novaid/runtime.py:89:    pepper = os.getenv("NOVAID_TOKEN_PEPPER", "development-only-novaid-pepper-0001").encode()
+deploy/production/docker-compose.trust-node.yml:22:      NOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}
+deploy/production/.env.production.trust-node.example:31:NOVAID_TOKEN_PEPPER=replace-with-independent-novaid-token-pepper
+scripts/preflight_production_deployment.py:33:    "NOVAID_TOKEN_PEPPER",
+
+### NOVAID_REDIS_URL
+afritech/tests/governance/test_production_deployment_preflight.py:29:        "NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required}",
+afritech/novaid/runtime.py:57:        "NOVAID_REDIS_URL"
+afritech/novaid/runtime.py:93:    redis_url = os.getenv("NOVAID_REDIS_URL", "")
+deploy/production/docker-compose.trust-node.yml:24:      NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required}
+deploy/production/.env.production.trust-node.example:32:NOVAID_REDIS_URL=redis://redis:6379/0
+scripts/preflight_production_deployment.py:34:    "NOVAID_REDIS_URL",
+tests/novaid/test_phase5d_postgres_runtime.py:37:    monkeypatch.setenv("NOVAID_REDIS_URL", REDIS_URL)
+tests/novaid/test_phase5c_startup.py:21:    "NOVAID_REDIS_URL": "redis://localhost:56379/15",
+tests/novaid/test_phase5c_startup.py:40:        ("NOVAID_REDIS_URL", "", "required_novaid_redis_url_missing"),
+tests/novaid/test_phase5c_startup.py:73:    monkeypatch.delenv("NOVAID_REDIS_URL")
+
+4. Signing-key implementation references
+------------------------------------------------------------
+afritech/afriprogramming/v9/crypto_governance.py:219:                UPDATE key_registry
+afritech/afriprogramming/persistence.py:795:        CREATE TABLE IF NOT EXISTS key_registry (
+afritech/afriprogramming/persistence.py:808:        CREATE TABLE IF NOT EXISTS key_rotation_events (
+afritech/afriprogramming/persistence.py:1104:        signing_key = SigningKey(seed)
+afritech/afriprogramming/persistence.py:1105:        public_key = signing_key.verify_key.encode().hex()
+afritech/afriprogramming/persistence.py:1129:        signing_key = SigningKey(seed)
+afritech/afriprogramming/persistence.py:1131:        signature = signing_key.sign(message).signature.hex()
+afritech/afriprogramming/persistence.py:1132:        public_key = signing_key.verify_key.encode().hex()
+afritech/afriprogramming/persistence.py:1146:                FROM key_registry
+afritech/afriprogramming/persistence.py:1162:                    INSERT INTO key_registry (
+afritech/afriprogramming/persistence.py:1247:            raise RuntimeError("audit signing key unavailable")
+afritech/afriprogramming/persistence.py:3984:    def list_signing_keys(
+afritech/afriprogramming/persistence.py:3991:        query = "SELECT * FROM key_registry"
+afritech/afriprogramming/persistence.py:4006:        return [self._row_to_signing_key(row) for row in rows]
+afritech/afriprogramming/persistence.py:4008:    def current_signing_key(
+afritech/afriprogramming/persistence.py:4020:            raise KeyError("signing key unavailable")
+afritech/afriprogramming/persistence.py:4023:    def rotate_signing_key(
+afritech/afriprogramming/persistence.py:4037:            raise KeyError("signing key unavailable")
+afritech/afriprogramming/persistence.py:4048:                UPDATE key_registry
+afritech/afriprogramming/persistence.py:4056:                INSERT INTO key_registry (
+afritech/afriprogramming/persistence.py:4077:                INSERT INTO key_rotation_events (
+afritech/afriprogramming/persistence.py:4103:    def list_key_rotations(
+afritech/afriprogramming/persistence.py:4109:        query = "SELECT * FROM key_rotation_events"
+afritech/afriprogramming/persistence.py:4118:        return [self._row_to_key_rotation(row) for row in rows]
+afritech/afriprogramming/persistence.py:5861:            key_count = conn.execute("SELECT COUNT(*) FROM key_registry" + query_filter, params).fetchone()[0]
+afritech/afriprogramming/persistence.py:5914:            "signing_keys": key_count,
+afritech/afriprogramming/persistence.py:7972:    def _row_to_signing_key(row: sqlite3.Row) -> dict[str, Any]:
+afritech/afriprogramming/persistence.py:7987:    def _row_to_key_rotation(row: sqlite3.Row) -> dict[str, Any]:
+afritech/afriprogramming/assurance/pki.py:47:    """Deterministic org-scoped PKI and key-rotation helper."""
+afritech/afriprogramming/assurance/pki.py:53:        return self.repository.current_signing_key(organization_id=organization_id, key_family=key_family)
+afritech/afriprogramming/assurance/pki.py:62:        return self.repository.list_signing_keys(
+afritech/afriprogramming/assurance/pki.py:74:        return self.repository.list_key_rotations(organization_id=organization_id, limit=limit)
+afritech/afriprogramming/assurance/pki.py:84:        return self.repository.rotate_signing_key(
+afritech/afriprogramming/assurance/pki.py:111:        signing_key = SigningKey(
+afritech/afriprogramming/assurance/pki.py:119:        signature = signing_key.sign(raw).signature.hex()
+afritech/afriprogramming/control_plane.py:5090:def build_key_registry(
+afritech/afriprogramming/control_plane.py:5098:        "view": "novaprogramming_key_registry",
+afritech/afriprogramming/control_plane.py:5107:def build_key_rotation(
+afritech/afriprogramming/control_plane.py:5131:        "view": "novaprogramming_key_rotation",
+afritech/afriprogramming/control_plane.py:6653:    def key_registry(self, organization_id: str | None = None, key_family: str = "audit") -> dict[str, Any]:
+afritech/afriprogramming/control_plane.py:6654:        return build_key_registry(organization_id=organization_id, key_family=key_family)
+afritech/afriprogramming/control_plane.py:6664:        return build_key_rotation(
+afritech/afriprogramming/control_plane.py:7752:    "build_key_registry",
+afritech/afriprogramming/control_plane.py:7753:    "build_key_rotation",
+afritech/core/runtime/admission/admission_engine.py:51:    - cryptographic authenticity (Ed25519)
+afritech/platform_contracts/platform.yaml:118:  - key_rotation
+afritech/distributed/zt_runtime.py:33:        # âœ… Build public key registry
+afritech/distributed/consensus/validator.py:6:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+afritech/distributed/consensus/validator.py:14:        public_keys: Optional[Mapping[str, Ed25519PublicKey | bytes | str]] = None,
+afritech/distributed/consensus/validator.py:35:                public_key = Ed25519PublicKey.from_public_bytes(
+afritech/distributed/consensus/validator.py:39:                public_key = Ed25519PublicKey.from_public_bytes(public_key)
+afritech/distributed/crypto.py:7:    Ed25519PrivateKey,
+afritech/distributed/crypto.py:8:    Ed25519PublicKey,
+afritech/distributed/crypto.py:28:    def __init__(self, private_key: Ed25519PrivateKey | None = None) -> None:
+afritech/distributed/crypto.py:31:            self._private_key = Ed25519PrivateKey.generate()
+afritech/distributed/crypto.py:33:            if not isinstance(private_key, Ed25519PrivateKey):
+afritech/distributed/crypto.py:37:        self.public_key: Ed25519PublicKey = self._private_key.public_key()
+afritech/distributed/crypto.py:94:            public_key = Ed25519PublicKey.from_public_bytes(public_key_bytes)
+afritech/distributed/crypto.py:159:    def load_public_key(data: bytes) -> Ed25519PublicKey:
+afritech/distributed/crypto.py:163:        return Ed25519PublicKey.from_public_bytes(data)
+afritech/distributed/crypto.py:181:    def load_private_key(data: bytes) -> Ed25519PrivateKey:
+afritech/distributed/crypto.py:185:        return Ed25519PrivateKey.from_private_bytes(data)
+afritech/distributed/verifier.py:8:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+afritech/distributed/verifier.py:24:    def __init__(self, public_keys: Dict[str, Ed25519PublicKey]) -> None:
+afritech/distributed/verifier.py:28:        self.public_keys: Dict[str, Ed25519PublicKey] = public_keys
+afritech/security/signing.py:1:"""Ed25519 signing for registry verification."""
+afritech/security/architecture_signing.py:16:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+afritech/security/architecture_signing.py:21:from afritech.core_platform.signing import AuditSignature, signing_key_status
+afritech/security/architecture_signing.py:43:def _trusted_key_registry_env_snapshot() -> str:
+afritech/security/architecture_signing.py:68:def _trusted_key_registry_payload() -> tuple[str, dict[str, dict[str, str]]]:
+afritech/security/architecture_signing.py:70:    status = signing_key_status()
+afritech/security/architecture_signing.py:110:def _trusted_key_registry_cached(env_snapshot: str) -> tuple[str, dict[str, dict[str, str]]]:
+afritech/security/architecture_signing.py:111:    return _trusted_key_registry_payload()
+afritech/security/architecture_signing.py:114:def _trusted_key_registry() -> dict[str, dict[str, str]]:
+afritech/security/architecture_signing.py:115:    return _trusted_key_registry_cached(_trusted_key_registry_env_snapshot())[1]
+afritech/security/architecture_signing.py:118:def trusted_architecture_key_registry() -> dict[str, Any]:
+afritech/security/architecture_signing.py:119:    active_key_id, registry = _trusted_key_registry_payload()
+afritech/security/architecture_signing.py:121:        "provider": signing_key_status().provider,
+afritech/security/architecture_signing.py:123:        "rotation_enabled": signing_key_status().rotation_enabled,
+afritech/security/architecture_signing.py:124:        "rotation_interval_days": signing_key_status().rotation_interval_days,
+afritech/security/architecture_signing.py:170:    status = signing_key_status()
+afritech/security/architecture_signing.py:219:    trusted_entry = _trusted_key_registry().get(sig.key_id)
+afritech/security/architecture_signing.py:245:            public_key = Ed25519PublicKey.from_public_bytes(base64.b64decode(sig.public_key))
+afritech/security/architecture_signing.py:275:    "trusted_architecture_key_registry",
+afritech/security/ed25519.py:4:AfriTech Ed25519 Cryptographic Module
+afritech/security/ed25519.py:44:    Generate a new Ed25519 keypair
+afritech/security/ed25519.py:50:        signing_key = SigningKey.generate()
+afritech/security/ed25519.py:51:        verify_key = signing_key.verify_key
+afritech/security/ed25519.py:54:            signing_key.encode().hex(),
+afritech/security/ed25519.py:67:    Load signing key from hex
+afritech/security/ed25519.py:105:        signing_key = load_private_key(private_key_hex)
+afritech/security/ed25519.py:106:        signed = signing_key.sign(message)
+afritech/security/ed25519.py:120:    Verify Ed25519 signature
+afritech/novacodepro/demo/personas.py:43:    header = {"alg": "HS256", "typ": "JWT"}
+afritech/novacodepro/production_readiness.py:27:    ProductionDependency("KMS signing key", "NOVACODEPRO_EVIDENCE_KMS_KEY_ID", ("uat", "production"), "Asymmetric evidence signing key."),
+afritech/novacodepro/platform.py:2542:        bundle["signing_key_id"] = str(payload.get("signing_key_id") or "local://novacodepro/evidence-development-key")
+afritech/novacodepro/platform.py:5216:                    ["KMS signing key or immutable bucket missing"]
+afritech/novacodepro/persistence/migrations/0001_enterprise_control_plane.sql:296:    signing_key_id TEXT NOT NULL,
+afritech/novacodepro/operating_fabric.py:381:        "signing_key_id": "local://novacodepro/evidence-development-key",
+afritech/ci/afripay_security_validator.py:24:    key_rotation_verified: bool
+afritech/ci/afripay_security_validator.py:41:            "key_rotation_verified": self.key_rotation_verified,
+afritech/ci/afripay_security_validator.py:61:    key_rotation_verified = _verify_key_rotation(models, security, stream)
+afritech/ci/afripay_security_validator.py:62:    if not key_rotation_verified:
+afritech/ci/afripay_security_validator.py:63:        mismatches.append("oauth client key rotation proof failed")
+afritech/ci/afripay_security_validator.py:82:        key_rotation_verified=key_rotation_verified,
+afritech/ci/afripay_security_validator.py:95:def _verify_key_rotation(models, security, stream: SecurityAuditStream) -> bool:
+afritech/ci/afripay_security_validator.py:223:        f"key_rotation={report.key_rotation_verified} "
+afritech/tests/test_features.py:237:    assert payload["signature"]["algorithm"] == "Ed25519"
+afritech/tests/test_features.py:281:    assert snapshot["signature"]["algorithm"] == "Ed25519"
+afritech/tests/test_level12_feature_registry.py:46:    assert snapshot["signature"]["algorithm"] == "Ed25519"
+afritech/tests/test_level12_feature_registry.py:55:    assert payload["signature"]["algorithm"] == "Ed25519"
+afritech/tests/distributed/test_trust_kernel_v2.py:7:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+afritech/tests/distributed/test_trust_kernel_v2.py:170:def _keypair() -> tuple[Ed25519PrivateKey, str]:
+afritech/tests/distributed/test_trust_kernel_v2.py:171:    private_key = Ed25519PrivateKey.generate()
+afritech/tests/distributed/test_trust_kernel_v2.py:180:    private_key: Ed25519PrivateKey,
+afritech/tests/distributed/test_trust_kernel_v3.py:7:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+afritech/tests/distributed/test_trust_kernel_v3.py:140:def _keypair() -> tuple[Ed25519PrivateKey, str]:
+afritech/tests/distributed/test_trust_kernel_v3.py:141:    private_key = Ed25519PrivateKey.generate()
+afritech/tests/distributed/test_trust_kernel_v3.py:150:    private_key: Ed25519PrivateKey,
+afritech/tests/afripay/test_afripay_api_security.py:50:    header = {"alg": "HS256", "typ": "JWT"}
+afritech/tests/afripay/test_afripay_global_proof_security.py:193:    assert report.key_rotation_verified is True
+afritech/tests/federation/test_protocol.py:7:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+afritech/tests/federation/test_protocol.py:201:def _keypair() -> tuple[Ed25519PrivateKey, str]:
+afritech/tests/federation/test_protocol.py:202:    private_key = Ed25519PrivateKey.generate()
+afritech/tests/federation/test_protocol.py:210:def _sign(private_key: Ed25519PrivateKey, message: bytes) -> str:
+afritech/tests/federation/test_discovery.py:8:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+afritech/tests/federation/test_discovery.py:67:def _keypair() -> tuple[Ed25519PrivateKey, str]:
+afritech/tests/federation/test_discovery.py:68:    private_key = Ed25519PrivateKey.generate()
+afritech/tests/federation/test_discovery.py:76:def _sign(private_key: Ed25519PrivateKey, message: bytes) -> str:
+afritech/tests/core_platform/test_production_boundaries.py:15:from afritech.core_platform.signing import sign_packet, signing_key_ready
+afritech/tests/core_platform/test_production_boundaries.py:217:    assert signing_key_ready() is False
+afritech/tests/core_platform/test_production_boundaries.py:218:    with pytest.raises(RuntimeError, match="production_novatrust_signing_key_required"):
+afritech/tests/core_platform/test_core_platform_layers.py:63:from afritech.core_platform.signing import build_key_rotation_plan, signing_key_status
+afritech/tests/core_platform/test_core_platform_layers.py:578:    status = signing_key_status()
+afritech/tests/core_platform/test_core_platform_layers.py:580:    assert build_key_rotation_plan()["steps"]
+afritech/tests/governance/test_production_deployment_preflight.py:27:        "NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}",
+afritech/tests/api/test_novaprogramming_control_plane_v9.py:109:    key_bundle = store.rotate_signing_key(
+afritech/tests/api/test_novaprogramming_control_plane_v7.py:38:def test_key_rotation_updates_pki_and_signed_audit_chain(tmp_path: Path) -> None:
+afritech/tests/api/test_novaprogramming_control_plane_v7.py:67:    assert store.list_key_rotations(organization_id=org_id)
+afritech/tests/api/test_novaprogramming_control_plane_v7.py:68:    assert store.list_signing_keys(organization_id=org_id, key_family="audit")[0]["status"] == "active"
+afritech/tests/api/test_feature_registry_api.py:58:    assert payload["signature"]["algorithm"] == "Ed25519"
+afritech/tests/afritpps/test_execution_engine.py:7:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+afritech/tests/afritpps/test_execution_engine.py:104:def _keypair() -> tuple[Ed25519PrivateKey, str]:
+afritech/tests/afritpps/test_execution_engine.py:105:    private_key = Ed25519PrivateKey.generate()
+afritech/tests/afritpps/test_execution_engine.py:114:    private_key: Ed25519PrivateKey,
+afritech/tests/novaride/test_runtime_settings.py:33:        evidence_signing_key_ref="test-key",
+afritech/features.py:822:        "algorithm": "Ed25519",
+afritech/docs/operations/afriride_realtime_trace_identity.md:69:custody, secure enclave integration, key rotation, device revocation, or a
+afritech/architecture/novaride_architecture.py:26:    trusted_architecture_key_registry,
+afritech/architecture/novaride_architecture.py:239:        "capabilities": ("hsm_signing", "cloud_kms", "key_rotation", "signing_audit"),
+afritech/architecture/novaride_architecture.py:607:def novaride_architecture_key_registry() -> dict[str, Any]:
+afritech/architecture/novaride_architecture.py:608:    """Return the trusted key registry used for signing and verification."""
+afritech/architecture/novaride_architecture.py:614:        **trusted_architecture_key_registry(),
+afritech/architecture/novaride_architecture.py:797:                    "summary": "Return the trusted NovaRide architecture signing key registry.",
+afritech/architecture/novaride_architecture.py:798:                    "responses": {"200": {"description": "Trusted key registry"}},
+afritech/architecture/novaride_super_app.py:581:                "key_rotation",
+afritech/federation/discovery.py:8:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+afritech/federation/discovery.py:78:        key = Ed25519PublicKey.from_public_bytes(
+afritech/federation/protocol.py:11:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+afritech/federation/protocol.py:224:        key = Ed25519PublicKey.from_public_bytes(
+afritech/core_platform/signing.py:16:    Ed25519PrivateKey,
+afritech/core_platform/signing.py:17:    Ed25519PublicKey,
+afritech/core_platform/signing.py:103:        key_id=signing_key_status().active_key_id,
+afritech/core_platform/signing.py:115:            public_key = Ed25519PublicKey.from_public_bytes(base64.b64decode(sig.public_key))
+afritech/core_platform/signing.py:138:def _load_private_key() -> Ed25519PrivateKey:
+afritech/core_platform/signing.py:144:        return Ed25519PrivateKey.from_private_bytes(raw)
+afritech/core_platform/signing.py:147:        raise RuntimeError("production_novatrust_signing_key_required")
+afritech/core_platform/signing.py:148:    return Ed25519PrivateKey.from_private_bytes(_DEV_PRIVATE_KEY_SEED)
+afritech/core_platform/signing.py:191:def signing_key_status() -> SigningKeyStatus:
+afritech/core_platform/signing.py:217:            message="local Ed25519 signing active",
+afritech/core_platform/signing.py:232:def signing_key_ready() -> bool:
+afritech/core_platform/signing.py:241:def build_key_rotation_plan() -> dict[str, object]:
+afritech/core_platform/signing.py:242:    status = signing_key_status()
+afritech/core_platform/signing.py:244:        "view": "novatrust_key_rotation_plan",
+afritech/core_platform/signing.py:248:            "Generate or select next Ed25519/KMS signing key",
+afritech/core_platform/services.py:33:from afritech.core_platform.signing import kms_signing_status, signing_key_status
+afritech/core_platform/services.py:257:                    "signing": signing_key_status().canonical(),
+afritech/core_platform/services.py:472:                "signing": signing_key_status().canonical(),
+afritech/core_platform/compliance_report.py:46:            "Requires production signing key custody",
+afritech/core_platform/consensus.py:17:    signing_key_ready,
+afritech/core_platform/consensus.py:335:    signing_ready = signing_key_ready()
+afritech/core_platform/stack.py:28:from afritech.core_platform.signing import signing_key_ready, signing_key_status
+afritech/core_platform/stack.py:115:    signing = signing_key_status()
+afritech/core_platform/stack.py:186:            status="ready" if signing_key_ready() else "blocked",
+afritech/core_platform/stack.py:187:            ready=bool(signing_key_ready()),
+afritech/governance/adr/ADR-0014-cross-system-proof-format.yaml:134:    description: Public key registry binding
+afritech/governance/adr/ADR-0014-cross-system-proof-format.yaml:135:    target: afritech.crypto.key_registry.PUBLIC_KEY_REGISTRY
+afritech/governance/adr/ADR-0018-cross-system-continuity.yaml:138:      description: Public key registry binding.
+afritech/governance/adr/ADR-0018-cross-system-continuity.yaml:139:      target: afritech.crypto.key_registry.PUBLIC_KEY_REGISTRY
+afritech/governance/rules/RULE-014-cross-proof.yaml:47:    description: public_key_id must exist in key registry
+afritech/governance/bindings/BIND-014-cross-proof.yaml:36:    name: public_key_registry
+afritech/governance/bindings/BIND-014-cross-proof.yaml:39:    target: afritech.crypto.key_registry.PUBLIC_KEY_REGISTRY
+afritech/registry/snapshot.py:19:        "algorithm": "Ed25519",
+afritech/api/afriprogramming_views.py:551:def novaprogramming_key_registry(request) -> Response:
+afritech/api/afriprogramming_views.py:554:    return Response(CONTROL_PLANE.key_registry(organization_id=organization_id, key_family=key_family))
+afritech/api/afriprogramming_views.py:1228:    "novaprogramming_key_registry",
+afritech/api/auth/jwt_device_auth.py:56:    """Minimal HS256 JWT service for controlled pilot authentication."""
+afritech/api/auth/jwt_device_auth.py:85:        header = {"alg": "HS256", "typ": "JWT"}
+afritech/api/auth/jwt_device_auth.py:128:        if header.get("alg") != "HS256":
+afritech/api/auth/novacodepro_session_store.py:276:        header = {"alg": "HS256", "typ": "JWT"}
+afritech/api/auth/novacodepro_session_store.py:307:        if header.get("alg") != "HS256":
+afritech/api/afriprogramming_control_api.py:613:    def key_registry(
+afritech/api/afriprogramming_control_api.py:617:        return control_plane.key_registry(organization_id=claims.organization_id, key_family=key_family)
+afritech/api/afriride_next_gen_mobile_api.py:35:    novaride_architecture_key_registry,
+afritech/api/afriride_next_gen_mobile_api.py:2678:        return novaride_architecture_key_registry()
+afritech/api/core_platform_api.py:72:    build_key_rotation_plan,
+afritech/api/core_platform_api.py:74:    signing_key_ready,
+afritech/api/core_platform_api.py:75:    signing_key_status,
+afritech/api/core_platform_api.py:884:            "status": signing_key_status().canonical(),
+afritech/api/core_platform_api.py:885:            "ready": signing_key_ready(),
+afritech/api/core_platform_api.py:886:            "rotation_plan": build_key_rotation_plan(),
+afritech/api/core_platform_api.py:1178:                "signature": "ready" if signing_key_ready() else "blocked",
+afritech/api/core_platform_api.py:1190:                "cryptographic_trust_layer": signing_key_ready(),
+afritech/api/ops_governance_api.py:56:            validation_failures=("device_clock_skew", "signing_key_rotation"),
+afritech/api/urls.py:86:    novaprogramming_key_registry,
+afritech/api/urls.py:313:    path("novaprogramming/keys", novaprogramming_key_registry),
+afritech/novaid/config.py:16:    jwt_algorithms: tuple[str, ...] = ("HS256",)
+afritech/novaid/standards.py:60:    "proof_types": ["Ed25519Signature2020", "jwt"],
+afritech/novaid/tokens.py:36:        signing_key: bytes | None = None,
+afritech/novaid/tokens.py:37:        signing_keys: dict[str, bytes] | None = None,
+afritech/novaid/tokens.py:43:        if signing_keys is None:
+afritech/novaid/tokens.py:44:            if signing_key is None:
+afritech/novaid/tokens.py:47:            signing_keys = {resolved_key_id: signing_key}
+afritech/novaid/tokens.py:50:            not signing_keys
+afritech/novaid/tokens.py:52:            or active_key_id not in signing_keys
+afritech/novaid/tokens.py:56:                for key_id, key in signing_keys.items()
+afritech/novaid/tokens.py:65:        self.signing_keys = dict(signing_keys)
+afritech/novaid/tokens.py:100:        header = {"alg": "HS256", "typ": "JWT", "kid": self.active_key_id}
+afritech/novaid/tokens.py:103:            self.signing_keys[self.active_key_id],
+afritech/novaid/tokens.py:123:        key_id = header.get("kid")
+afritech/novaid/tokens.py:124:        key = self.signing_keys.get(key_id) if isinstance(key_id, str) else None
+afritech/novaid/tokens.py:130:            header.get("alg") != "HS256"
+afritech/novaid/runtime.py:53:    if os.getenv("NOVAID_TOKEN_ALGORITHM", "HS256") != "HS256":
+afritech/novaid/runtime.py:55:    _load_signing_keyring(require_rotation=True)
+afritech/novaid/runtime.py:90:    signing_keys, active_signing_key_id = _load_signing_keyring(
+afritech/novaid/runtime.py:126:        signing_keys=signing_keys,
+afritech/novaid/runtime.py:127:        active_key_id=active_signing_key_id,
+afritech/novaid/runtime.py:226:def _load_signing_keyring(*, require_rotation: bool) -> tuple[dict[str, bytes], str]:
+afritech/novaid/runtime.py:227:    encoded_registry = os.getenv("NOVAID_SIGNING_KEYS_JSON", "")
+afritech/novaid/runtime.py:228:    active_key_id = os.getenv("NOVAID_ACTIVE_SIGNING_KEY_ID", "")
+afritech/novaid/runtime.py:233:            raise RuntimeError("invalid_novaid_signing_key_registry") from exc
+afritech/novaid/runtime.py:235:            raise RuntimeError("invalid_novaid_signing_key_registry")
+afritech/novaid/runtime.py:245:            raise RuntimeError("invalid_novaid_signing_key_registry")
+afritech/novaid/runtime.py:248:        raise RuntimeError("missing_novaid_signing_key_registry")
+afritech/novaid/runtime.py:251:        "development-only-signing-key-00001",
+afritech/novaid/runtime.py:254:        raise RuntimeError("invalid_novaid_signing_key")
+afritech/trust_kernel/signatures.py:7:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+afritech/trust_kernel/signatures.py:64:    public_key = Ed25519PublicKey.from_public_bytes(_decode_b64(device_key.public_key))
+afritech/ecosystem_evolution.py:231:        "Ed25519",
+afritech/novapay/ecosystem_contract.py:168:        "Secrets Manager": "partner credentials and signing keys",
+afritech/genesis/genesis_validator.py:14:- cryptographic authenticity (Ed25519)
+afritech/genesis/genesis_signature.py:12:- Ed25519 authenticity
+afritech/genesis/genesis_signature.py:75:    Sign genesis payload using Ed25519
+afritech/genesis/genesis_signature.py:108:    Verify Ed25519 signature for genesis
+afritech/novaride_runtime/config.py:67:    evidence_signing_key_ref: str = ""
+afritech/novaride_runtime/config.py:126:            evidence_signing_key_ref=values.get("NOVARIDE_EVIDENCE_SIGNING_KEY_REF", ""),
+afritech/novaride_runtime/config.py:160:            if not self.evidence_signing_key_ref:
+afritech/services/cross_proof_verifier.py:4:from afritech.crypto.key_registry import get_public_key
+afritech/guards/architecture_drift_report.py:146:    "afritech/crypto/key_registry.py",
+afritech/api_catalog/signing.py:12:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
+afritech/api_catalog/signing.py:36:class Ed25519SigningBackend:
+afritech/api_catalog/signing.py:37:    private_key: Ed25519PrivateKey
+afritech/api_catalog/signing.py:38:    public_key: Ed25519PublicKey
+afritech/api_catalog/signing.py:65:            public_key = Ed25519PublicKey.from_public_bytes(public_key_bytes)
+afritech/api_catalog/signing.py:72:def _decode_private_key(value: str) -> Ed25519PrivateKey:
+afritech/api_catalog/signing.py:75:        raise ValueError("API contract signing key must contain 32 raw Ed25519 bytes.")
+afritech/api_catalog/signing.py:76:    return Ed25519PrivateKey.from_private_bytes(raw)
+afritech/api_catalog/signing.py:89:            raise RuntimeError("Production API contract signing key is not configured.")
+afritech/api_catalog/signing.py:90:        private_key = Ed25519PrivateKey.generate()
+afritech/api_catalog/signing.py:92:    return Ed25519SigningBackend(private_key=private_key, public_key=private_key.public_key(), _key_id=key_id, _provider=provider)
+afritech/api_catalog/signing.py:100:    return Ed25519SigningBackend(
+afritech/api_catalog/signing.py:101:        private_key=Ed25519PrivateKey.generate(),
+afritech/api_catalog/signing.py:102:        public_key=Ed25519PrivateKey.generate().public_key(),
+scripts/preflight_production_deployment.py:31:    "NOVAID_SIGNING_KEYS_JSON",
+scripts/preflight_production_deployment.py:32:    "NOVAID_ACTIVE_SIGNING_KEY_ID",
+scripts/bootstrap_ec2_afritech.sh:60:5. Place signing keys on the host:
+scripts/mobile/verify_release_signing_credentials.sh:36:  echo "Android signing key alias mismatch" >&2
+scripts/mobile/verify_release_signing_credentials.sh:42:  echo "Android signing keystore not found: $AFRIRIDE_ANDROID_KEYSTORE_PATH" >&2
+scripts/novaid/certify_postgres_production.py:67:        NOVAID_SIGNING_KEYS_JSON=json.dumps(
+scripts/novaid/certify_postgres_production.py:69:                "certification-previous": "previous-certification-signing-key-0001",
+scripts/novaid/certify_postgres_production.py:70:                "certification-active": "active-certification-signing-key-000002",
+scripts/novaid/certify_postgres_production.py:73:        NOVAID_ACTIVE_SIGNING_KEY_ID="certification-active",
+scripts/novaid/phase6f_operational_verify.py:159:        header = {"alg": "HS256", "typ": "JWT"}
+deploy/production/docker-compose.trust-node.yml:19:      NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}
+deploy/production/docker-compose.trust-node.yml:20:      NOVAID_ACTIVE_SIGNING_KEY_ID: ${NOVAID_ACTIVE_SIGNING_KEY_ID:?NovaID active signing key required}
+deploy/production/docker-compose.trust-node.yml:21:      NOVAID_TOKEN_ALGORITHM: HS256
+deploy/production/.env.production.trust-node.example:26:# signing keys and select one active key to preserve rotation capability.
+deploy/production/.env.production.trust-node.example:29:NOVAID_SIGNING_KEYS_JSON={"previous":"replace-with-32-byte-minimum-key","active":"replace-with-independent-32-byte-minimum-key"}
+deploy/production/.env.production.trust-node.example:30:NOVAID_ACTIVE_SIGNING_KEY_ID=active
+tests/novaid/test_phase5d_postgres_runtime.py:38:    monkeypatch.setenv("NOVAID_SIGNING_KEY", "phase-5d-signing-key-with-enough-bytes")
+tests/novaid/test_phase5c_authoritative_router.py:38:        signing_key=b"mounted-signing-key-for-tests-0001",
+tests/novaid/test_phase5c_startup.py:12:    "NOVAID_SIGNING_KEYS_JSON": json.dumps(
+tests/novaid/test_phase5c_startup.py:14:            "2026-q2": "previous-signing-key-with-32-bytes-minimum",
+tests/novaid/test_phase5c_startup.py:15:            "2026-q3": "active-signing-key-with-at-least-32-bytes",
+tests/novaid/test_phase5c_startup.py:18:    "NOVAID_ACTIVE_SIGNING_KEY_ID": "2026-q3",
+tests/novaid/test_phase5c_startup.py:19:    "NOVAID_TOKEN_ALGORITHM": "HS256",
+tests/novaid/test_phase5c_startup.py:33:        ("NOVAID_SIGNING_KEYS_JSON", "{}", "invalid_novaid_signing_key_registry"),
+tests/novaid/test_phase5c_startup.py:35:            "NOVAID_ACTIVE_SIGNING_KEY_ID",
+tests/novaid/test_phase5c_startup.py:37:            "invalid_novaid_signing_key_registry",
+tests/novaid/test_phase5c_startup.py:59:    monkeypatch.delenv("NOVAID_SIGNING_KEYS_JSON")
+tests/novaid/test_phase5c_startup.py:60:    monkeypatch.delenv("NOVAID_ACTIVE_SIGNING_KEY_ID")
+tests/novaid/test_phase5c_startup.py:65:    with pytest.raises(RuntimeError, match="missing_novaid_signing_key_registry"):
+tests/novaid/test_phase2_security_validation.py:15:OLD_KEY = b"phase2-old-signing-key-at-least-32-bytes"
+tests/novaid/test_phase2_security_validation.py:16:NEW_KEY = b"phase2-new-signing-key-at-least-32-bytes"
+tests/novaid/test_phase2_security_validation.py:33:        signing_keys=keys,
+tests/novaid/test_phase2_security_validation.py:60:    assert _decode(old_token.split(".")[0])["kid"] == "2026-q2"
+tests/novaid/test_phase2_security_validation.py:73:    assert _decode(new_token.split(".")[0])["kid"] == "2026-q3"
+tests/novaid/test_phase2_security_validation.py:107:        _resign(token, NEW_KEY, header={**header, "kid": "attacker"}),
+tests/novaid/test_phase4_access_tokens.py:61:        signing_key=b"phase4-signing-key-for-tests-only!!",
+tests/novaid/test_phase4_access_tokens.py:98:def test_wrong_tenant_audience_and_signing_key_fail_closed(tmp_path) -> None:
+tests/api_catalog/test_contract_signing.py:6:from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+tests/api_catalog/test_contract_signing.py:22:    wrong_private = Ed25519PrivateKey.generate()
+tests/api_catalog/test_contract_signing.py:33:def test_production_without_signing_key_fails_startup(monkeypatch: pytest.MonkeyPatch) -> None:
+
+5. JWT configuration classes and loaders
+------------------------------------------------------------
+
+===== afritech/novaid/config.py =====
+from dataclasses import dataclass
+import os
+
+
+@dataclass(frozen=True)
+class NovaIDAuthenticationConfig:
+    access_token_seconds: int = 900
+    refresh_token_seconds: int = 604800
+    refresh_family_seconds: int = 2592000
+    otp_seconds: int = 300
+    otp_maximum_attempts: int = 5
+    session_idle_seconds: int = 1800
+    session_absolute_seconds: int = 43200
+    jwt_issuer: str = ""
+    jwt_audience: str = ""
+    jwt_algorithms: tuple[str, ...] = ("HS256",)
+
+    @classmethod
+    def from_environment(cls, environment: str | None = None) -> "NovaIDAuthenticationConfig":
+        stage = (environment or os.getenv("AFRITECH_ENV", "development")).lower()
+        config = cls(
+            jwt_issuer=os.getenv("NOVAID_JWT_ISSUER", ""),
+            jwt_audience=os.getenv("NOVAID_JWT_AUDIENCE", ""),
+        )
+        if stage in {"production", "prod"} and (not config.jwt_issuer or not config.jwt_audience):
+            raise ValueError("missing_production_novaid_token_configuration")
+        return config
+
+===== afritech/novaid/runtime.py =====
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+
+from .api import build_durable_authentication_router
+from .application import (
+    AuthenticationLockoutService,
+    DurableAuthenticationService,
+    PasswordLifecycleService,
+    SessionAdministrationService,
+)
+from .application.webauthn import WebAuthnService
+from .application.recovery import AccountRecoveryService, RecoveryCodeService
+from .application.recovery import TenantWebAuthnPolicyService
+from .domain import AuthenticatorPolicy
+from .config import NovaIDAuthenticationConfig
+from .persistence import NovaIDUnitOfWork
+from .persistence import PostgresNovaIdUnitOfWork
+from .persistence.migrations import verify_migration_revisions
+from .persistence.pool import NovaIDPostgresPool
+from .revocation import ProcessLocalRevocationStore, RedisRevocationStore
+from .tokens import AccessTokenService
+from .observability import NovaIDMetrics, NovaIDTracer
+from .outbox import RevocationOutbox
+from .revocation_delivery import RevocationConsumer, RevocationPublisher
+from .webauthn_coordination import RedisWebAuthnChallengeCoordinator
+from .webauthn_delivery import (
+    WebAuthnDistributedEventConsumer,
+    WebAuthnOutboxPublisher,
+    WebAuthnOutboxRepository,
+)
+
+
+def validate_runtime_environment(stage: str, backend: str) -> None:
+    if stage not in {"production", "prod"}:
+        return
+    if backend != "postgres":
+        raise RuntimeError("production_novaid_requires_postgres")
+    database_url = os.getenv("NOVAID_DATABASE_URL", "")
+    if not database_url:
+        raise RuntimeError("missing_novaid_postgres_url")
+    if not database_url.startswith(("postgresql://", "postgres://")):
+        raise RuntimeError("invalid_novaid_postgres_url")
+    issuer, audience = os.getenv("NOVAID_JWT_ISSUER", ""), os.getenv("NOVAID_JWT_AUDIENCE", "")
+    if not issuer:
+        raise RuntimeError("missing_novaid_issuer")
+    if not audience:
+        raise RuntimeError("missing_novaid_audience")
+    if audience == "*":
+        raise RuntimeError("wildcard_novaid_audience")
+    if os.getenv("NOVAID_TOKEN_ALGORITHM", "HS256") != "HS256":
+        raise RuntimeError("unsupported_novaid_token_algorithm")
+    _load_signing_keyring(require_rotation=True)
+    if os.getenv("NOVAID_REDIS_REQUIRED", "true").lower() == "true" and not os.getenv(
+        "NOVAID_REDIS_URL"
+    ):
+        raise RuntimeError("required_novaid_redis_url_missing")
+
+
+def build_default_durable_router():
+    stage = os.getenv("AFRITECH_ENV", "development").lower()
+    backend = os.getenv("NOVAID_PERSISTENCE_BACKEND", "sqlite").lower()
+    validate_runtime_environment(stage, backend)
+    if backend not in {"sqlite", "postgres"}:
+        raise RuntimeError("unsupported_novaid_persistence_backend")
+    config = NovaIDAuthenticationConfig.from_environment(stage)
+    pool = None
+    if backend == "postgres":
+        dsn = os.getenv("NOVAID_DATABASE_URL", "")
+        if not dsn:
+            raise RuntimeError("missing_novaid_postgres_url")
+        pool = NovaIDPostgresPool(
+            dsn,
+            minimum_size=int(os.getenv("NOVAID_POSTGRES_POOL_MIN", "1")),
+            maximum_size=int(os.getenv("NOVAID_POSTGRES_POOL_MAX", "8")),
+            timeout=float(os.getenv("NOVAID_POSTGRES_POOL_TIMEOUT", "5")),
+        )
+        if not pool.check():
+            raise RuntimeError("novaid_postgres_unavailable")
+        with pool.connection() as connection:
+            verify_migration_revisions(connection)
+            connection.rollback()
+        uow = PostgresNovaIdUnitOfWork(pool=pool)
+    else:
+        path = Path(os.getenv("NOVAID_DURABLE_DB_PATH", "/tmp/novaid-durable.sqlite3"))
+        uow = NovaIDUnitOfWork(path)
+    pepper = os.getenv("NOVAID_TOKEN_PEPPER", "development-only-novaid-pepper-0001").encode()
+    signing_keys, active_signing_key_id = _load_signing_keyring(
+        require_rotation=stage in {"production", "prod"}
+    )
+    redis_url = os.getenv("NOVAID_REDIS_URL", "")
+    if redis_url:
+        import redis
+
+        redis_client = redis.Redis.from_url(redis_url, decode_responses=True)
+        try:
+            redis_client.ping()
+        except Exception as exc:
+            if os.getenv("NOVAID_REDIS_REQUIRED", "false").lower() == "true":
+                if pool:
+                    pool.close()
+                raise RuntimeError("required_novaid_redis_unavailable") from exc
+            redis_client = None
+        revocations = (
+            RedisRevocationStore(redis_client) if redis_client else ProcessLocalRevocationStore()
+        )
+    else:
+        revocations = ProcessLocalRevocationStore()
+    trace_path = os.getenv("NOVAID_TRACE_EXPORT_PATH", "")
+    metrics, tracer = (
+        NovaIDMetrics(),
+        NovaIDTracer(export_path=Path(trace_path) if trace_path else None),
+    )
+    outbox = RevocationOutbox(uow)
+    lockout = AuthenticationLockoutService(uow, pepper=pepper)
+    authentication = DurableAuthenticationService(uow, pepper=pepper, lockout=lockout)
+    passwords = PasswordLifecycleService(uow, revocations, pepper=pepper, outbox=outbox)
+    sessions = SessionAdministrationService(
+        uow, revocations, outbox=outbox, metrics=metrics, tracer=tracer
+    )
+    tokens = AccessTokenService(
+        uow,
+        revocations,
+        signing_keys=signing_keys,
+        active_key_id=active_signing_key_id,
+        issuer=config.jwt_issuer or "novaid-development",
+        audience=config.jwt_audience or "novaid-development-clients",
+        lifetime_seconds=config.access_token_seconds,
+    )
+    distributed_outbox = WebAuthnOutboxRepository(uow)
+    webauthn_service = WebAuthnService(
+        uow,
+        AuthenticatorPolicy(
+            rp_id=os.getenv("NOVAID_WEBAUTHN_RP_ID", "localhost"),
+            rp_name=os.getenv("NOVAID_WEBAUTHN_RP_NAME", "NovaID"),
+            origins=tuple(
+                item.strip()
+                for item in os.getenv("NOVAID_WEBAUTHN_ORIGINS", "http://localhost").split(",")
+                if item.strip()
+            ),
+            require_user_verification=os.getenv("NOVAID_WEBAUTHN_REQUIRE_UV", "true").lower()
+            == "true",
+            attestation=os.getenv("NOVAID_WEBAUTHN_ATTESTATION", "none"),
+        ),
+        metrics=metrics,
+        tracer=tracer,
+        token_pepper=pepper,
+        coordinator=(
+            RedisWebAuthnChallengeCoordinator(
+                redis_client,
+                required=os.getenv("NOVAID_WEBAUTHN_REDIS_REQUIRED", "false").lower() == "true",
+                metrics=metrics,
+            )
+            if redis_url and redis_client
+            else None
+        ),
+        distributed_outbox=distributed_outbox,
+    )
+    recovery_codes = RecoveryCodeService(uow, pepper=pepper, metrics=metrics, tracer=tracer)
+    account_recovery = AccountRecoveryService(uow, recovery_codes, outbox=outbox)
+    webauthn_policies = TenantWebAuthnPolicyService(uow, distributed_outbox=distributed_outbox)
+    router = build_durable_authentication_router(
+        authentication,
+        tokens=tokens,
+        passwords=passwords,
+        sessions=sessions,
+        metrics=metrics,
+        tracer=tracer,
+        webauthn_service=webauthn_service,
+        recovery_codes=recovery_codes,
+        account_recovery=account_recovery,
+        webauthn_policies=webauthn_policies,
+    )
+    setattr(router, "novaid_postgres_pool", pool)
+    setattr(router, "novaid_outbox", outbox)
+    setattr(router, "novaid_metrics", metrics)
+    setattr(router, "novaid_tracer", tracer)
+    setattr(router, "novaid_redis_client", redis_client if redis_url else None)
+    setattr(router, "novaid_webauthn_outbox", distributed_outbox)
+    if redis_url and redis_client:
+        publisher_uow = PostgresNovaIdUnitOfWork(pool=pool) if pool else uow
+        consumer_uow = PostgresNovaIdUnitOfWork(pool=pool) if pool else uow
+        distributed_publisher_outbox = WebAuthnOutboxRepository(publisher_uow)
+        setattr(
+            router,
+            "novaid_webauthn_publisher",
+            WebAuthnOutboxPublisher(
+                distributed_publisher_outbox,
+                redis_client,
+                instance_id=os.getenv("NOVAID_SERVICE_INSTANCE_ID", "novaid-local"),
+                metrics=metrics,
+                tracer=tracer,
+            ),
+        )
+        setattr(
+            router,
+            "novaid_webauthn_consumer",
+            WebAuthnDistributedEventConsumer(
+                redis_client,
+                consumer_name=os.getenv("NOVAID_SERVICE_INSTANCE_ID", "novaid-local"),
+                metrics=metrics,
+                uow=consumer_uow,
+            ),
+        )
+        setattr(
+            router,
+            "novaid_revocation_publisher",
+            RevocationPublisher(
+                outbox,
+                redis_client,
+                instance_id=os.getenv("NOVAID_INSTANCE_ID", "novaid-local"),
+                metrics=metrics,
+                tracer=tracer,
+            ),
+        )
+        setattr(
+            router,
+            "novaid_revocation_consumer",
+            RevocationConsumer(redis_client, uow=consumer_uow, metrics=metrics, tracer=tracer),
+        )
+    return router
+
+
+def _load_signing_keyring(*, require_rotation: bool) -> tuple[dict[str, bytes], str]:
+    encoded_registry = os.getenv("NOVAID_SIGNING_KEYS_JSON", "")
+    active_key_id = os.getenv("NOVAID_ACTIVE_SIGNING_KEY_ID", "")
+    if encoded_registry:
+        try:
+            parsed = json.loads(encoded_registry)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("invalid_novaid_signing_key_registry") from exc
+        if not isinstance(parsed, dict) or not parsed:
+            raise RuntimeError("invalid_novaid_signing_key_registry")
+        keys = {
+            str(key_id): str(secret).encode()
+            for key_id, secret in parsed.items()
+        }
+        if (
+            not active_key_id
+            or active_key_id not in keys
+            or any(len(secret) < 32 for secret in keys.values())
+        ):
+            raise RuntimeError("invalid_novaid_signing_key_registry")
+        return keys, active_key_id
+    if require_rotation:
+        raise RuntimeError("missing_novaid_signing_key_registry")
+    legacy_key = os.getenv(
+        "NOVAID_SIGNING_KEY",
+        "development-only-signing-key-00001",
+    ).encode()
+    if len(legacy_key) < 32:
+        raise RuntimeError("invalid_novaid_signing_key")
+    return {"development-v1": legacy_key}, "development-v1"
+
+===== afritech/tests/governance/test_production_deployment_preflight.py =====
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+import pytest
+
+
+ROOT = Path(__file__).resolve().parents[3]
+MODULE_PATH = ROOT / "scripts/preflight_production_deployment.py"
+SPEC = importlib.util.spec_from_file_location("production_preflight", MODULE_PATH)
+assert SPEC and SPEC.loader
+preflight = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(preflight)
+
+
+def test_trust_node_uses_compose_secrets_instead_of_file_bind_mounts() -> None:
+    text = preflight.DEFAULT_COMPOSE.read_text(encoding="utf-8")
+    assert (
+        "NOVACODEPRO_DATABASE_URL: "
+        "${NOVATECH_CORE_DATABASE_URL:?NovaCodePro PostgreSQL URL required}"
+    ) in text
+    for marker in (
+        "NOVAID_PERSISTENCE_BACKEND: postgres",
+        "NOVAID_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaID PostgreSQL URL required}",
+        "NOVAID_JWT_ISSUER: ${NOVAID_JWT_ISSUER:?NovaID JWT issuer required}",
+        "NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}",
+        "NOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}",
+        "NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required}",
+    ):
+        assert marker in text
+    assert "secrets:\n      - eth_private_key" in text
+    assert "target: afritech_private_key.pem" in text
+    assert "target: afritech_public_key.pem" in text
+    assert "name: ${AFRITECH_INFRA_NETWORK:-production_infra}" in text
+    assert "      - infrastructure" in text
+    assert "file: ./secrets/eth_private_key" in text
+    assert "./secrets/eth_private_key:/run/secrets/eth_private_key:ro" not in text
+
+
+def test_all_production_compose_variants_avoid_secret_bind_mounts() -> None:
+    for name in (
+        "docker-compose.production.yml",
+        "docker-compose.production.tls.yml",
+        "docker-compose.trust-node.yml",
+    ):
+        text = (ROOT / "deploy/production" / name).read_text(encoding="utf-8")
+        assert "file: ./secrets/eth_private_key" in text
+        assert "./secrets/eth_private_key:/run/secrets/eth_private_key:ro" not in text
+
+
+def test_environment_template_declares_regional_overlay_inputs() -> None:
+    text = (
+        ROOT / "deploy/production/.env.production.trust-node.example"
+    ).read_text(encoding="utf-8")
+    for key in preflight.REGION_ENV:
+        assert f"{key}=" in text
+
+
+def test_preflight_rejects_placeholder_environment(tmp_path: Path) -> None:
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "\n".join(f"{key}=valid-value" for key in preflight.REQUIRED_ENV)
+        + "\nAFRITECH_DOMAIN=trust.afritech.example\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(
+        preflight.DeploymentConfigurationError,
+        match="placeholder environment values",
+    ):
+        preflight.validate_env(env_file)
+
+
+def test_preflight_rejects_missing_and_insecure_secret_files(tmp_path: Path) -> None:
+    insecure = tmp_path / "private-key"
+    insecure.write_text("not-a-real-key", encoding="utf-8")
+    insecure.chmod(0o644)
+    missing = tmp_path / "missing-key"
+    with pytest.raises(
+        preflight.DeploymentConfigurationError,
+        match="insecure mode.*missing regular file",
+    ):
+        preflight.validate_secret_files((insecure, missing))
+
+===== scripts/novaid/certify_postgres_production.py =====
+#!/usr/bin/env python3
+"""Certify PostgreSQL as NovaID's production persistence authority."""
+
+from __future__ import annotations
+
+import argparse
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
+from datetime import UTC, datetime
+from hashlib import sha256
+import json
+import os
+from pathlib import Path
+from statistics import median
+import sys
+from tempfile import TemporaryDirectory
+from time import perf_counter
+from typing import Any, Iterator
+from uuid import uuid4
+
+import psycopg
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from afritech.novaid.persistence.migrations import (  # noqa: E402
+    EXPECTED_REVISIONS,
+    apply_migrations,
+    verify_migration_revisions,
+)
+from afritech.novaid.runtime import validate_runtime_environment  # noqa: E402
+
+
+def _percentile(values: list[float], percentile: float) -> float:
+    ordered = sorted(values)
+    index = min(len(ordered) - 1, int((len(ordered) - 1) * percentile))
+    return round(ordered[index], 3)
+
+
+@contextmanager
+def _environment(**values: str) -> Iterator[None]:
+    previous = {key: os.environ.get(key) for key in values}
+    os.environ.update(values)
+    try:
+        yield
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
+def _connection(dsn: str, schema: str) -> psycopg.Connection[Any]:
+    connection = psycopg.connect(dsn)
+    connection.execute(f'SET search_path TO "{schema}"')
+    connection.commit()
+    return connection
+
+
+def _production_authority_gate(dsn: str) -> dict[str, Any]:
+    with _environment(
+        NOVAID_DATABASE_URL=dsn,
+        NOVAID_JWT_ISSUER="https://identity.afritech.example",
+        NOVAID_JWT_AUDIENCE="afritech-production",
+        NOVAID_SIGNING_KEYS_JSON=json.dumps(
+            {
+                "certification-previous": "previous-certification-signing-key-0001",
+                "certification-active": "active-certification-signing-key-000002",
+            }
+        ),
+        NOVAID_ACTIVE_SIGNING_KEY_ID="certification-active",
+        NOVAID_REDIS_REQUIRED="false",
+    ):
+        rejected_sqlite = False
+        try:
+            validate_runtime_environment("production", "sqlite")
+        except RuntimeError as exc:
+            rejected_sqlite = str(exc) == "production_novaid_requires_postgres"
+        validate_runtime_environment("production", "postgres")
+    if not rejected_sqlite:
+        raise RuntimeError("production_sqlite_authority_was_not_rejected")
+    return {
+        "production_backend": "postgres",
+        "sqlite_rejected": True,
+        "postgres_configuration_accepted": True,
+    }
+
+
+def _bootstrap(dsn: str, schema: str) -> dict[str, Any]:
+    with _connection(dsn, schema) as connection:
+        started = perf_counter()
+        revisions = apply_migrations(connection)
+        elapsed_ms = (perf_counter() - started) * 1000
+        verified = verify_migration_revisions(connection)
+        checksums = connection.execute(
+            "SELECT revision,checksum FROM novaid_schema_migrations ORDER BY revision"
+        ).fetchall()
+        constraints = connection.execute(
+            "SELECT count(*) FROM information_schema.table_constraints "
+            "WHERE table_schema=%s AND constraint_type IN "
+            "('PRIMARY KEY','FOREIGN KEY','UNIQUE','CHECK')",
+            (schema,),
+        ).fetchone()[0]
+        tables = connection.execute(
+            "SELECT count(*) FROM information_schema.tables WHERE table_schema=%s",
+            (schema,),
+        ).fetchone()[0]
+    if revisions != EXPECTED_REVISIONS or verified != EXPECTED_REVISIONS:
+        raise RuntimeError("canonical_migration_chain_not_verified")
+    if not all(checksum for _, checksum in checksums):
+        raise RuntimeError("migration_checksum_missing")
+    return {
+        "revision_count": len(revisions),
+        "revisions": list(revisions),
+        "checksums_present": True,
+        "table_count": tables,
+        "constraint_count": constraints,
+        "bootstrap_ms": round(elapsed_ms, 3),
+    }
+
+
+def _failed_migration_rollback(dsn: str, schema: str) -> dict[str, Any]:
+    with TemporaryDirectory(prefix="novaid-failed-migration-") as directory:
+        migration_directory = Path(directory)
+        (migration_directory / "0001_probe.sql").write_text(
+            "CREATE TABLE rollback_probe(id integer PRIMARY KEY);",
+            encoding="utf-8",
+        )
+        (migration_directory / "0002_failure.sql").write_text(
+            "INSERT INTO rollback_probe(id) VALUES (1); "
+            "ALTER TABLE table_that_does_not_exist ADD COLUMN impossible integer;",
+            encoding="utf-8",
+        )
+        failed = False
+        with _connection(dsn, schema) as connection:
+            try:
+                apply_migrations(
+                    connection,
+                    migration_directory=migration_directory,
+                )
+            except psycopg.Error:
+                failed = True
+            probe_exists = connection.execute(
+                "SELECT to_regclass(%s)", (f"{schema}.rollback_probe",)
+            ).fetchone()[0]
+            ledger_exists = connection.execute(
+                "SELECT to_regclass(%s)", (f"{schema}.novaid_schema_migrations",)
+            ).fetchone()[0]
+    if not failed or probe_exists is not None or ledger_exists is not None:
+        raise RuntimeError("failed_migration_was_not_fully_rolled_back")
+    return {
+        "failure_injected": True,
+        "partial_schema_absent": True,
+        "partial_ledger_absent": True,
+        "transactional_rollback": "PASS",
+    }
+
+
+def _seed_workload(dsn: str, schema: str, tenant_count: int, identities_per_tenant: int):
+    tenants: list[str] = []
+    identities: list[tuple[str, str]] = []
+    now = datetime.now(UTC)
+    with _connection(dsn, schema) as connection:
+        for tenant_index in range(tenant_count):
+            tenant_id = str(uuid4())
+            tenants.append(tenant_id)
+            connection.execute(
+                "INSERT INTO novaid_tenants"
+                "(tenant_id,name,status,created_at,updated_at) "
+                "VALUES(%s,%s,'ACTIVE',%s,%s)",
+                (tenant_id, f"Workload tenant {tenant_index}", now, now),
+            )
+            for identity_index in range(identities_per_tenant):
+                identity_id = str(uuid4())
+                identities.append((tenant_id, identity_id))
+                connection.execute(
+                    "INSERT INTO novaid_identities"
+                    "(identity_id,tenant_id,normalized_email,status,created_at,updated_at) "
+                    "VALUES(%s,%s,%s,'ACTIVE',%s,%s)",
+                    (
+                        identity_id,
+                        tenant_id,
+                        f"user-{identity_index}@tenant-{tenant_index}.example",
+                        now,
+                        now,
+                    ),
+                )
+        connection.commit()
+    return tenants, identities
+
+
+def _workload(
+    dsn: str,
+    schema: str,
+    *,
+    workers: int,
+    operations: int,
+    tenant_count: int,
+    identities_per_tenant: int,
+) -> dict[str, Any]:
+    tenants, identities = _seed_workload(
+        dsn, schema, tenant_count, identities_per_tenant
+    )
+
+    def operation(index: int) -> float:
+        tenant_id, identity_id = identities[index % len(identities)]
+        started = perf_counter()
+        with _connection(dsn, schema) as connection:
+            row = connection.execute(
+                "SELECT version FROM novaid_identities "
+                "WHERE tenant_id=%s AND identity_id=%s FOR UPDATE",
+                (tenant_id, identity_id),
+            ).fetchone()
+            if row is None:
+                raise RuntimeError("tenant_bound_identity_missing")
+            connection.execute(
+                "UPDATE novaid_identities SET version=version+1,updated_at=now() "
+                "WHERE tenant_id=%s AND identity_id=%s",
+                (tenant_id, identity_id),
+            )
+            event_id = str(uuid4())
+            connection.execute(
+                "INSERT INTO novaid_security_events("
+                "event_id,event_type,severity,tenant_id,actor_identity_id,"
+                "subject_identity_id,correlation_id,request_id,occurred_at,"
+                "recorded_at,outcome,reason_codes,metadata,schema_version"
+                ") VALUES(%s,'CERTIFICATION_WRITE','INFO',%s,%s,%s,%s,%s,"
+                "now(),now(),'SUCCESS','[]'::jsonb,'{}'::jsonb,1)",
+                (
+                    event_id,
+                    tenant_id,
+                    identity_id,
+                    identity_id,
+                    str(uuid4()),
+                    str(uuid4()),
+                ),
+            )
+            connection.commit()
+        return (perf_counter() - started) * 1000
+
+    started = perf_counter()
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        latencies = list(executor.map(operation, range(operations)))
+    elapsed = perf_counter() - started
+
+    with _connection(dsn, schema) as connection:
+        event_count = connection.execute(
+            "SELECT count(*) FROM novaid_security_events "
+            "WHERE event_type='CERTIFICATION_WRITE'"
+        ).fetchone()[0]
+        version_increments = connection.execute(
+            "SELECT sum(version - 1) FROM novaid_identities"
+        ).fetchone()[0]
+        cross_tenant_rows = connection.execute(
+            "SELECT count(*) FROM novaid_identities i "
+            "JOIN novaid_tenants t ON t.tenant_id=i.tenant_id "
+            "WHERE i.tenant_id<>t.tenant_id"
+        ).fetchone()[0]
+
+===== scripts/preflight_production_deployment.py =====
+#!/usr/bin/env python3
+"""Fail-closed validation of production deployment inputs."""
+
+from __future__ import annotations
+
+import argparse
+import re
+import stat
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_COMPOSE = ROOT / "deploy/production/docker-compose.trust-node.yml"
+DEFAULT_ENV = ROOT / "deploy/production/.env.production.trust-node"
+SECRET_PATHS = (
+    ROOT / "deploy/production/secrets/eth_private_key",
+    ROOT / "deploy/production/secrets/afritech_private_key.pem",
+    ROOT / "deploy/production/secrets/afritech_public_key.pem",
+)
+REQUIRED_ENV = (
+    "AFRITECH_DOMAIN",
+    "AFRITECH_TLS_EMAIL",
+    "DATABASE_URL",
+    "NOVATECH_CORE_DATABASE_URL",
+    "AFRITECH_JWT_SECRET",
+    "NOVATRUST_ED25519_PRIVATE_KEY_B64",
+    "NOVAID_JWT_ISSUER",
+    "NOVAID_JWT_AUDIENCE",
+    "NOVAID_SIGNING_KEYS_JSON",
+    "NOVAID_ACTIVE_SIGNING_KEY_ID",
+    "NOVAID_TOKEN_PEPPER",
+    "NOVAID_REDIS_URL",
+)
+REGION_ENV = (
+    "AFRIRIDE_DEFAULT_REGION",
+    "AFRIRIDE_REGION_CELL",
+    "AFRIRIDE_DATA_RESIDENCY",
+)
+PLACEHOLDER = re.compile(
+    r"replace-with|replace-me|your-domain\.example|trust\.afritech\.example|"
+    r"YOUR_|example\.invalid",
+    re.IGNORECASE,
+)
+
+
+class DeploymentConfigurationError(RuntimeError):
+    """Raised when deployment inputs are unsafe or incomplete."""
+
+
+def load_env(path: Path) -> dict[str, str]:
+    if not path.is_file():
+        raise DeploymentConfigurationError(f"missing environment file: {path}")
+    values: dict[str, str] = {}
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        values[key.strip()] = value.strip()
+    return values
+
+
+def validate_env(path: Path, *, regional: bool = False) -> dict[str, str]:
+    values = load_env(path)
+    required = (*REQUIRED_ENV, *(REGION_ENV if regional else ()))
+    missing = [key for key in required if not values.get(key)]
+    if missing:
+        raise DeploymentConfigurationError(
+            f"missing required environment values: {', '.join(missing)}"
+        )
+    placeholders = [key for key, value in values.items() if value and PLACEHOLDER.search(value)]
+    if placeholders:
+        raise DeploymentConfigurationError(
+            f"placeholder environment values: {', '.join(sorted(placeholders))}"
+        )
+    return values
+
+
+def validate_secret_files(paths: tuple[Path, ...] = SECRET_PATHS) -> None:
+    failures: list[str] = []
+    for path in paths:
+        if not path.is_file():
+            failures.append(f"{path}: missing regular file")
+            continue
+        if path.stat().st_size == 0:
+            failures.append(f"{path}: empty")
+        mode = stat.S_IMODE(path.stat().st_mode)
+        if mode & 0o077:
+            failures.append(f"{path}: insecure mode {mode:04o}; require 0600 or stricter")
+    if failures:
+        raise DeploymentConfigurationError("; ".join(failures))
+
+
+def validate_compose_files(paths: tuple[Path, ...]) -> None:
+    failures = [str(path) for path in paths if not path.is_file()]
+    if failures:
+        raise DeploymentConfigurationError(
+            f"missing Compose files: {', '.join(failures)}"
+        )
+
+
+def run_compose_validation(
+    env_file: Path, compose_files: tuple[Path, ...], *, project_directory: Path
+) -> None:
+    command = [
+        "docker",
+        "compose",
+        "--project-directory",
+        str(project_directory),
+        "--env-file",
+        str(env_file),
+    ]
+    for path in compose_files:
+        command.extend(("-f", str(path)))
+    command.extend(("config", "--quiet"))
+    try:
+        subprocess.run(command, cwd=ROOT, check=True)
+    except FileNotFoundError as exc:
+        raise DeploymentConfigurationError("docker is not installed") from exc
+    except subprocess.CalledProcessError as exc:
+        raise DeploymentConfigurationError(
+            f"Docker Compose validation failed with exit code {exc.returncode}"
+        ) from exc
+
+
+def validate(
+    env_file: Path,
+    compose_files: tuple[Path, ...],
+    *,
+    check_compose: bool,
+) -> None:
+    validate_compose_files(compose_files)
+    regional = any(path.name == "docker-compose.region.yml" for path in compose_files)
+    validate_env(env_file, regional=regional)
+    validate_secret_files()
+    if check_compose:
+        run_compose_validation(
+            env_file,
+            compose_files,
+            project_directory=DEFAULT_COMPOSE.parent,
+        )
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV)
+    parser.add_argument(
+        "--compose-file",
+        action="append",
+        type=Path,
+        dest="compose_files",
+    )
+    parser.add_argument("--check-compose", action="store_true")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    compose_files = tuple(args.compose_files or (DEFAULT_COMPOSE,))
+    try:
+        validate(
+            args.env_file.resolve(),
+            tuple(path.resolve() for path in compose_files),
+            check_compose=args.check_compose,
+        )
+    except DeploymentConfigurationError as exc:
+        print(f"Production deployment preflight FAILED: {exc}", file=sys.stderr)
+        return 1
+    print("Production deployment preflight PASSED")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+===== tests/novaid/test_phase3_revocation_config.py =====
+from datetime import UTC, datetime, timedelta
+
+import pytest
+
+from afritech.novaid.config import NovaIDAuthenticationConfig
+from afritech.novaid.revocation import ProcessLocalRevocationStore
+
+
+def test_revocation_is_tenant_bound_and_expires() -> None:
+    store = ProcessLocalRevocationStore()
+    future = datetime.now(UTC) + timedelta(minutes=5)
+    store.revoke_session("tenant-a", "session", future)
+    assert store.is_session_revoked("tenant-a", "session")
+    assert not store.is_session_revoked("tenant-b", "session")
+
+
+def test_production_configuration_fails_closed(monkeypatch) -> None:
+    monkeypatch.delenv("NOVAID_JWT_ISSUER", raising=False)
+    monkeypatch.delenv("NOVAID_JWT_AUDIENCE", raising=False)
+    with pytest.raises(ValueError, match="missing_production"):
+        NovaIDAuthenticationConfig.from_environment("production")
+
+===== tests/novaid/test_phase5c_startup.py =====
+import json
+
+import pytest
+
+from afritech.novaid.runtime import validate_runtime_environment
+
+
+BASE = {
+    "NOVAID_DATABASE_URL": "postgresql://localhost/novaid",
+    "NOVAID_JWT_ISSUER": "novaid",
+    "NOVAID_JWT_AUDIENCE": "novaid-clients",
+    "NOVAID_SIGNING_KEYS_JSON": json.dumps(
+        {
+            "2026-q2": "previous-signing-key-with-32-bytes-minimum",
+            "2026-q3": "active-signing-key-with-at-least-32-bytes",
+        }
+    ),
+    "NOVAID_ACTIVE_SIGNING_KEY_ID": "2026-q3",
+    "NOVAID_TOKEN_ALGORITHM": "HS256",
+    "NOVAID_REDIS_REQUIRED": "true",
+    "NOVAID_REDIS_URL": "redis://localhost:56379/15",
+}
+
+
+@pytest.mark.parametrize(
+    ("name", "value", "message"),
+    [
+        ("NOVAID_DATABASE_URL", "", "missing_novaid_postgres_url"),
+        ("NOVAID_DATABASE_URL", "sqlite:///unsafe.db", "invalid_novaid_postgres_url"),
+        ("NOVAID_JWT_ISSUER", "", "missing_novaid_issuer"),
+        ("NOVAID_JWT_AUDIENCE", "", "missing_novaid_audience"),
+        ("NOVAID_JWT_AUDIENCE", "*", "wildcard_novaid_audience"),
+        ("NOVAID_SIGNING_KEYS_JSON", "{}", "invalid_novaid_signing_key_registry"),
+        (
+            "NOVAID_ACTIVE_SIGNING_KEY_ID",
+            "unknown",
+            "invalid_novaid_signing_key_registry",
+        ),
+        ("NOVAID_TOKEN_ALGORITHM", "none", "unsupported_novaid_token_algorithm"),
+        ("NOVAID_REDIS_URL", "", "required_novaid_redis_url_missing"),
+    ],
+)
+def test_production_configuration_fails_closed(monkeypatch, name, value, message) -> None:
+    for key, configured in BASE.items():
+        monkeypatch.setenv(key, configured)
+    monkeypatch.setenv(name, value)
+    with pytest.raises(RuntimeError, match=message):
+        validate_runtime_environment("production", "postgres")
+
+
+def test_production_refuses_sqlite() -> None:
+    with pytest.raises(RuntimeError, match="production_novaid_requires_postgres"):
+        validate_runtime_environment("production", "sqlite")
+
+
+def test_production_requires_rotation_registry(monkeypatch) -> None:
+    for key, configured in BASE.items():
+        monkeypatch.setenv(key, configured)
+    monkeypatch.delenv("NOVAID_SIGNING_KEYS_JSON")
+    monkeypatch.delenv("NOVAID_ACTIVE_SIGNING_KEY_ID")
+    monkeypatch.setenv(
+        "NOVAID_SIGNING_KEY",
+        "legacy-single-key-is-no-longer-production-valid",
+    )
+    with pytest.raises(RuntimeError, match="missing_novaid_signing_key_registry"):
+        validate_runtime_environment("production", "postgres")
+
+
+def test_optional_redis_may_be_absent(monkeypatch) -> None:
+    for key, configured in BASE.items():
+        monkeypatch.setenv(key, configured)
+    monkeypatch.setenv("NOVAID_REDIS_REQUIRED", "false")
+    monkeypatch.delenv("NOVAID_REDIS_URL")
+    validate_runtime_environment("production", "postgres")
+
+6. Token-pepper implementation
+------------------------------------------------------------
+afritech/tests/governance/test_production_deployment_preflight.py:28:        "NOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}",
+afritech/tests/novaid/test_account_recovery_service.py:214:    pepper = b"x" * 32
+afritech/tests/novaid/test_account_recovery_service.py:215:    codes = RecoveryCodeService(uow, pepper=pepper)
+afritech/tests/novaid/test_refresh_rotation.py:97:    return DurableAuthenticationService(uow, pepper=b"pepper-pepper-pepper-pepper-123456")
+afritech/novaid/security.py:27:def _digest(secret: str, pepper: bytes) -> str:
+afritech/novaid/security.py:28:    return hmac.new(pepper, secret.encode("utf-8"), hashlib.sha256).hexdigest()
+afritech/novaid/security.py:74:    def __init__(self, *, pepper: bytes | None = None, clock: Clock = _utcnow) -> None:
+afritech/novaid/security.py:75:        self._pepper = pepper or secrets.token_bytes(32)
+afritech/novaid/security.py:88:            _digest(f"{otp_id}:{identity_id}:{purpose}:{code}", self._pepper),
+afritech/novaid/security.py:104:            supplied = _digest(f"{otp_id}:{identity_id}:{purpose}:{code}", self._pepper)
+afritech/novaid/security.py:124:    def __init__(self, *, pepper: bytes | None = None, clock: Clock = _utcnow) -> None:
+afritech/novaid/security.py:125:        self._pepper = pepper or secrets.token_bytes(32)
+afritech/novaid/security.py:136:            _digest(secret, self._pepper),
+afritech/novaid/security.py:145:        supplied = _digest(secret, self._pepper)
+afritech/novaid/security.py:157:            family.current_digest = _digest(new_secret, self._pepper)
+afritech/novaid/runtime.py:89:    pepper = os.getenv("NOVAID_TOKEN_PEPPER", "development-only-novaid-pepper-0001").encode()
+afritech/novaid/runtime.py:117:    lockout = AuthenticationLockoutService(uow, pepper=pepper)
+afritech/novaid/runtime.py:118:    authentication = DurableAuthenticationService(uow, pepper=pepper, lockout=lockout)
+afritech/novaid/runtime.py:119:    passwords = PasswordLifecycleService(uow, revocations, pepper=pepper, outbox=outbox)
+afritech/novaid/runtime.py:149:        token_pepper=pepper,
+afritech/novaid/runtime.py:161:    recovery_codes = RecoveryCodeService(uow, pepper=pepper, metrics=metrics, tracer=tracer)
+afritech/novaid/application/recovery.py:30:    def __init__(self, uow, *, pepper: bytes, metrics=None, tracer=None) -> None:
+afritech/novaid/application/recovery.py:31:        if len(pepper) < 32:
+afritech/novaid/application/recovery.py:32:            raise ValueError("recovery_pepper_too_short")
+afritech/novaid/application/recovery.py:33:        self.uow, self.pepper = uow, pepper
+afritech/novaid/application/recovery.py:39:        return hmac.new(self.pepper, material, hashlib.sha256).hexdigest()
+afritech/novaid/application/lockout.py:21:        self, uow: NovaIDUnitOfWork, *, pepper: bytes, policy: LockoutPolicy | None = None
+afritech/novaid/application/lockout.py:23:        self.uow, self.pepper = uow, pepper
+afritech/novaid/application/lockout.py:28:            self.pepper, identifier.strip().lower().encode(), hashlib.sha256
+afritech/novaid/application/webauthn.py:89:        token_pepper: bytes | None = None,
+afritech/novaid/application/webauthn.py:95:        self.token_pepper = token_pepper
+afritech/novaid/application/webauthn.py:125:        if not self.token_pepper or len(self.token_pepper) < 32:
+afritech/novaid/application/webauthn.py:128:            self.token_pepper, f"{purpose}:{value}".encode(), hashlib.sha256
+afritech/novaid/application/authentication.py:39:        pepper: bytes,
+afritech/novaid/application/authentication.py:43:        if len(pepper) < 32:
+afritech/novaid/application/authentication.py:44:            raise ValueError("token_pepper_too_short")
+afritech/novaid/application/authentication.py:45:        self.uow, self.pepper = uow, pepper
+afritech/novaid/application/authentication.py:50:        return hmac.new(self.pepper, f"{purpose}:{value}".encode(), hashlib.sha256).hexdigest()
+afritech/novaid/application/passwords.py:36:        pepper: bytes,
+afritech/novaid/application/passwords.py:40:        self.uow, self.revocations, self.pepper = uow, revocations, pepper
+afritech/novaid/application/passwords.py:45:        return hmac.new(self.pepper, f"password-reset:{value}".encode(), hashlib.sha256).hexdigest()
+scripts/preflight_production_deployment.py:33:    "NOVAID_TOKEN_PEPPER",
+tests/novaid/test_phase6c_recovery_policy.py:88:    codes = RecoveryCodeService(uow, pepper=b"phase-6c-recovery-pepper-at-least-32")
+tests/novaid/test_phase6d_postgres_recovery_races.py:23:PEPPER = b"phase-6d-postgres-recovery-pepper-at-least-32"
+tests/novaid/test_phase6d_postgres_recovery_races.py:74:    generator = RecoveryCodeService(PostgresNovaIdUnitOfWork(pool=pool), pepper=PEPPER)
+tests/novaid/test_phase6d_postgres_recovery_races.py:82:            service = RecoveryCodeService(PostgresNovaIdUnitOfWork(pool=pool), pepper=PEPPER)
+tests/novaid/test_phase3_api.py:17:    service = DurableAuthenticationService(store, pepper=b"api-test-pepper" * 3)
+tests/novaid/test_phase3_api.py:72:            DurableAuthenticationService(store, pepper=b"api-test-pepper" * 3)
+tests/novaid/test_security_event_datetime_contract.py:28:        pepper=b"security-event-contract-pepper-value",
+tests/novaid/test_phase5c_authoritative_router.py:34:    auth = DurableAuthenticationService(store, pepper=b"mounted-auth-pepper" * 3)
+tests/novaid/test_phase5c_authoritative_router.py:45:        passwords=PasswordLifecycleService(store, revocations, pepper=b"mounted-reset" * 3),
+tests/novaid/test_phase6_webauthn.py:130:        WebAuthnService(uow, policy, token_pepper=b"phase-6b-test-pepper-at-least-32-bytes"),
+tests/novaid/test_phase5b_lockout.py:26:        store, pepper=b"lockout-pepper" * 3, policy=LockoutPolicy(threshold=3, lock_seconds=60)
+tests/novaid/test_phase5b_lockout.py:28:    auth = DurableAuthenticationService(store, pepper=b"auth-pepper" * 3, lockout=lockout)
+tests/novaid/test_phase3_authentication_flow.py:21:    return tenant, store, DurableAuthenticationService(store, pepper=b"phase3-test-pepper" * 2)
+tests/novaid/test_phase5b_password_lifecycle.py:20:    auth = DurableAuthenticationService(store, pepper=b"password-tests" * 3)
+tests/novaid/test_phase5b_password_lifecycle.py:58:        store, ProcessLocalRevocationStore(), pepper=b"password-reset" * 3
+tests/novaid/test_phase5b_password_lifecycle.py:111:        store, ProcessLocalRevocationStore(), pepper=b"password-reset" * 3
+tests/novaid/test_session_activation_expiry_contract.py:36:        pepper=b"session-activation-contract-pepper-value",
+tests/novaid/test_phase5a_session_administration.py:18:    auth = DurableAuthenticationService(store, pepper=b"session-tests" * 3)
+tests/novaid/test_phase4_access_tokens.py:22:    auth = DurableAuthenticationService(store, pepper=b"phase4-pepper" * 3)
+tests/novaid/test_security_invariants.py:18:    store = OTPStore(pepper=b"test" * 8, clock=lambda: now)
+tests/novaid/test_security_invariants.py:24:    expired = OTPStore(pepper=b"test" * 8, clock=lambda: now)
+tests/novaid/test_security_invariants.py:31:    store = RefreshTokenStore(pepper=b"test" * 8)
+tests/novaid/test_phase6f_checkpoints_and_replay.py:159:            DurableAuthenticationService(uow, pepper=b"openapi-pepper" * 3)
+tests/novaid/test_phase5e_postgres_races.py:45:                PostgresNovaIdUnitOfWork(pool=pool), pepper=b"phase-5e-race-pepper" * 3
+deploy/production/docker-compose.trust-node.yml:22:      NOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}
+deploy/production/.env.production.trust-node.example:31:NOVAID_TOKEN_PEPPER=replace-with-independent-novaid-token-pepper
+
+7. Redis implementation and URL parsing
+------------------------------------------------------------
+afritech/middleware/redis_rate_limiter.py:113:    def from_url(
+afritech/middleware/redis_rate_limiter.py:115:        redis_url: str | None = None,
+afritech/middleware/redis_rate_limiter.py:123:            client = redis.Redis.from_url(redis_url or os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
+afritech/middleware/distributed_governance.py:34:        redis_url: str | None = None,
+afritech/middleware/distributed_governance.py:35:        redis_urls: dict[str, str] | None = None,
+afritech/middleware/distributed_governance.py:66:                region_urls=redis_urls,
+afritech/middleware/multi_region_redis.py:16:def parse_region_redis_urls(raw: str | None) -> dict[str, str]:
+afritech/middleware/multi_region_redis.py:137:        resolved_urls = dict(region_urls or parse_region_redis_urls(os.environ.get("AFRITECH_TRUST_REDIS_URLS")))
+afritech/middleware/multi_region_redis.py:169:            return redis.Redis.from_url(url)
+afritech/middleware/multi_region_redis.py:250:    "parse_region_redis_urls",
+afritech/middleware/redis_circuit_breaker.py:55:    def from_url(
+afritech/middleware/redis_circuit_breaker.py:57:        redis_url: str | None = None,
+afritech/middleware/redis_circuit_breaker.py:65:            client = redis.Redis.from_url(redis_url or os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
+afritech/afripay/celery_app.py:37:        broker=os.environ.get("CELERY_BROKER_URL", os.environ.get("REDIS_URL", "redis://localhost:6379/0")),
+afritech/afripay/celery_app.py:38:        backend=os.environ.get("CELERY_RESULT_BACKEND", os.environ.get("REDIS_URL", "redis://localhost:6379/1")),
+afritech/tests/platform_runtime_operational/test_redis_adapter.py:24:    adapter = RedisAdapter("redis://127.0.0.1:6379/0")
+afritech/tests/core_platform/test_autonomous_control.py:18:    plane = AutonomousControlPlane(client=MemoryRedis())
+afritech/tests/core_platform/test_autonomous_control.py:67:    plane = AutonomousControlPlane(client=MemoryRedis())
+afritech/tests/core_platform/test_adaptive_sla.py:44:    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+afritech/tests/core_platform/test_adaptive_sla.py:80:    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+afritech/tests/core_platform/test_adaptive_sla.py:96:    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+afritech/tests/core_platform/test_adaptive_sla.py:120:    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+afritech/tests/core_platform/test_adaptive_sla.py:146:        client=MemoryRedis(),
+afritech/tests/core_platform/test_adaptive_sla.py:149:        autonomous_control=AutonomousControlPlane(client=MemoryRedis()),
+afritech/tests/governance/test_production_deployment_preflight.py:29:        "NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required}",
+afritech/tests/api/test_distributed_partner_governance_middleware.py:112:    redis_backend = shared_redis or FakeRedis()
+afritech/tests/api/test_distributed_partner_governance_middleware.py:205:    shared_redis = FakeRedis()
+afritech/tests/api/test_distributed_partner_governance_middleware.py:230:    shared_redis = FakeRedis()
+afritech/tests/api/test_partner_governance_api.py:173:    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+afritech/tests/api/test_partner_governance_api.py:198:    redis = MemoryRedis()
+afritech/architecture/anchor_indexer.py:435:        self.redis = cast(Any, redis.Redis.from_url(url))
+afritech/architecture/anchor_indexer.py:543:        redis_url = os.getenv("AFRITECH_CHAIN_INDEX_REDIS_URL")
+afritech/architecture/anchor_indexer.py:544:        if not redis_url:
+afritech/architecture/anchor_indexer.py:546:        return RedisAnchorIndexBackend(redis_url, os.getenv("AFRITECH_CHAIN_INDEX_REDIS_KEY"))
+afritech/mobility/realtime_hub.py:148:    def from_url(cls, url: str) -> "RedisMobilityHub":
+afritech/mobility/realtime_hub.py:150:        client = redis.Redis.from_url(url, decode_responses=True)
+afritech/mobility/realtime_hub.py:232:    redis_url = os.environ.get("AFRIRIDE_REDIS_URL") or os.environ.get("REDIS_URL")
+afritech/mobility/realtime_hub.py:233:    if not redis_url:
+afritech/mobility/realtime_hub.py:235:    return RedisMobilityHub.from_url(redis_url)
+afritech/execution/queue/redis_result_store.py:6:    def __init__(self, url="redis://redis:6379/0"):
+afritech/execution/queue/redis_result_store.py:7:        self.client = redis.Redis.from_url(url)
+afritech/execution/queue/redis_queue.py:7:    def __init__(self, url="redis://redis:6379/0"):
+afritech/execution/queue/redis_queue.py:8:        self.client = redis.Redis.from_url(url)
+afritech/api/app.py:131:from afritech.middleware.multi_region_redis import RegionAwareRedisBackend, parse_region_redis_urls
+afritech/api/app.py:203:_trust_redis_urls = os.environ.get("AFRITECH_TRUST_REDIS_URLS")
+afritech/api/app.py:204:_trust_redis_url_map = parse_region_redis_urls(_trust_redis_urls)
+afritech/api/app.py:207:    region_urls=_trust_redis_url_map or None,
+afritech/novaid/runtime.py:57:        "NOVAID_REDIS_URL"
+afritech/novaid/runtime.py:59:        raise RuntimeError("required_novaid_redis_url_missing")
+afritech/novaid/runtime.py:93:    redis_url = os.getenv("NOVAID_REDIS_URL", "")
+afritech/novaid/runtime.py:94:    if redis_url:
+afritech/novaid/runtime.py:97:        redis_client = redis.Redis.from_url(redis_url, decode_responses=True)
+afritech/novaid/runtime.py:156:            if redis_url and redis_client
+afritech/novaid/runtime.py:180:    setattr(router, "novaid_redis_client", redis_client if redis_url else None)
+afritech/novaid/runtime.py:182:    if redis_url and redis_client:
+scripts/preflight_production_deployment.py:34:    "NOVAID_REDIS_URL",
+tests/novaid/test_phase5d_postgres_runtime.py:37:    monkeypatch.setenv("NOVAID_REDIS_URL", REDIS_URL)
+tests/novaid/test_phase6d_redis_coordination.py:19:    client = redis.Redis.from_url(URL, decode_responses=True)
+tests/novaid/test_phase5a_redis_integration.py:15:    first = redis.Redis.from_url(URL, decode_responses=True)
+tests/novaid/test_phase5a_redis_integration.py:16:    second = redis.Redis.from_url(URL, decode_responses=True)
+tests/novaid/test_phase5c_startup.py:21:    "NOVAID_REDIS_URL": "redis://localhost:56379/15",
+tests/novaid/test_phase5c_startup.py:40:        ("NOVAID_REDIS_URL", "", "required_novaid_redis_url_missing"),
+tests/novaid/test_phase5c_startup.py:73:    monkeypatch.delenv("NOVAID_REDIS_URL")
+tests/novaid/test_phase6e_distributed_delivery.py:31:    client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+tests/novaid/redis_phase5f_probe.py:16:dsn, redis_url, mode = (
+tests/novaid/redis_phase5f_probe.py:45:        redis.Redis.from_url(redis_url, decode_responses=True),
+tests/novaid/redis_phase5f_probe.py:58:        redis.Redis.from_url(redis_url, decode_responses=True),
+tests/novaid/test_phase5e_sessions_and_delivery.py:171:    failed = RevocationPublisher(outbox, FakeRedis(fail_publish=True), instance_id="failed")
+tests/novaid/test_phase5e_sessions_and_delivery.py:179:    redis = FakeRedis()
+tests/novaid/test_phase5e_postgres_races.py:82:    pool, redis = NovaIDPostgresPool(DSN, minimum_size=2, maximum_size=4), ThreadSafeRedis()
+deploy/afripay/docker-compose.afripay.yml:10:      REDIS_URL: "redis://redis:6379/0"
+deploy/afripay/docker-compose.afripay.yml:25:      REDIS_URL: "redis://redis:6379/0"
+deploy/afripay/docker-compose.afripay.yml:26:      CELERY_BROKER_URL: "redis://redis:6379/0"
+deploy/afripay/docker-compose.afripay.yml:27:      CELERY_RESULT_BACKEND: "redis://redis:6379/1"
+deploy/afripay/kubernetes/configmap.yaml:10:  REDIS_URL: "redis://afripay-redis:6379/0"
+deploy/afripay/kubernetes/configmap.yaml:11:  CELERY_BROKER_URL: "redis://afripay-redis:6379/0"
+deploy/afripay/kubernetes/configmap.yaml:12:  CELERY_RESULT_BACKEND: "redis://afripay-redis:6379/1"
+deploy/production/docker-compose.trust-node.yml:24:      NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required}
+deploy/production/.env.production.trust-node.example:32:NOVAID_REDIS_URL=redis://redis:6379/0
+deploy/novaride/compose.operational.yml:7:  NOVARIDE_REDIS_URL: redis://redis:6379/0
+deploy/novaride/docker-compose.realtime.yml:11:      AFRIRIDE_REDIS_URL: redis://redis:6379/0
+
+8. Production environment example
+------------------------------------------------------------
+AFRITECH_DOMAIN=trust.afritech.example
+AFRITECH_TLS_EMAIL=ops@afritech.example
+AFRITECH_ENV=production
+AFRITECH_INFRA_NETWORK=production_infra
+
+# Required only when docker-compose.region.yml is included.
+AFRIRIDE_DEFAULT_REGION=au-melbourne
+AFRIRIDE_REGION_CELL=melbourne-primary
+AFRIRIDE_DATA_RESIDENCY=AU
+AFRIRIDE_TENANT_CONFIG_JSON={}
+
+AFRITECH_JWT_SECRET=<redacted>
+AFRITECH_ALLOW_PILOT_TOKEN_ISSUANCE=<redacted>
+AFRITECH_AUTH_BOOTSTRAP_SECRET=<redacted>
+AFRITECH_EVENT_INGESTION_SECRET=<redacted>
+AFRIRIDE_JWT_SECRET=<redacted>
+AFRIRIDE_EVENT_INGESTION_SECRET=<redacted>
+AFRIRIDE_DJANGO_SECRET_KEY=<redacted>
+AFRIRIDE_AUDIT_API_KEY=replace-with-production-audit-api-key
+
+# Managed PostgreSQL. Apply migrations before starting application traffic.
+DATABASE_URL=<redacted>
+NOVATECH_CORE_DATABASE_URL=<redacted>
+
+# NovaID production runtime. Provision at least two independently generated
+# signing keys and select one active key to preserve rotation capability.
+NOVAID_JWT_ISSUER=https://trust.afritech.example/novaid
+NOVAID_JWT_AUDIENCE=novatech-production
+NOVAID_SIGNING_KEYS_JSON=<redacted>
+NOVAID_ACTIVE_SIGNING_KEY_ID=active
+NOVAID_TOKEN_PEPPER=<redacted>
+NOVAID_REDIS_URL=redis://redis:6379/0
+
+# NovaTrust production signing. Never use the repository development key.
+NOVATRUST_ED25519_PRIVATE_KEY_B64=<redacted>
+NOVATRUST_SIGNING_KEY_ID=novatrust-prod-001
+NOVATRUST_KEY_ROTATION_ENABLED=true
+NOVATRUST_KEY_ROTATION_DAYS=90
+
+# Provider webhook authentication and replay protection.
+NOVAPAY_WEBHOOK_SECRET=<redacted>
+
+# Federation is verification-only. Consensus does not grant execution authority.
+NOVATRUST_FEDERATION_NODES=1
+NOVATRUST_FEDERATION_HEALTHY_NODES=1
+NOVATRUST_FEDERATION_NODE_KEYS_JSON={"validator-melbourne-001":"base64-ed25519-public-key"}
+
+# External payment provider activation remains separately licensed and approved.
+STRIPE_LIVE_MODE=false
+STRIPE_API_KEY=
+
+# PayID / NPP live gateway activation remains separately licensed and approved.
+NOVAPAY_PAYID_LIVE_ENABLED=false
+NOVAPAY_PAYID_COLLECTION_URL=
+NOVAPAY_PAYID_API_TOKEN=
+NOVAPAY_PAYID_MERCHANT_ID=
+NOVAPAY_PAYID_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON=
+NOVAPAY_PAYID_REFERENCE_FIELD=transaction_id
+
+# Mobile money remains disabled until each operator approves the merchant.
+NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=false
+
+# Kenya - Safaricom Daraja / M-PESA.
+NOVAPAY_MPESA_KE_LIVE_MODE=false
+NOVAPAY_MPESA_KE_CONSUMER_KEY=
+NOVAPAY_MPESA_KE_CONSUMER_SECRET=
+NOVAPAY_MPESA_KE_SHORT_CODE=
+NOVAPAY_MPESA_KE_PASSKEY=
+NOVAPAY_MPESA_KE_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+NOVAPAY_MPESA_KE_WEBHOOK_SECRET=
+
+# Kenya - Airtel Money partner contract.
+NOVAPAY_AIRTEL_KE_LIVE_MODE=false
+NOVAPAY_AIRTEL_KE_COLLECTION_URL=
+NOVAPAY_AIRTEL_KE_API_TOKEN=
+NOVAPAY_AIRTEL_KE_MERCHANT_ID=
+NOVAPAY_AIRTEL_KE_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+NOVAPAY_AIRTEL_MONEY_KE_WEBHOOK_SECRET=
+
+# Burundi - Lumicash and EcoCash partner contracts.
+NOVAPAY_LUMICASH_BI_LIVE_MODE=false
+NOVAPAY_LUMICASH_BI_COLLECTION_URL=
+NOVAPAY_LUMICASH_BI_API_TOKEN=
+NOVAPAY_LUMICASH_BI_MERCHANT_ID=
+NOVAPAY_LUMICASH_BI_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+NOVAPAY_LUMICASH_BI_WEBHOOK_SECRET=
+
+NOVAPAY_ECOCASH_BI_LIVE_MODE=false
+NOVAPAY_ECOCASH_BI_COLLECTION_URL=
+NOVAPAY_ECOCASH_BI_API_TOKEN=
+NOVAPAY_ECOCASH_BI_MERCHANT_ID=
+NOVAPAY_ECOCASH_BI_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+NOVAPAY_ECOCASH_BI_WEBHOOK_SECRET=
+
+# DR Congo - Orange Money, Airtel Money, and Vodacom M-PESA contracts.
+NOVAPAY_ORANGE_CD_LIVE_MODE=false
+NOVAPAY_ORANGE_CD_COLLECTION_URL=
+NOVAPAY_ORANGE_CD_API_TOKEN=
+NOVAPAY_ORANGE_CD_MERCHANT_ID=
+NOVAPAY_ORANGE_CD_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+NOVAPAY_ORANGE_MONEY_CD_WEBHOOK_SECRET=
+
+NOVAPAY_AIRTEL_CD_LIVE_MODE=false
+NOVAPAY_AIRTEL_CD_COLLECTION_URL=
+NOVAPAY_AIRTEL_CD_API_TOKEN=
+NOVAPAY_AIRTEL_CD_MERCHANT_ID=
+NOVAPAY_AIRTEL_CD_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+NOVAPAY_AIRTEL_MONEY_CD_WEBHOOK_SECRET=
+
+NOVAPAY_MPESA_CD_LIVE_MODE=false
+NOVAPAY_MPESA_CD_COLLECTION_URL=
+NOVAPAY_MPESA_CD_API_TOKEN=
+NOVAPAY_MPESA_CD_MERCHANT_ID=
+NOVAPAY_MPESA_CD_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+NOVAPAY_MPESA_CD_WEBHOOK_SECRET=
+
+AFRITECH_SIGNING_PRIVATE_KEY_PATH=<redacted>
+AFRITECH_SIGNING_PUBLIC_KEY_PATH=/run/secrets/afritech_public_key.pem
+
+VITE_AFRIRIDE_API_URL=https://trust.afritech.example
+VITE_AFRIRIDE_APP_VERSION=trust-node-1
+
+# Live public-ledger anchoring. Replace every placeholder before enabling.
+AFRITECH_CHAIN_MODE=sepolia
+AFRITECH_CHAIN_NETWORK=sepolia
+AFRITECH_CHAIN_RPC_URL_SEPOLIA=https://sepolia.infura.io/v3/replace-with-provider-key
+AFRITECH_CHAIN_WS_URL_SEPOLIA=wss://sepolia.infura.io/ws/v3/replace-with-provider-key
+AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA=https://base-sepolia.infura.io/v3/replace-with-provider-key
+AFRITECH_CHAIN_WS_URL_BASE_SEPOLIA=wss://base-sepolia.infura.io/ws/v3/replace-with-provider-key
+AFRITECH_CHAIN_RPC_URL_MAINNET=https://mainnet.infura.io/v3/replace-with-provider-key
+AFRITECH_CHAIN_WS_URL_MAINNET=wss://mainnet.infura.io/ws/v3/replace-with-provider-key
+AFRITECH_CHAIN_PRIVATE_KEY_PATH=<redacted>
+AFRITECH_CHAIN_ADDRESS_CHECKSUM=0xYOUR_FUNDED_PUBLIC_LEDGER_WALLET
+AFRITECH_CHAIN_ID=11155111
+AFRITECH_CHAIN_CONTRACT_ADDRESS=0xYOUR_DEPLOYED_ARCHITECTURE_ANCHOR
+AFRITECH_CHAIN_ENABLE_PUBLISH=true
+AFRITECH_CHAIN_AUTO_PUBLISH_ON_PROOF=false
+AFRITECH_CHAIN_ETHERSCAN_VERIFIED=false
+AFRITECH_CHAIN_INDEX_BACKEND=file
+AFRITECH_CHAIN_INDEX_FILE=/var/lib/afritech/anchor-index.json
+AFRITECH_ECOSYSTEM_LIVE_RECEIPT_FILE=/var/lib/afritech/ecosystem-live-anchor.json
+AFRITECH_CHAIN_EVENT_SUBSCRIBER_ENABLED=true
+AFRITECH_CHAIN_EVENT_SUBSCRIBER_TRANSPORT=websocket
+AFRITECH_CHAIN_EVENT_BACKFILL_ENABLED=true
+AFRITECH_CHAIN_EVENT_RECONNECT_DELAY_SECONDS=5
+AFRITECH_CHAIN_CONTRACT_DEPLOYMENT_BLOCK=11064832
+AFRITECH_CHAIN_TX_TIMEOUT=120
+AFRITECH_CHAIN_GAS_PRICE_GWEI=2
+
+9. Compose contract
+------------------------------------------------------------
+14:      NOVACODEPRO_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaCodePro PostgreSQL URL required}
+15:      NOVAID_PERSISTENCE_BACKEND: postgres
+16:      NOVAID_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaID PostgreSQL URL required}
+17:      NOVAID_JWT_ISSUER: ${NOVAID_JWT_ISSUER:?NovaID JWT issuer required}
+18:      NOVAID_JWT_AUDIENCE: ${NOVAID_JWT_AUDIENCE:?NovaID JWT audience required}
+19:      NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}
+20:      NOVAID_ACTIVE_SIGNING_KEY_ID: ${NOVAID_ACTIVE_SIGNING_KEY_ID:?NovaID active signing key required}
+21:      NOVAID_TOKEN_ALGORITHM: HS256
+22:      NOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}
+23:      NOVAID_REDIS_REQUIRED: "true"
+24:      NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required}
+38:    networks:
+247:networks:
+250:    name: ${AFRITECH_INFRA_NETWORK:-production_infra}
+
+10. Preflight validation rules
+------------------------------------------------------------
+18:    ROOT / "deploy/production/secrets/eth_private_key",
+19:    ROOT / "deploy/production/secrets/afritech_private_key.pem",
+20:    ROOT / "deploy/production/secrets/afritech_public_key.pem",
+29:    "NOVAID_JWT_ISSUER",
+30:    "NOVAID_JWT_AUDIENCE",
+31:    "NOVAID_SIGNING_KEYS_JSON",
+32:    "NOVAID_ACTIVE_SIGNING_KEY_ID",
+33:    "NOVAID_TOKEN_PEPPER",
+34:    "NOVAID_REDIS_URL",
+60:        key, value = line.split("=", 1)
+61:        values[key.strip()] = value.strip()
+68:    missing = [key for key in required if not values.get(key)]
+73:    placeholders = [key for key, value in values.items() if value and PLACEHOLDER.search(value)]
+74:    if placeholders:
+76:            f"placeholder environment values: {', '.join(sorted(placeholders))}"
+
+11. Relevant tests
+------------------------------------------------------------
+
+===== afritech/tests/governance/__pycache__/test_production_deployment_preflight.cpython-311-pytest-9.0.3.pyc =====
+§
+    Æ¸jjÍ  ã                  óT  — d dl mZ d dlZd dlmc mZ d dlZ	d dl
+mZ d dlZ ee¦  «                             ¦   «         j        d         Zedz  Ze	j                             de¦  «        Zg ZeZer	ej        ZeZesßddd	 ej        ¦   «         v s ej        e¦  «        r ej        e¦  «        nd	iz  Ze                     e¦  «         er\d
+d	 ej        ¦   «         v s ej        e¦  «        r ej        e¦  «        nd	 ej        e¦  «        dœz  Ze                     e¦  «          ej        ed ¦  «        i z  Z dde iz  Z! e" ej#        e!¦  «        ¦  «        ‚dxZxZZe	j         $                    e¦  «        Z%ej         &                    e%¦  «         dd„Z'dd„Z(dd„Z)dd„Z*dd„Z+dS )é    )ÚannotationsN)ÚPathé   z*scripts/preflight_production_deployment.pyÚproduction_preflightz%(py2)sÚpy2ÚSPECz#%(py6)s
+{%(py6)s = %(py4)s.loader
+})Úpy4Úpy6zassert %(py9)sÚpy9ÚreturnÚNonec                 ó  — t           j                             d¬¦  «        } d}|| v }|s—t          j        d|fd|| f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd	|iz  }t          t          j
+        |¦  «        ¦  «        ‚d x}}d
+D ]Ì}|| v }|sÂt          j        d|fd|| f¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        nddt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd|iz  }t          t          j
+        |¦  «        ¦  «        ‚d }ŒÍd}|| v }|s—t          j        d|fd|| f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd	|iz  }t          t          j
+        |¦  «        ¦  «        ‚d x}}d}|| v }|s—t          j        d|fd|| f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd	|iz  }t          t          j
+        |¦  «        ¦  «        ‚d x}}d}|| v }|s—t          j        d|fd|| f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd	|iz  }t          t          j
+        |¦  «        ¦  «        ‚d x}}d}|| v }|s—t          j        d|fd|| f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd	|iz  }t          t          j
+        |¦  «        ¦  «        ‚d x}}d}|| v }|s—t          j        d|fd|| f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd	|iz  }t          t          j
+        |¦  «        ¦  «        ‚d x}}d}|| v }|s—t          j        d|fd|| f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd	|iz  }t          t          j
+        |¦  «        ¦  «        ‚d x}}d}|| v}|s—t          j        d|fd|| f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nddœz  }dd	|iz  }t          t          j
+        |¦  «        ¦  «        ‚d x}}d S )Núutf-8©Úencodingz\NOVACODEPRO_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaCodePro PostgreSQL URL required}©Úin©z%(py1)s in %(py3)sÚtext©Úpy1Úpy3úassert %(py5)sÚpy5)z$NOVAID_PERSISTENCE_BACKEND: postgreszRNOVAID_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaID PostgreSQL URL required}zCNOVAID_JWT_ISSUER: ${NOVAID_JWT_ISSUER:?NovaID JWT issuer required}z[NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}zINOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}z@NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required})z%(py0)s in %(py2)sÚmarker)Úpy0r   zassert %(py4)sr	   z secrets:
+      - eth_private_keyz target: afritech_private_key.pemztarget: afritech_public_key.pemz1name: ${AFRITECH_INFRA_NETWORK:-production_infra}z      - infrastructureúfile: ./secrets/eth_private_keyú9./secrets/eth_private_key:/run/secrets/eth_private_key:ro©únot in©z%(py1)s not in %(py3)s)Ú	preflightÚDEFAULT_COMPOSEÚ	read_textÚ
+@pytest_arÚ_call_reprcompareÚ	_safereprÚ@py_builtinsÚlocalsÚ_should_repr_global_nameÚAssertionErrorÚ_format_explanation)	r   Ú@py_assert0Ú@py_assert2Ú@py_format4Ú@py_format6r   Ú@py_assert1Ú@py_format3Ú@py_format5s	            ú`/Users/ostrinov/afritelematics/afritech/tests/governance/test_production_deployment_preflight.pyÚ@test_trust_node_uses_compose_secrets_instead_of_file_bind_mountsr5      s¼  € İÔ$×.Ò.¸Ğ.Ñ@Ô@€Dğ	Mğğ	Mà	ğğ ğ ğ õ ìğğ ğ ğ ğ	Mà	ğñ ô õ ô ğ	Mñô ğ õ ô ñô ğ ğ õ ìˆñô ğ õ ô ˆñô ğ ğ ğ ğ ñ ğ ğ ğ ğ ğ ñ ğ õ õ ìğñ ô ñ ô ğ ğ ğ ğ ğ ğğ ğ ˆğ ˜ˆ~ĞĞĞÕÔĞĞĞĞˆv˜ĞÑÔĞÕÔÑÔĞĞÕÔˆvÑÔĞÕÔˆvÑÔĞĞĞÕÔÑÔĞĞÕÔ˜ÑÔĞÕÔ˜ÑÔĞĞĞĞÑĞĞĞĞĞÑĞÕÕÔĞÑÔÑÔĞĞĞĞØ.Ğ6Ğ.°$Ğ6Ğ6Ğ6Ğ6Õ6Ô6Ğ6Ğ6Ğ6Ğ6Ğ.°$Ğ6Ñ6Ô6Õ6Ô6Ğ.Ñ6Ô6Ğ6Õ6Ô6Ñ6Ô6Ğ6Ğ6Õ6Ô6°$Ñ6Ô6Ğ6Õ6Ô6°$Ñ6Ô6Ğ6Ğ6Ğ6Ğ6Ñ6Ğ6Ğ6Ğ6Ğ6Ğ6Ñ6Ğ6Õ6Õ6Ô6Ğ6Ñ6Ô6Ñ6Ô6Ğ6Ğ6Ğ6Ğ6Ğ6Ø-Ğ5Ğ-°Ğ5Ğ5Ğ5Ğ5Õ5Ô5Ğ5Ğ5Ğ5Ğ5Ğ-°Ğ5Ñ5Ô5Õ5Ô5Ğ-Ñ5Ô5Ğ5Õ5Ô5Ñ5Ô5Ğ5Ğ5Õ5Ô5°Ñ5Ô5Ğ5Õ5Ô5°Ñ5Ô5Ğ5Ğ5Ğ5Ğ5Ñ5Ğ5Ğ5Ğ5Ğ5Ğ5Ñ5Ğ5Õ5Õ5Ô5Ğ5Ñ5Ô5Ñ5Ô5Ğ5Ğ5Ğ5Ğ5Ğ5Ø,Ğ4Ğ,°Ğ4Ğ4Ğ4Ğ4Õ4Ô4Ğ4Ğ4Ğ4Ğ4Ğ,°Ğ4Ñ4Ô4Õ4Ô4Ğ,Ñ4Ô4Ğ4Õ4Ô4Ñ4Ô4Ğ4Ğ4Õ4Ô4°Ñ4Ô4Ğ4Õ4Ô4°Ñ4Ô4Ğ4Ğ4Ğ4Ğ4Ñ4Ğ4Ğ4Ğ4Ğ4Ğ4Ñ4Ğ4Õ4Õ4Ô4Ğ4Ñ4Ô4Ñ4Ô4Ğ4Ğ4Ğ4Ğ4Ğ4Ø>ĞFĞ>À$ĞFĞFĞFĞFÕFÔFĞFĞFĞFĞFĞ>À$ĞFÑFÔFÕFÔFĞ>ÑFÔFĞFÕFÔFÑFÔFĞFĞFÕFÔFÀ$ÑFÔFĞFÕFÔFÀ$ÑFÔFĞFĞFĞFĞFÑFĞFĞFĞFĞFĞFÑFĞFÕFÕFÔFĞFÑFÔFÑFÔFĞFĞFĞFĞFĞFØ#Ğ+Ğ# tĞ+Ğ+Ğ+Ğ+Õ+Ô+Ğ+Ğ+Ğ+Ğ+Ğ# tĞ+Ñ+Ô+Õ+Ô+Ğ#Ñ+Ô+Ğ+Õ+Ô+Ñ+Ô+Ğ+Ğ+Õ+Ô+ tÑ+Ô+Ğ+Õ+Ô+ tÑ+Ô+Ğ+Ğ+Ğ+Ğ+Ñ+Ğ+Ğ+Ğ+Ğ+Ğ+Ñ+Ğ+Õ+Õ+Ô+Ğ+Ñ+Ô+Ñ+Ô+Ğ+Ğ+Ğ+Ğ+Ğ+Ø,Ğ4Ğ,°Ğ4Ğ4Ğ4Ğ4Õ4Ô4Ğ4Ğ4Ğ4Ğ4Ğ,°Ğ4Ñ4Ô4Õ4Ô4Ğ,Ñ4Ô4Ğ4Õ4Ô4Ñ4Ô4Ğ4Ğ4Õ4Ô4°Ñ4Ô4Ğ4Õ4Ô4°Ñ4Ô4Ğ4Ğ4Ğ4Ğ4Ñ4Ğ4Ğ4Ğ4Ğ4Ğ4Ñ4Ğ4Õ4Õ4Ô4Ğ4Ñ4Ô4Ñ4Ô4Ğ4Ğ4Ğ4Ğ4Ğ4ØFĞRĞFÈdĞRĞRĞRĞRÕRÔRĞRĞRĞRĞRĞFÈdĞRÑRÔRÕRÔRĞFÑRÔRĞRÕRÔRÑRÔRĞRĞRÕRÔRÈdÑRÔRĞRÕRÔRÈdÑRÔRĞRĞRĞRĞRÑRĞRĞRĞRĞRĞRÑRĞRÕRÕRÔRĞRÑRÔRÑRÔRĞRĞRĞRĞRĞRĞRĞRó    c                 óâ  — dD ]j} t           dz  | z                       d¬¦  «        }d}||v }|s—t          j        d|fd||f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndd	œz  }d
+d|iz  }t          t          j	        |¦  «        ¦  «        ‚d x}}d}||v}|s—t          j        d|fd||f¦  «        t          j        |¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndd	œz  }d
+d|iz  }t          t          j	        |¦  «        ¦  «        ‚d x}}Œld S )N)zdocker-compose.production.ymlz!docker-compose.production.tls.ymlzdocker-compose.trust-node.ymlzdeploy/productionr   r   r   r   r   r   r   r   r   r   r   r!   )
+ÚROOTr$   r%   r&   r'   r(   r)   r*   r+   r,   )Únamer   r-   r.   r/   r0   s         r4   Ú=test_all_production_compose_variants_avoid_secret_bind_mountsr:   )   sÕ  € ğğ Wñ Wˆõ
+ Ğ*Ñ*¨TÑ1×<Ò<ÀgĞ<ÑNÔNˆØ0Ğ8Ğ0°DĞ8Ğ8Ğ8Ğ8Õ8Ô8Ğ8Ğ8Ğ8Ğ8Ğ0°DĞ8Ñ8Ô8Õ8Ô8Ğ0Ñ8Ô8Ğ8Õ8Ô8Ñ8Ô8Ğ8Ğ8Õ8Ô8°DÑ8Ô8Ğ8Õ8Ô8°DÑ8Ô8Ğ8Ğ8Ğ8Ğ8Ñ8Ğ8Ğ8Ğ8Ğ8Ğ8Ñ8Ğ8Õ8Õ8Ô8Ğ8Ñ8Ô8Ñ8Ô8Ğ8Ğ8Ğ8Ğ8Ğ8ØJĞVĞJĞRVĞVĞVĞVĞVÕVÔVĞVĞVĞVĞVĞJĞRVĞVÑVÔVÕVÔVĞJÑVÔVĞVÕVÔVÑVÔVĞVĞVÕVÔVĞRVÑVÔVĞVÕVÔVĞRVÑVÔVĞVĞVĞVĞVÑVĞVĞVĞVĞVĞVÑVĞVÕVÕVÔVĞVÑVÔVÑVÔVĞVĞVĞVĞVĞVÑVğWğ Wr6   c                 ó¬  — t           dz                       d¬¦  «        } t          j        D ]¨}|› d}|| v }|s—t	          j        d|fd|| f¦  «        t	          j        |¦  «        dt          j        ¦   «         v st	          j	        | ¦  «        rt	          j        | ¦  «        nddœz  }d	d
+|iz  }t          t	          j        |¦  «        ¦  «        ‚d x}}Œ©d S )Nz4deploy/production/.env.production.trust-node.exampler   r   ú=r   r   r   r   r   r   )r8   r$   r"   Ú
+REGION_ENVr%   r&   r'   r(   r)   r*   r+   r,   )r   Úkeyr-   r.   r/   r0   s         r4   Ú:test_environment_template_declares_regional_overlay_inputsr?   4   s  € åĞEÑEß‚i˜€iÑ!Ô!ğ 	õ Ô#ğ !ğ !ˆØˆyˆyˆyĞ ˆy˜DĞ Ğ Ğ Ğ Õ Ô Ğ Ğ Ğ Ğ ˆy˜DĞ Ñ Ô Õ Ô ˆyÑ Ô Ğ Õ Ô Ñ Ô Ğ Ğ Õ Ô ˜DÑ Ô Ğ Õ Ô ˜DÑ Ô Ğ Ğ Ğ Ğ Ñ Ğ Ğ Ğ Ğ Ğ Ñ Ğ Õ Õ Ô Ğ Ñ Ô Ñ Ô Ğ Ğ Ğ Ğ Ğ Ğ ğ!ğ !r6   Útmp_pathr   c                ó8  — | dz  }|                      d                     d„ t          j        D ¦   «         ¦  «        dz   d¬¦  «         t	          j        t          j        d¬¦  «        5  t                               |¦  «         d d d ¦  «         d S # 1 swxY w Y   d S )	Nz.envú
+c              3  ó    K  — | ]	}|› d V — Œ
+dS )z=valid-valueN© )Ú.0r>   s     r4   ú	<genexpr>zAtest_preflight_rejects_placeholder_environment.<locals>.<genexpr>?   s+   è è € ĞIĞI¨3SĞ&Ğ&Ğ&ĞIĞIĞIĞIĞIĞIr6   z(
+AFRITECH_DOMAIN=trust.afritech.example
+r   r   zplaceholder environment values©Úmatch)Ú
+write_textÚjoinr"   ÚREQUIRED_ENVÚpytestÚraisesÚDeploymentConfigurationErrorÚvalidate_env)r@   Úenv_files     r4   Ú.test_preflight_rejects_placeholder_environmentrQ   <   sñ   € Ø˜&Ñ €HØ×ÒØ	Š	ĞIĞIµ)Ô2HĞIÑIÔIÑIÔIØ
+6ñ	7àğ ñ ô ğ õ
+ 
+ŒİÔ.Ø.ğ
+ñ 
+ô 
+ğ )ğ )õ 	×Ò˜xÑ(Ô(Ğ(ğ	)ğ )ğ )ñ )ô )ğ )ğ )ğ )ğ )ğ )ğ )ğ )øøøğ )ğ )ğ )ğ )ğ )ğ )s   Á'BÂBÂBc                ó  — | dz  }|                      dd¬¦  «         |                     d¦  «         | dz  }t          j        t          j        d¬¦  «        5  t                               ||f¦  «         d d d ¦  «         d S # 1 swxY w Y   d S )	Nzprivate-keyznot-a-real-keyr   r   i¤  zmissing-keyz#insecure mode.*missing regular filerG   )rI   ÚchmodrL   rM   r"   rN   Úvalidate_secret_files)r@   ÚinsecureÚmissings      r4   Ú8test_preflight_rejects_missing_and_insecure_secret_filesrW   J   sá   € Ø˜-Ñ'€HØ×ÒĞ(°7ĞÑ;Ô;Ğ;Ø‡N‚N5ÑÔĞØ˜Ñ&€Gİ	ŒİÔ.Ø3ğ
+ñ 
+ô 
+ğ =ğ =õ 	×'Ò'¨°7Ğ(;Ñ<Ô<Ğ<ğ	=ğ =ğ =ñ =ô =ğ =ğ =ğ =ğ =ğ =ğ =ğ =øøøğ =ğ =ğ =ğ =ğ =ğ =s   ÁBÂBÂB)r   r   )r@   r   r   r   ),Ú
+__future__r   Úbuiltinsr(   Ú_pytest.assertion.rewriteÚ	assertionÚrewriter%   Úimportlib.utilÚ	importlibÚpathlibr   rL   Ú__file__ÚresolveÚparentsr8   ÚMODULE_PATHÚutilÚspec_from_file_locationr   r1   r-   ÚloaderÚ@py_assert5r)   r*   r'   r2   ÚappendÚ@py_format7Ú_format_boolopÚ@py_format8Ú@py_format10r+   r,   Úmodule_from_specr"   Úexec_moduler5   r:   r?   rQ   rW   rD   r6   r4   ú<module>ro      s©  ğØ "Ğ "Ğ "Ğ "Ğ "Ğ "à  € € € € € € € € € € € € Ğ Ğ Ğ Ğ Ø Ğ Ğ Ğ Ğ Ğ à €€€ğ €tˆH~„~×ÒÑÔÔ'¨Ô*€ØĞAÑA€Ø„~×-Ò-Ğ.DÀkÑRÔR€Ø Ğ €tĞ €tĞ ”Ğ Ğ Ğ Ğ Ğ Ğ Ğ Ğ Ğ Ô Ñ Ô Ğ Ğ Ğ Ğ Ô €tÑ Ô Ğ Ğ Ğ Ô €tÑ Ô Ğ Ğ Ğ Ñ Ğ Ğ × Ò Ğ Ñ Ô Ğ €tĞ Ğ Ğ Ğ Ğ Ô Ñ Ô Ğ Ğ Ğ Ğ Ô Ñ Ô Ğ Ğ Ğ Ô Ñ Ô Ğ Ğ Ğ Ğ Ô Ñ Ô Ğ Ğ Ñ Ğ Ğ × Ò Ğ Ñ Ô Ğ Ğ Ğ Ô Ğ Ğ Ñ Ô Ğ Ñ Ğ Ğ Ğ Ğ Ğ Ñ Ğ Ğ Ğ Ğ Ğ Ô Ğ Ñ Ô Ñ Ô Ğ Ğ Ğ Ğ Ğ Ğ Ğ ØŒN×+Ò+¨DÑ1Ô1€	Ø „× Ò ˜	Ñ "Ô "Ğ "ğSğ Sğ Sğ Sğ0Wğ Wğ Wğ Wğ!ğ !ğ !ğ !ğ)ğ )ğ )ğ )ğ	=ğ 	=ğ 	=ğ 	=ğ 	=ğ 	=r6   
+===== afritech/tests/governance/test_production_deployment_preflight.py =====
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+import pytest
+
+
+ROOT = Path(__file__).resolve().parents[3]
+MODULE_PATH = ROOT / "scripts/preflight_production_deployment.py"
+SPEC = importlib.util.spec_from_file_location("production_preflight", MODULE_PATH)
+assert SPEC and SPEC.loader
+preflight = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(preflight)
+
+
+def test_trust_node_uses_compose_secrets_instead_of_file_bind_mounts() -> None:
+    text = preflight.DEFAULT_COMPOSE.read_text(encoding="utf-8")
+    assert (
+        "NOVACODEPRO_DATABASE_URL: "
+        "${NOVATECH_CORE_DATABASE_URL:?NovaCodePro PostgreSQL URL required}"
+    ) in text
+    for marker in (
+        "NOVAID_PERSISTENCE_BACKEND: postgres",
+        "NOVAID_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaID PostgreSQL URL required}",
+        "NOVAID_JWT_ISSUER: ${NOVAID_JWT_ISSUER:?NovaID JWT issuer required}",
+        "NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}",
+        "NOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}",
+        "NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required}",
+    ):
+        assert marker in text
+    assert "secrets:\n      - eth_private_key" in text
+    assert "target: afritech_private_key.pem" in text
+    assert "target: afritech_public_key.pem" in text
+    assert "name: ${AFRITECH_INFRA_NETWORK:-production_infra}" in text
+    assert "      - infrastructure" in text
+    assert "file: ./secrets/eth_private_key" in text
+    assert "./secrets/eth_private_key:/run/secrets/eth_private_key:ro" not in text
+
+
+def test_all_production_compose_variants_avoid_secret_bind_mounts() -> None:
+    for name in (
+        "docker-compose.production.yml",
+        "docker-compose.production.tls.yml",
+        "docker-compose.trust-node.yml",
+    ):
+        text = (ROOT / "deploy/production" / name).read_text(encoding="utf-8")
+        assert "file: ./secrets/eth_private_key" in text
+        assert "./secrets/eth_private_key:/run/secrets/eth_private_key:ro" not in text
+
+
+def test_environment_template_declares_regional_overlay_inputs() -> None:
+    text = (
+        ROOT / "deploy/production/.env.production.trust-node.example"
+    ).read_text(encoding="utf-8")
+    for key in preflight.REGION_ENV:
+        assert f"{key}=" in text
+
+
+def test_preflight_rejects_placeholder_environment(tmp_path: Path) -> None:
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "\n".join(f"{key}=valid-value" for key in preflight.REQUIRED_ENV)
+        + "\nAFRITECH_DOMAIN=trust.afritech.example\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(
+        preflight.DeploymentConfigurationError,
+        match="placeholder environment values",
+    ):
+        preflight.validate_env(env_file)
+
+
+def test_preflight_rejects_missing_and_insecure_secret_files(tmp_path: Path) -> None:
+    insecure = tmp_path / "private-key"
+    insecure.write_text("not-a-real-key", encoding="utf-8")
+    insecure.chmod(0o644)
+    missing = tmp_path / "missing-key"
+    with pytest.raises(
+        preflight.DeploymentConfigurationError,
+        match="insecure mode.*missing regular file",
+    ):
+        preflight.validate_secret_files((insecure, missing))
+
+===== tests/novaid/__pycache__/redis_phase5f_probe.cpython-311.pyc =====
+§
+    í [j±
+  ã            
+       ó´  — d Z ddlmZmZmZ ddlZddlZddlmZ ddlZddl	Z	ddl
+mZ ddlmZ ddlmZmZ ej        d         ej        d	         ej        d
+         cZZZedk    rä e e¦   «         ¦  «         e e¦   «         ¦  «         ej        e¦  «        cZZZ ej        e¦  «        5 Ze                     deeef¦  «         ddd¦  «         n# 1 swxY w Y    ee¦  «        Ze5   ee¦  «                             edded
+ddi¬¦  «         ddd¦  «         n# 1 swxY w Y   e                     ¦   «           e d¦  «         dS edk    r¹ ee¦  «        Z e ee¦  «        e	j!         "                    ed¬¦  «        d¬¦  «        Z#e# $                    ¦   «         dk    sJ ‚ej                             d¦  «         %                    ¦   «         Z&e&d         dk    sJ ‚ e de#j'        › ¦  «         e                     ¦   «          dS edk    rIe	j!         "                    ed¬¦  «         ee¦  «        cZ(Ze5  ej                             d ej        e¦  «         ed
+¬¦  «        z
+   )                    ¦   «          ej        e¦  «         ed
+¬¦  «        z
+   )                    ¦   «         f¦  «         ddd¦  «         n# 1 swxY w Y    e ee¦  «        e(d¬¦  «        Z#e# $                    ¦   «         d
+k    sJ ‚e( *                    ¦   «           ee(e¬ ¦  «         +                    ¦   «         Z,e,dk    sJ ‚ e d!e,› ¦  «         e                     ¦   «          dS dS )"z4Manual real-Redis outage/recovery certificate probe.é    )ÚUTCÚdatetimeÚ	timedeltaN)Úuuid4)ÚRevocationOutbox)ÚPostgresNovaIdUnitOfWork)ÚRevocationConsumerÚRevocationPublisherÚNOVAID_TEST_DATABASE_URLÚNOVAID_TEST_REDIS_URLé   ÚpreparezoINSERT INTO novaid_tenants(tenant_id,name,status,created_at,updated_at) VALUES(%s,'Redis Probe','ACTIVE',%s,%s)ÚSESSION_REVOKEDÚSESSIONÚreasonÚphase5f_probe)Ú	tenant_idÚ
+event_typeÚresource_typeÚresource_idÚevent_versionÚpayloadÚpreparedÚfailT)Údecode_responseszphase5f-failure)Úinstance_idzsSELECT status FROM novaid_security_outbox WHERE payload->>'reason'='phase5f_probe' ORDER BY created_at DESC LIMIT 1ÚstatusÚFAILEDz&outage_retained status=FAILED retries=Úrecoverz•UPDATE novaid_security_outbox SET next_attempt_at=?,available_at=?,lease_expires_at=NULL WHERE payload->>'reason'='phase5f_probe' AND status='FAILED')Úsecondszphase5f-recovery)Úuowzrecovered published=1 rebuilt=)-Ú__doc__r   r   r   ÚosÚsysÚuuidr   ÚpsycopgÚredisÚafritech.novaid.outboxr   Ú$afritech.novaid.persistence.postgresr   Ú#afritech.novaid.revocation_deliveryr	   r
+   ÚenvironÚargvÚdsnÚ	redis_urlÚmodeÚstrÚnowÚtenantÚresourceÚconnectÚ
+connectionÚexecuter!   ÚenqueueÚcloseÚprintÚRedisÚfrom_urlÚ	publisherÚpublish_onceÚfetchoneÚrowÚretriesÚclientÚ	isoformatÚflushdbÚrebuild_from_databaseÚrebuilt© ó    ú#tests/novaid/redis_phase5f_probe.pyú<module>rI      s  ğØ :Ğ :à -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ø 	€	€	€	Ø 
+€
+€
+€
+Ø Ğ Ğ Ğ Ğ Ğ à €€€Ø €€€à 3Ğ 3Ğ 3Ğ 3Ğ 3Ğ 3Ø IĞ IĞ IĞ IĞ IĞ IØ WĞ WĞ WĞ WĞ WĞ WĞ WĞ Wğ „JĞ)Ô*Ø„JĞ&Ô'Ø„HˆQ„Kğ €€Yğ
+ ˆ9ÒĞØ˜C  ¡¤™LœL¨#¨#¨e¨e©g¬g©,¬,¸¸¼ÀSÑ8IÔ8IĞ€FˆHcØ	ˆŒ˜Ñ	Ô	ğ 
+ Ø×Òğ6àS˜#Ğñ	
+ô 	
+ğ 	
+ğ
+ğ 
+ğ 
+ñ 
+ô 
+ğ 
+ğ 
+ğ 
+ğ 
+ğ 
+ğ 
+øøøğ 
+ğ 
+ğ 
+ğ 
+ğ #Ğ
+" 3Ñ
+'Ô
+'€CØ	ğ 
+ğ 
+ØĞ˜ÑÔ×%Ò%ØØ(Ø#Ø ØØ˜Ğ/ğ 	&ñ 	
+ô 	
+ğ 	
+ğ
+ğ 
+ğ 
+ñ 
+ô 
+ğ 
+ğ 
+ğ 
+ğ 
+ğ 
+ğ 
+øøøğ 
+ğ 
+ğ 
+ğ 
+ğ ‡I‚IK„K€KØ	€Eˆ*ÑÔĞĞĞØ	ˆV‚^€^Ø
+"Ğ
+" 3Ñ
+'Ô
+'€CØ#Ğ#ØĞ˜ÑÔØŒ×Ò˜Y¸ĞÑ>Ô>Ø%ğñ ô €Iğ
+ ×!Ò!Ñ#Ô# qÒ(Ğ(Ğ(Ğ(Ø
+Œ.×
+ Ò
+ ğ	+ñô ÷ ‚hj„jğ ğ ˆxŒ=˜HÒ$Ğ$Ğ$Ğ$Ø	€EĞ
+F°9Ô3DĞ
+FĞ
+FÑGÔGĞGØ‡I‚IK„K€K€K€KØ	ˆYÒÑàŒ×Ò˜Y¸ĞÑ>Ô>Ø Ğ  Ñ%Ô%ğ €FˆCğ 
+ğ 	
+ğ 	
+ØŒ×ÒğKğ ”˜cÑ"Ô" Y Y°qĞ%9Ñ%9Ô%9Ñ9×DÒDÑFÔFØ”˜cÑ"Ô" Y Y°qĞ%9Ñ%9Ô%9Ñ9×DÒDÑFÔFğñ		
+ô 	
+ğ 	
+ğ	
+ğ 	
+ğ 	
+ñ 	
+ô 	
+ğ 	
+ğ 	
+ğ 	
+ğ 	
+ğ 	
+ğ 	
+øøøğ 	
+ğ 	
+ğ 	
+ğ 	
+ğ $Ğ#Ğ$4Ğ$4°SÑ$9Ô$9¸6ĞOaĞbÑbÔb€IØ×!Ò!Ñ#Ô# qÒ(Ğ(Ğ(Ğ(Ø
+‡N‚NÑÔĞØ Ğ  ¨SĞ1Ñ1Ô1×GÒGÑIÔI€GØQŠ;ˆ;ˆ;ˆ;Ø	€EĞ
+4¨7Ğ
+4Ğ
+4Ñ5Ô5Ğ5Ø‡I‚IK„K€K€K€Kğ+ Ğs7   Â,CÃCÃCÃ*'DÄD!Ä$D!È9A8J=Ê=KËK
+===== tests/novaid/__pycache__/test_phase5a_redis_integration.cpython-311-pytest-9.0.3.pyc =====
+§
+    Şi[jl  ã                   ó²   — d dl Zd dlmc mZ d dlmZmZmZ d dl	Z	d dl
+Z
+d dlmZ  e	j        d¦  «        Ze
+j                             e d¬¦  «        Zd	d„ZdS )
+é    N)ÚUTCÚdatetimeÚ	timedelta)ÚRedisRevocationStoreÚNOVAID_TEST_REDIS_URLz!NOVAID_TEST_REDIS_URL unavailable)ÚreasonÚreturnc                  óÄ	  ‡— t          j        d¦  «        } | j                             t          d¬¦  «        }| j                             t          d¬¦  «        Š|                     ¦   «          t          |¦  «        t          ‰¦  «        }}t          j        t          ¦  «        t          d¬¦  «        z   }|                     dd|¦  «         |                     dd|¦  «         |j        }d}d} |||¦  «        }|s±d	d
+t          j        ¦   «         v st!          j        |¦  «        rt!          j        |¦  «        nd
+t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        dœz  }	t'          t!          j        |	¦  «        ¦  «        ‚d x}x}x}}|j        }d}d} |||¦  «        }|s±dd
+t          j        ¦   «         v st!          j        |¦  «        rt!          j        |¦  «        nd
+t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        dœz  }	t'          t!          j        |	¦  «        ¦  «        ‚d x}x}x}}|j        }d}d} |||¦  «        }| }
+|
+s±dd
+t          j        ¦   «         v st!          j        |¦  «        rt!          j        |¦  «        nd
+t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        dœz  }t'          t!          j        |¦  «        ¦  «        ‚d x}x}x}x}}
+‰                     d¦  «        }d„ |D ¦   «         }t/          |¦  «        }|s•ddt          j        ¦   «         v st!          j        t.          ¦  «        rt!          j        t.          ¦  «        ndt!          j        |¦  «        t!          j        |¦  «        dœz  }t'          t!          j        |¦  «        ¦  «        ‚d x}}ˆfd„|D ¦   «         }t/          |¦  «        }|s•ddt          j        ¦   «         v st!          j        t.          ¦  «        rt!          j        t.          ¦  «        ndt!          j        |¦  «        t!          j        |¦  «        dœz  }t'          t!          j        |¦  «        ¦  «        ‚d x}}d S )NÚredisT)Údecode_responsesé   )Úminutesztenant-az	session-azfamily-az]assert %(py8)s
+{%(py8)s = %(py2)s
+{%(py2)s = %(py0)s.is_session_revoked
+}(%(py4)s, %(py6)s)
+}Úreader)Úpy0Úpy2Úpy4Úpy6Úpy8z\assert %(py8)s
+{%(py8)s = %(py2)s
+{%(py2)s = %(py0)s.is_family_revoked
+}(%(py4)s, %(py6)s)
+}ztenant-bzaassert not %(py8)s
+{%(py8)s = %(py2)s
+{%(py2)s = %(py0)s.is_session_revoked
+}(%(py4)s, %(py6)s)
+}Ú*c              3   ó.   K  — | ]}d |vod|vod|vV — ŒdS )ÚtokenÚpasswordÚotpN© )Ú.0Úkeys     úM/Users/ostrinov/afritelematics/tests/novaid/test_phase5a_redis_integration.pyú	<genexpr>zCtest_two_clients_observe_tenant_bound_revocation.<locals>.<genexpr>   s<   è è € ĞaĞaĞUXˆw˜cĞ!ĞP j¸Ğ&;ĞPÀÈSĞ@PĞaĞaĞaĞaĞaĞaó    z,assert %(py4)s
+{%(py4)s = %(py0)s(%(py2)s)
+}Úall)r   r   r   c              3   ó^   •K  — | ]'}d ‰                      |¦  «        cxk     odk    nc V — Œ(dS )r   i,  N)Úttl)r   r   Úseconds     €r   r   zCtest_two_clients_observe_tenant_bound_revocation.<locals>.<genexpr>   sI   øè è € Ğ:Ğ:¨cˆq6—:’:˜c‘?”?Ğ)Ğ)Ò)Ğ) cÒ)Ğ)Ğ)Ğ)Ğ:Ğ:Ğ:Ğ:Ğ:Ğ:r   )ÚpytestÚimportorskipÚRedisÚfrom_urlÚURLÚflushdbr   r   Únowr   r   Úrevoke_sessionÚrevoke_familyÚis_session_revokedÚ@py_builtinsÚlocalsÚ
+@pytest_arÚ_should_repr_global_nameÚ	_safereprÚAssertionErrorÚ_format_explanationÚis_family_revokedÚkeysr    )r   ÚfirstÚwriterr   ÚexpiryÚ@py_assert1Ú@py_assert3Ú@py_assert5Ú@py_assert7Ú@py_format9Ú@py_assert9Ú@py_format10r6   Ú@py_format5r#   s                 @r   Ú0test_two_clients_observe_tenant_bound_revocationrB      sü  ø€ İÔ Ñ(Ô(€EØŒK× Ò ¥°tĞ Ñ<Ô<€EØŒ[×!Ò!¥#¸Ğ!Ñ=Ô=€FØ	‡M‚MO„O€Oİ)¨%Ñ0Ô0Õ2FÀvÑ2NÔ2NˆF€FİŒ\#ÑÔ¥°1Ğ!5Ñ!5Ô!5Ñ5€FØ
+×Ò˜* k°6Ñ:Ô:Ğ:Ø
+×Ò˜ Z°Ñ8Ô8Ğ8ØÔ$Ğ= ZĞ=°Ğ=Ğ$Ğ$ Z°Ñ=Ô=Ğ=Ğ=Ğ=Ğ=Ğ=Õ=Ô=Ñ=Ô=Ğ=Ğ=Õ=Ô=ˆ6Ñ=Ô=Ğ=Õ=Ô=ˆ6Ñ=Ô=Ğ=Ğ=Õ=Ô=Ğ$Ñ=Ô=Õ=Ô= ZÑ=Ô=Õ=Ô=°Ñ=Ô=Õ=Ô=Ğ=Ñ=Ô=Ğ=Ğ=Ñ=Ğ=Õ=Õ=Ô=Ğ=Ñ=Ô=Ñ=Ô=Ğ=Ğ=Ğ=Ğ=Ğ=Ğ=Ğ=Ğ=Ğ=ØÔ#Ğ; JĞ;°
+Ğ;Ğ#Ğ# J°
+Ñ;Ô;Ğ;Ğ;Ğ;Ğ;Ğ;Õ;Ô;Ñ;Ô;Ğ;Ğ;Õ;Ô;ˆ6Ñ;Ô;Ğ;Õ;Ô;ˆ6Ñ;Ô;Ğ;Ğ;Õ;Ô;Ğ#Ñ;Ô;Õ;Ô; JÑ;Ô;Õ;Ô;°
+Ñ;Ô;Õ;Ô;Ğ;Ñ;Ô;Ğ;Ğ;Ñ;Ğ;Õ;Õ;Ô;Ğ;Ñ;Ô;Ñ;Ô;Ğ;Ğ;Ğ;Ğ;Ğ;Ğ;Ğ;Ğ;Ğ;ØÔ(ĞA¨ĞA°[ĞAĞ(Ğ(¨°[ÑAÔAĞAĞAĞAĞAĞAĞAĞAĞAÕAÔAÑAÔAĞAĞAÕAÔAˆvÑAÔAĞAÕAÔAˆvÑAÔAĞAĞAÕAÔAĞ(ÑAÔAÕAÔA¨ÑAÔAÕAÔA°[ÑAÔAÕAÔAĞAÑAÔAĞAĞAÑAĞAÕAÕAÔAĞAÑAÔAÑAÔAĞAĞAĞAĞAĞAĞAĞAĞAĞAĞAĞAØ;Š;sÑÔ€DØaĞaĞ\`ĞaÑaÔaĞa3ĞaÑaÔaĞaĞaĞaĞaĞaÕaÔaÑaÔaĞaĞaÕaÔa3ÑaÔaĞaÕaÔa3ÑaÔaĞaĞaÕaÔaĞaÑaÔaÕaÔaĞaÑaÔaĞaĞaÑaĞaÕaÕaÔaĞaÑaÔaÑaÔaĞaĞaĞaĞaĞaØ:Ğ:Ğ:Ğ:°TĞ:Ñ:Ô:Ğ:3Ğ:Ñ:Ô:Ğ:Ğ:Ğ:Ğ:Ğ:Õ:Ô:Ñ:Ô:Ğ:Ğ:Õ:Ô:3Ñ:Ô:Ğ:Õ:Ô:3Ñ:Ô:Ğ:Ğ:Õ:Ô:Ğ:Ñ:Ô:Õ:Ô:Ğ:Ñ:Ô:Ğ:Ğ:Ñ:Ğ:Õ:Õ:Ô:Ğ:Ñ:Ô:Ñ:Ô:Ğ:Ğ:Ğ:Ğ:Ğ:Ğ:Ğ:r   )r	   N)Úbuiltinsr.   Ú_pytest.assertion.rewriteÚ	assertionÚrewriter0   r   r   r   Úosr$   Úafritech.novaid.revocationr   Úgetenvr(   ÚmarkÚskipifÚ
+pytestmarkrB   r   r   r   ú<module>rM      s±   ğØ  € € € € € € € € € € € € Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ø 	€	€	€	à €€€à ;Ğ ;Ğ ;Ğ ;Ğ ;Ğ ;ğ €b„iĞ'Ñ(Ô(€ØŒ[×Ò C Ğ0SĞÑTÔT€
+ğ;ğ ;ğ ;ğ ;ğ ;ğ ;r   
+===== tests/novaid/__pycache__/test_phase5a_redis_integration.cpython-311-pytest-9.1.1.pyc =====
+§
+    Şi[jl  ã                   ó²   — d dl Zd dlmc mZ d dlmZmZmZ d dl	Z	d dl
+Z
+d dlmZ  e	j        d¦  «        Ze
+j                             e d¬¦  «        Zd	d„ZdS )
+é    N)ÚUTCÚdatetimeÚ	timedelta)ÚRedisRevocationStoreÚNOVAID_TEST_REDIS_URLz!NOVAID_TEST_REDIS_URL unavailable)ÚreasonÚreturnc                  óÄ	  ‡— t          j        d¦  «        } | j                             t          d¬¦  «        }| j                             t          d¬¦  «        Š|                     ¦   «          t          |¦  «        t          ‰¦  «        }}t          j        t          ¦  «        t          d¬¦  «        z   }|                     dd|¦  «         |                     dd|¦  «         |j        }d}d} |||¦  «        }|s±d	d
+t          j        ¦   «         v st!          j        |¦  «        rt!          j        |¦  «        nd
+t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        dœz  }	t'          t!          j        |	¦  «        ¦  «        ‚d x}x}x}}|j        }d}d} |||¦  «        }|s±dd
+t          j        ¦   «         v st!          j        |¦  «        rt!          j        |¦  «        nd
+t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        dœz  }	t'          t!          j        |	¦  «        ¦  «        ‚d x}x}x}}|j        }d}d} |||¦  «        }| }
+|
+s±dd
+t          j        ¦   «         v st!          j        |¦  «        rt!          j        |¦  «        nd
+t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        t!          j        |¦  «        dœz  }t'          t!          j        |¦  «        ¦  «        ‚d x}x}x}x}}
+‰                     d¦  «        }d„ |D ¦   «         }t/          |¦  «        }|s•ddt          j        ¦   «         v st!          j        t.          ¦  «        rt!          j        t.          ¦  «        ndt!          j        |¦  «        t!          j        |¦  «        dœz  }t'          t!          j        |¦  «        ¦  «        ‚d x}}ˆfd„|D ¦   «         }t/          |¦  «        }|s•ddt          j        ¦   «         v st!          j        t.          ¦  «        rt!          j        t.          ¦  «        ndt!          j        |¦  «        t!          j        |¦  «        dœz  }t'          t!          j        |¦  «        ¦  «        ‚d x}}d S )NÚredisT)Údecode_responsesé   )Úminutesztenant-az	session-azfamily-az]assert %(py8)s
+{%(py8)s = %(py2)s
+{%(py2)s = %(py0)s.is_session_revoked
+}(%(py4)s, %(py6)s)
+}Úreader)Úpy0Úpy2Úpy4Úpy6Úpy8z\assert %(py8)s
+{%(py8)s = %(py2)s
+{%(py2)s = %(py0)s.is_family_revoked
+}(%(py4)s, %(py6)s)
+}ztenant-bzaassert not %(py8)s
+{%(py8)s = %(py2)s
+{%(py2)s = %(py0)s.is_session_revoked
+}(%(py4)s, %(py6)s)
+}Ú*c              3   ó.   K  — | ]}d |vod|vod|vV — ŒdS )ÚtokenÚpasswordÚotpN© )Ú.0Úkeys     úM/Users/ostrinov/afritelematics/tests/novaid/test_phase5a_redis_integration.pyú	<genexpr>zCtest_two_clients_observe_tenant_bound_revocation.<locals>.<genexpr>   s<   è è € ĞaĞaĞUXˆw˜cĞ!ĞP j¸Ğ&;ĞPÀÈSĞ@PĞaĞaĞaĞaĞaĞaó    z,assert %(py4)s
+{%(py4)s = %(py0)s(%(py2)s)
+}Úall)r   r   r   c              3   ó^   •K  — | ]'}d ‰                      |¦  «        cxk     odk    nc V — Œ(dS )r   i,  N)Úttl)r   r   Úseconds     €r   r   zCtest_two_clients_observe_tenant_bound_revocation.<locals>.<genexpr>   sI   øè è € Ğ:Ğ:¨cˆq6—:’:˜c‘?”?Ğ)Ğ)Ò)Ğ) cÒ)Ğ)Ğ)Ğ)Ğ:Ğ:Ğ:Ğ:Ğ:Ğ:r   )ÚpytestÚimportorskipÚRedisÚfrom_urlÚURLÚflushdbr   r   Únowr   r   Úrevoke_sessionÚrevoke_familyÚis_session_revokedÚ@py_builtinsÚlocalsÚ
+@pytest_arÚ_should_repr_global_nameÚ	_safereprÚAssertionErrorÚ_format_explanationÚis_family_revokedÚkeysr    )r   ÚfirstÚwriterr   ÚexpiryÚ@py_assert1Ú@py_assert3Ú@py_assert5Ú@py_assert7Ú@py_format9Ú@py_assert9Ú@py_format10r6   Ú@py_format5r#   s                 @r   Ú0test_two_clients_observe_tenant_bound_revocationrB      sü  ø€ İÔ Ñ(Ô(€EØŒK× Ò ¥°tĞ Ñ<Ô<€EØŒ[×!Ò!¥#¸Ğ!Ñ=Ô=€FØ	‡M‚MO„O€Oİ)¨%Ñ0Ô0Õ2FÀvÑ2NÔ2NˆF€FİŒ\#ÑÔ¥°1Ğ!5Ñ!5Ô!5Ñ5€FØ
+×Ò˜* k°6Ñ:Ô:Ğ:Ø
+×Ò˜ Z°Ñ8Ô8Ğ8ØÔ$Ğ= ZĞ=°Ğ=Ğ$Ğ$ Z°Ñ=Ô=Ğ=Ğ=Ğ=Ğ=Ğ=Õ=Ô=Ñ=Ô=Ğ=Ğ=Õ=Ô=ˆ6Ñ=Ô=Ğ=Õ=Ô=ˆ6Ñ=Ô=Ğ=Ğ=Õ=Ô=Ğ$Ñ=Ô=Õ=Ô= ZÑ=Ô=Õ=Ô=°Ñ=Ô=Õ=Ô=Ğ=Ñ=Ô=Ğ=Ğ=Ñ=Ğ=Õ=Õ=Ô=Ğ=Ñ=Ô=Ñ=Ô=Ğ=Ğ=Ğ=Ğ=Ğ=Ğ=Ğ=Ğ=Ğ=ØÔ#Ğ; JĞ;°
+Ğ;Ğ#Ğ# J°
+Ñ;Ô;Ğ;Ğ;Ğ;Ğ;Ğ;Õ;Ô;Ñ;Ô;Ğ;Ğ;Õ;Ô;ˆ6Ñ;Ô;Ğ;Õ;Ô;ˆ6Ñ;Ô;Ğ;Ğ;Õ;Ô;Ğ#Ñ;Ô;Õ;Ô; JÑ;Ô;Õ;Ô;°
+Ñ;Ô;Õ;Ô;Ğ;Ñ;Ô;Ğ;Ğ;Ñ;Ğ;Õ;Õ;Ô;Ğ;Ñ;Ô;Ñ;Ô;Ğ;Ğ;Ğ;Ğ;Ğ;Ğ;Ğ;Ğ;Ğ;ØÔ(ĞA¨ĞA°[ĞAĞ(Ğ(¨°[ÑAÔAĞAĞAĞAĞAĞAĞAĞAĞAÕAÔAÑAÔAĞAĞAÕAÔAˆvÑAÔAĞAÕAÔAˆvÑAÔAĞAĞAÕAÔAĞ(ÑAÔAÕAÔA¨ÑAÔAÕAÔA°[ÑAÔAÕAÔAĞAÑAÔAĞAĞAÑAĞAÕAÕAÔAĞAÑAÔAÑAÔAĞAĞAĞAĞAĞAĞAĞAĞAĞAĞAĞAØ;Š;sÑÔ€DØaĞaĞ\`ĞaÑaÔaĞa3ĞaÑaÔaĞaĞaĞaĞaĞaÕaÔaÑaÔaĞaĞaÕaÔa3ÑaÔaĞaÕaÔa3ÑaÔaĞaĞaÕaÔaĞaÑaÔaÕaÔaĞaÑaÔaĞaĞaÑaĞaÕaÕaÔaĞaÑaÔaÑaÔaĞaĞaĞaĞaĞaØ:Ğ:Ğ:Ğ:°TĞ:Ñ:Ô:Ğ:3Ğ:Ñ:Ô:Ğ:Ğ:Ğ:Ğ:Ğ:Õ:Ô:Ñ:Ô:Ğ:Ğ:Õ:Ô:3Ñ:Ô:Ğ:Õ:Ô:3Ñ:Ô:Ğ:Ğ:Õ:Ô:Ğ:Ñ:Ô:Õ:Ô:Ğ:Ñ:Ô:Ğ:Ğ:Ñ:Ğ:Õ:Õ:Ô:Ğ:Ñ:Ô:Ñ:Ô:Ğ:Ğ:Ğ:Ğ:Ğ:Ğ:Ğ:r   )r	   N)Úbuiltinsr.   Ú_pytest.assertion.rewriteÚ	assertionÚrewriter0   r   r   r   Úosr$   Úafritech.novaid.revocationr   Úgetenvr(   ÚmarkÚskipifÚ
+pytestmarkrB   r   r   r   ú<module>rM      s±   ğØ  € € € € € € € € € € € € Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ø 	€	€	€	à €€€à ;Ğ ;Ğ ;Ğ ;Ğ ;Ğ ;ğ €b„iĞ'Ñ(Ô(€ØŒ[×Ò C Ğ0SĞÑTÔT€
+ğ;ğ ;ğ ;ğ ;ğ ;ğ ;r   
+===== tests/novaid/__pycache__/test_phase5a_redis_integration.cpython-311.pyc =====
+§
+    Şi[jl  ã                   ó˜   — d dl mZm Z mZ d dlZd dlZd dlmZ  ej        d¦  «        Zej	         
+                    e d¬¦  «        Zd	d„ZdS )
+é    )ÚUTCÚdatetimeÚ	timedeltaN)ÚRedisRevocationStoreÚNOVAID_TEST_REDIS_URLz!NOVAID_TEST_REDIS_URL unavailable)ÚreasonÚreturnc                  óò  ‡— t          j        d¦  «        } | j                             t          d¬¦  «        }| j                             t          d¬¦  «        Š|                     ¦   «          t          |¦  «        t          ‰¦  «        }}t          j        t          ¦  «        t          d¬¦  «        z   }|                     dd|¦  «         |                     dd|¦  «         |                     dd¦  «        sJ ‚|                     dd¦  «        sJ ‚|                     d	d¦  «        rJ ‚‰                     d
+¦  «        }t!          d„ |D ¦   «         ¦  «        sJ ‚t!          ˆfd„|D ¦   «         ¦  «        sJ ‚d S )NÚredisT)Údecode_responsesé   )Úminutesztenant-az	session-azfamily-aztenant-bÚ*c              3   ó.   K  — | ]}d |vod|vod|vV — ŒdS )ÚtokenÚpasswordÚotpN© )Ú.0Úkeys     ú.tests/novaid/test_phase5a_redis_integration.pyú	<genexpr>zCtest_two_clients_observe_tenant_bound_revocation.<locals>.<genexpr>   s<   è è € ĞaĞaĞUXˆw˜cĞ!ĞP j¸Ğ&;ĞPÀÈSĞ@PĞaĞaĞaĞaĞaĞaó    c              3   ó^   •K  — | ]'}d ‰                      |¦  «        cxk     odk    nc V — Œ(dS )r   i,  N)Úttl)r   r   Úseconds     €r   r   zCtest_two_clients_observe_tenant_bound_revocation.<locals>.<genexpr>   sI   øè è € Ğ:Ğ:¨cˆq6—:’:˜c‘?”?Ğ)Ğ)Ò)Ğ) cÒ)Ğ)Ğ)Ğ)Ğ:Ğ:Ğ:Ğ:Ğ:Ğ:r   )ÚpytestÚimportorskipÚRedisÚfrom_urlÚURLÚflushdbr   r   Únowr   r   Úrevoke_sessionÚrevoke_familyÚis_session_revokedÚis_family_revokedÚkeysÚall)r   ÚfirstÚwriterÚreaderÚexpiryr(   r   s         @r   Ú0test_two_clients_observe_tenant_bound_revocationr.      su  ø€ İÔ Ñ(Ô(€EØŒK× Ò ¥°tĞ Ñ<Ô<€EØŒ[×!Ò!¥#¸Ğ!Ñ=Ô=€FØ	‡M‚MO„O€Oİ)¨%Ñ0Ô0Õ2FÀvÑ2NÔ2NˆF€FİŒ\#ÑÔ¥°1Ğ!5Ñ!5Ô!5Ñ5€FØ
+×Ò˜* k°6Ñ:Ô:Ğ:Ø
+×Ò˜ Z°Ñ8Ô8Ğ8Ø×$Ò$ Z°Ñ=Ô=Ğ=Ğ=Ğ=Ø×#Ò# J°
+Ñ;Ô;Ğ;Ğ;Ğ;Ø×(Ò(¨°[ÑAÔAĞAĞAĞAØ;Š;sÑÔ€DİĞaĞaĞ\`ĞaÑaÔaÑaÔaĞaĞaĞaİĞ:Ğ:Ğ:Ğ:°TĞ:Ñ:Ô:Ñ:Ô:Ğ:Ğ:Ğ:Ğ:Ğ:r   )r	   N)r   r   r   Úosr   Úafritech.novaid.revocationr   Úgetenvr!   ÚmarkÚskipifÚ
+pytestmarkr.   r   r   r   ú<module>r5      s–   ğØ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ğ -Ø 	€	€	€	à €€€à ;Ğ ;Ğ ;Ğ ;Ğ ;Ğ ;ğ €b„iĞ'Ñ(Ô(€ØŒ[×Ò C Ğ0SĞÑTÔT€
+ğ;ğ ;ğ ;ğ ;ğ ;ğ ;r   
+===== tests/novaid/__pycache__/test_phase6d_redis_coordination.cpython-311-pytest-9.0.3.pyc =====
+§
+    a'\j  ã                   ó¾   — d dl Zd dlmc mZ d dlZd dlmZ d dl	Z	d dl
+Z
+d dlmZ  ej        d¦  «        Ze	j                             e d¬¦  «        Zdefd„Zd
+d	„ZdS )é    N)Úuuid4)Ú!RedisWebAuthnChallengeCoordinatorÚNOVAID_TEST_REDIS_URLzRedis integration unavailable)ÚreasonÚreturnc                  ó8   — t          t          ¦   «         ¦  «        S )N)Ústrr   © ó    úN/Users/ostrinov/afritelematics/tests/novaid/test_phase6d_redis_coordination.pyÚuidr      s   € İu‰wŒw‰<Œ<Ğr   c                  óÄ  — t           j                             t          d¬¦  «        } |                      ¦   «          t          | d¬¦  «        }t          ¦   «         t          ¦   «         t          ¦   «         t          ¦   «         f\  }}}}|                     ||d|dd¬¦  «        }|j        }d}||k    }	|	sªt          j
+        d	|	fd
+||f¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        t          j        |¦  «        dœz  }
+dd|
+iz  }t          t          j        |¦  «        ¦  «        ‚d x}x}	}|                     ||d|dd¬¦  «        }|j        }d}||k    }	|	sªt          j
+        d	|	fd
+||f¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        t          j        |¦  «        dœz  }
+dd|
+iz  }t          t          j        |¦  «        ¦  «        ‚d x}x}	}|                      |                     ||d¦  «        ¦  «        }|d         }d}	||	k    }|slt          j
+        d	|fd||	f¦  «        t          j        |¦  «        t          j        |	¦  «        dœz  }dd|iz  }t          t          j        |¦  «        ¦  «        ‚d x}x}}	|                     ||dd¬¦  «        }|j        }d}||k    }	|	sªt          j
+        d	|	fd
+||f¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        t          j        |¦  «        dœz  }
+dd|
+iz  }t          t          j        |¦  «        ¦  «        ‚d x}x}	}|                     ||dd¬¦  «        }|j        }ddh}||v }	|	sªt          j
+        d|	fd||f¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        t          j        |¦  «        dœz  }
+dd|
+iz  }t          t          j        |¦  «        ¦  «        ‚d x}x}	}d}d}	|	j        }g }| j        }d} ||¬ ¦  «        }|}|sg }|} ||¦  «        }||v}|smd!d"t          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        nd"t          j        |¦  «        t          j        |¦  «        t          j        |¦  «        d#œz  }|                     |¦  «         |s.d$d%t          j        |¦  «        iz  }|                     |¦  «         t          j        |d&¦  «        i z  }t          j
+        d'|fd(||f¦  «        t          j        |¦  «        t          j        |	¦  «        t          j        |¦  «        |t          j        |¦  «        d)œz  }d*d+|iz  } t          t          j        | ¦  «        ¦  «        ‚d x}x}x}	x}x}x}x}x}x}x}}d S ),NT)Údecode_responses)ÚrequiredÚAUTHENTICATIONz
+first-hashé<   )Ú	tenant_idÚsubjectÚpurposeÚchallenge_idÚchallenge_hashÚttl_secondsÚCREATED)ú==)z.%(py2)s
+{%(py2)s = %(py0)s.status
+} == %(py5)sÚcreated_first)Úpy0Úpy2Úpy5zassert %(py7)sÚpy7zsecond-hashÚcreated_secondÚstatusÚ
+SUPERSEDED)z%(py1)s == %(py4)s)Úpy1Úpy4zassert %(py6)sÚpy6)r   r   r   r   ÚCONSUMEDÚconsumedÚALREADY_CONSUMED)Úin)z.%(py2)s
+{%(py2)s = %(py0)s.status
+} in %(py5)sÚsecond_againú znovaid:v1:tenant:*)ÚmatchzO%(py15)s
+{%(py15)s = %(py11)s
+{%(py11)s = %(py9)s.scan_iter
+}(match=%(py13)s)
+}Úclient)Úpy9Úpy11Úpy13Úpy15z%(py18)sÚpy18é   )únot in)zQ%(py1)s not in %(py23)s
+{%(py23)s = %(py6)s
+{%(py6)s = %(py4)s.join
+}(%(py21)s)
+})r#   r$   r%   Úpy21Úpy23zassert %(py25)sÚpy25)ÚredisÚRedisÚfrom_urlÚURLÚflushdbr   r   Úcreater!   Ú
+@pytest_arÚ_call_reprcompareÚ@py_builtinsÚlocalsÚ_should_repr_global_nameÚ	_safereprÚAssertionErrorÚ_format_explanationÚhgetallÚ_challenge_keyÚconsumeÚjoinÚ	scan_iterÚappendÚ_format_boolop)!r-   ÚcoordinatorÚtenantr   ÚfirstÚsecondr   Ú@py_assert1Ú@py_assert4Ú@py_assert3Ú@py_format6Ú@py_format8r    Úfirst_stateÚ@py_assert0Ú@py_assert2Ú@py_format5Ú@py_format7r'   r*   Ú@py_assert5Ú@py_assert8Ú@py_assert10Ú@py_assert12Ú@py_assert14Ú@py_assert7Ú@py_assert17Ú@py_assert22Ú@py_format16Ú@py_format19Ú@py_format20Ú@py_format24Ú@py_format26s!                                    r   Ú8test_redis_challenge_supersession_and_single_consumptionrh      s•  € İŒ[×!Ò!¥#¸Ğ!Ñ=Ô=€FØ
+‡N‚NÑÔĞİ3°FÀTĞJÑJÔJ€Kİ%(¡U¤U­C©E¬Eµ3±5´5½#¹%¼%Ğ%?Ñ"€FˆGU˜FØ×&Ò&ØØØ ØØ#Øğ 'ñ ô €Mğ ÔĞ, 9Ğ,Ğ 9Ò,Ğ,Ğ,Ğ,Õ,Ô,Ğ,Ğ,Ğ,Ğ,Ğ 9Ğ,Ñ,Ô,Ğ,Õ,Ô,Ñ,Ô,Ğ,Ğ,Õ,Ô,ˆ=Ñ,Ô,Ğ,Õ,Ô,ˆ=Ñ,Ô,Ğ,Ğ,Õ,Ô,ĞÑ,Ô,Õ,Ô, 9Ñ,Ô,Ğ,Ğ,Ñ,Ğ,Ğ,Ğ,Ğ,Ğ,Ñ,Ğ,Õ,Õ,Ô,Ğ,Ñ,Ô,Ñ,Ô,Ğ,Ğ,Ğ,Ğ,Ğ,Ğ,Ğ,Ø ×'Ò'ØØØ ØØ$Øğ (ñ ô €Nğ Ô Ğ- IĞ-Ğ  IÒ-Ğ-Ğ-Ğ-Õ-Ô-Ğ-Ğ-Ğ-Ğ-Ğ  IĞ-Ñ-Ô-Ğ-Õ-Ô-Ñ-Ô-Ğ-Ğ-Õ-Ô-ˆ>Ñ-Ô-Ğ-Õ-Ô-ˆ>Ñ-Ô-Ğ-Ğ-Õ-Ô-Ğ Ñ-Ô-Õ-Ô- IÑ-Ô-Ğ-Ğ-Ñ-Ğ-Ğ-Ğ-Ğ-Ğ-Ñ-Ğ-Õ-Õ-Ô-Ğ-Ñ-Ô-Ñ-Ô-Ğ-Ğ-Ğ-Ğ-Ğ-Ğ-Ğ-Ø—.’. ×!;Ò!;¸FÀEĞK[Ñ!\Ô!\Ñ]Ô]€KØxÔ Ğ0 LĞ0Ğ  LÒ0Ğ0Ğ0Ğ0Õ0Ô0Ğ0Ğ0Ğ0Ğ0Ğ  LĞ0Ñ0Ô0Õ0Ô0Ğ Ñ0Ô0Õ0Ô0 LÑ0Ô0Ğ0Ğ0Ñ0Ğ0Ğ0Ğ0Ğ0Ğ0Ñ0Ğ0Õ0Õ0Ô0Ğ0Ñ0Ô0Ñ0Ô0Ğ0Ğ0Ğ0Ğ0Ğ0Ğ0Ğ0Ø×"Ò"Ø v¸mĞUeğ #ñ ô €Hğ Œ?Ğ(˜jĞ(ˆ?˜jÒ(Ğ(Ğ(Ğ(Õ(Ô(Ğ(Ğ(Ğ(Ğ(ˆ?˜jĞ(Ñ(Ô(Ğ(Õ(Ô(Ñ(Ô(Ğ(Ğ(Õ(Ô(ˆ8Ñ(Ô(Ğ(Õ(Ô(ˆ8Ñ(Ô(Ğ(Ğ(Õ(Ô(ˆ?Ñ(Ô(Õ(Ô(˜jÑ(Ô(Ğ(Ğ(Ñ(Ğ(Ğ(Ğ(Ğ(Ğ(Ñ(Ğ(Õ(Õ(Ô(Ğ(Ñ(Ô(Ñ(Ô(Ğ(Ğ(Ğ(Ğ(Ğ(Ğ(Ğ(Ø×&Ò&ØØØ$Ø ğ	 'ñ ô €Lğ ÔĞBĞ#5°zĞ"BĞBĞĞ"BĞBĞBĞBĞBÕBÔBĞBĞBĞBĞBĞĞ"BĞBÑBÔBĞBÕBÔBÑBÔBĞBĞBÕBÔBˆ<ÑBÔBĞBÕBÔBˆ<ÑBÔBĞBĞBÕBÔBĞÑBÔBÕBÔBĞ"BÑBÔBĞBĞBÑBĞBĞBĞBĞBĞBÑBĞBÕBÕBÔBĞBÑBÔBÑBÔBĞBĞBĞBĞBĞBĞBĞBØĞ[˜sĞ[˜sœxĞ[Ğ[Ğ[¨Ô(8Ğ[Ğ?SĞ[Ğ(8Ğ(8Ğ?SĞ(TÑ(TÔ(TĞ[Ğ(TĞ[Ğ(TĞ[ĞXZĞ[ĞXZĞ[˜x˜xĞ[Ñ[Ô[Ğ[ˆ<Ğ[Ğ[Ğ[Ğ[Ñ[Ğ[Ğ[Õ[Ô[Ñ[Ô[Ğ[Ğ[Õ[Ô[¨Ñ[Ô[Ğ[Õ[Ô[¨Ñ[Ô[Ğ[Ğ[Õ[Ô[Ğ(8Ñ[Ô[Õ[Ô[Ğ?SÑ[Ô[Õ[Ô[Ğ(TÑ[Ô[Ğ[Ğ[Ñ[Ğ[Ğ[×[Ò[Ğ[Ñ[Ô[Ğ[Ğ(TĞ[Ğ[Ğ[Õ[Ô[ĞXZÑ[Ô[Ğ[Ñ[Ğ[Ğ[×[Ò[Ğ[Ñ[Ô[Ğ[Õ[Ô[Ğ[Ğ[Ñ[Ô[Ğ[Ñ[Ğ[Õ[Ô[Ğ[Ğ[Ğ[Ğ[ˆ<Ğ[Ğ[Ñ[Ô[Õ[Ô[ˆ<Ñ[Ô[Õ[Ô[˜sÑ[Ô[Õ[Ô[˜xÑ[Ô[Ğ[Õ[Ô[Ğ[Ñ[Ô[Ğ[Ğ[Ñ[Ğ[Ğ[Ğ[Ğ[Ğ[Ñ[Ğ[Õ[Õ[Ô[Ğ[Ñ[Ô[Ñ[Ô[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[r   )r   N)Úbuiltinsr@   Ú_pytest.assertion.rewriteÚ	assertionÚrewriter>   ÚosÚuuidr   Úpytestr8   Ú%afritech.novaid.webauthn_coordinationr   Úgetenvr;   ÚmarkÚskipifÚ
+pytestmarkr	   r   rh   r
+   r   r   ú<module>ru      sÎ   ğØ  € € € € € € € € € € € € €	€	€	€	Ø Ğ Ğ Ğ Ğ Ğ à €€€Ø €€€à SĞ SĞ SĞ SĞ SĞ Sğ €b„iĞ'Ñ(Ô(€ØŒ[×Ò C Ğ0OĞÑPÔP€
+ğˆSğ ğ ğ ğ ğ$\ğ $\ğ $\ğ $\ğ $\ğ $\r   
+===== tests/novaid/__pycache__/test_phase6d_redis_coordination.cpython-311-pytest-9.1.1.pyc =====
+§
+    “è[j‚  ã                   ó¾   — d dl Zd dlmc mZ d dlZd dlmZ d dl	Z	d dl
+Z
+d dlmZ  ej        d¦  «        Ze	j                             e d¬¦  «        Zdefd„Zd
+d	„ZdS )é    N)Úuuid4)Ú!RedisWebAuthnChallengeCoordinatorÚNOVAID_TEST_REDIS_URLzRedis integration unavailable)ÚreasonÚreturnc                  ó8   — t          t          ¦   «         ¦  «        S )N)Ústrr   © ó    úN/Users/ostrinov/afritelematics/tests/novaid/test_phase6d_redis_coordination.pyÚuidr      s   € İu‰wŒw‰<Œ<Ğr   c                  ó   — t           j                             t          d¬¦  «        } |                      ¦   «          t          | d¬¦  «        }t          ¦   «         t          ¦   «         t          ¦   «         t          ¦   «         f\  }}}}|                     ||d|dd¬¦  «         |                     ||d|dd¬¦  «         | j        }|j	        } |||¦  «        } ||¦  «        }	d	}
+|	|
+k    }|st          j        d
+|fd|	|
+f¦  «        dt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        ndt          j        |¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        nddt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        t          j        |	¦  «        t          j        |
+¦  «        dœ	z  }dd|iz  }t!          t          j        |¦  «        ¦  «        ‚d x}x}x}x}	x}}
+|j        }d} ||||¬¦  «        }|sddt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        nddt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        t          j        |¦  «        dœz  }t!          t          j        |¦  «        ¦  «        ‚d x}x}}|j        }d} ||||¬¦  «        }| }|sddt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        dt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        nddt          j        ¦   «         v st          j        |¦  «        rt          j        |¦  «        ndt          j        |¦  «        t          j        |¦  «        dœz  }t!          t          j        |¦  «        ¦  «        ‚d x}x}x}}d}d}|j        }g }| j        }	d} |	|¬¦  «        }|}|sg }|} ||¦  «        }||v}|smddt          j        ¦   «         v st          j        | ¦  «        rt          j        | ¦  «        ndt          j        |	¦  «        t          j        |¦  «        t          j        |¦  «        dœz  }|                     |¦  «         |s.ddt          j        |¦  «        iz  }|                     |¦  «         t          j        |d¦  «        i z  }t          j        d |fd!||f¦  «        t          j        |¦  «        t          j        |¦  «        t          j        |¦  «        |t          j        |¦  «        d"œz  }d#d$|iz  }t!          t          j        |¦  «        ¦  «        ‚d x}x}x}x}x}x}x}	x}x}x}}d S )%NT)Údecode_responses)ÚrequiredÚAUTHENTICATIONz
+first-hashé<   )Ú	tenant_idÚsubjectÚpurposeÚchallenge_idÚchallenge_hashÚttl_secondszsecond-hashÚ
+SUPERSEDED)ú==)z—%(py11)s
+{%(py11)s = %(py2)s
+{%(py2)s = %(py0)s.get
+}(%(py9)s
+{%(py9)s = %(py5)s
+{%(py5)s = %(py3)s._challenge_key
+}(%(py6)s, %(py7)s)
+})
+} == %(py14)sÚclientÚcoordinatorÚtenantÚfirst)	Úpy0Úpy2Úpy3Úpy5Úpy6Úpy7Úpy9Úpy11Úpy14zassert %(py16)sÚpy16)r   r   r   zassert %(py8)s
+{%(py8)s = %(py2)s
+{%(py2)s = %(py0)s.consume
+}(tenant_id=%(py3)s, challenge_id=%(py4)s, challenge_hash=%(py6)s)
+}Úsecond)r   r    r!   Úpy4r#   Úpy8z…assert not %(py8)s
+{%(py8)s = %(py2)s
+{%(py2)s = %(py0)s.consume
+}(tenant_id=%(py3)s, challenge_id=%(py4)s, challenge_hash=%(py6)s)
+}ú znovaid:webauthn:*)ÚmatchzO%(py15)s
+{%(py15)s = %(py11)s
+{%(py11)s = %(py9)s.scan_iter
+}(match=%(py13)s)
+})r%   r&   Úpy13Úpy15z%(py18)sÚpy18é   )únot in)zQ%(py1)s not in %(py23)s
+{%(py23)s = %(py6)s
+{%(py6)s = %(py4)s.join
+}(%(py21)s)
+})Úpy1r*   r#   Úpy21Úpy23zassert %(py25)sÚpy25)ÚredisÚRedisÚfrom_urlÚURLÚflushdbr   r   ÚcreateÚgetÚ_challenge_keyÚ
+@pytest_arÚ_call_reprcompareÚ@py_builtinsÚlocalsÚ_should_repr_global_nameÚ	_safereprÚAssertionErrorÚ_format_explanationÚconsumeÚjoinÚ	scan_iterÚappendÚ_format_boolop)r   r   r   r   r   r)   Ú@py_assert1Ú@py_assert4Ú@py_assert8Ú@py_assert10Ú@py_assert13Ú@py_assert12Ú@py_format15Ú@py_format17Ú@py_assert5Ú@py_assert7Ú@py_format9Ú@py_assert9Ú@py_format10Ú@py_assert0Ú@py_assert3Ú@py_assert14Ú@py_assert17Ú@py_assert22Ú@py_assert2Ú@py_format16Ú@py_format19Ú@py_format20Ú@py_format24Ú@py_format26s                                 r   Ú8test_redis_challenge_supersession_and_single_consumptionrd      sA  € İŒ[×!Ò!¥#¸Ğ!Ñ=Ô=€FØ
+‡N‚NÑÔĞİ3°FÀTĞJÑJÔJ€Kİ%(¡U¤U­C©E¬Eµ3±5´5½#¹%¼%Ğ%?Ñ"€FˆGU˜FØ×ÒØØØ ØØ#Øğ ñ ô ğ ğ ×ÒØØØ ØØ$Øğ ñ ô ğ ğ Œ:ĞPkÔ0ĞPĞ0Ğ0°¸Ñ?Ô?ĞPˆ:ˆ:Ğ?Ñ@Ô@ĞPÀLĞPĞ@ÀLÒPĞPĞPÑPÕPÔPĞPĞPĞPĞPĞ@ÀLĞPÑPÔPĞPÕPÔPÑPÔPĞPĞPÕPÔPˆ6ÑPÔPĞPÕPÔPˆ6ÑPÔPĞPĞPÕPÔPˆ:ÑPÔPĞPÕPÔPÑPÔPĞPĞPÕPÔPkÑPÔPĞPÕPÔPkÑPÔPĞPĞPÕPÔPĞ0ÑPÔPĞPÕPÔPÑPÔPĞPĞPÕPÔP°ÑPÔPĞPÕPÔP°ÑPÔPĞPĞPĞPÕPÔPÑPÔPĞPĞPÕPÔP¸ÑPÔPĞPÕPÔP¸ÑPÔPĞPĞPÕPÔPĞ?ÑPÔPÕPÔPĞ@ÑPÔPÕPÔPÀLÑPÔPĞPĞPÑPĞPĞPĞPĞPĞPÑPĞPÕPÕPÔPĞPÑPÔPÑPÔPĞPĞPĞPĞPĞPĞPĞPĞPĞPĞPĞPĞPĞPØÔĞcĞUbĞcĞĞ¨¸fĞUbĞcÑcÔcĞcĞcÑcĞcĞcÕcÔcÑcÔcĞcĞcÕcÔcˆ;ÑcÔcĞcÕcÔcˆ;ÑcÔcĞcĞcÕcÔcĞÑcÔcĞcÕcÔcÑcÔcĞcĞcÕcÔc¨ÑcÔcĞcÕcÔc¨ÑcÔcĞcĞcĞcÕcÔcÑcÔcĞcĞcÕcÔc¸fÑcÔcĞcÕcÔc¸fÑcÔcĞcĞcÕcÔcĞUbÑcÔcÕcÔcĞcÑcÔcĞcĞcÑcĞcÕcÕcÔcĞcÑcÔcÑcÔcĞcĞcĞcĞcĞcĞcĞcØÔ"ğ Ø>KğĞ"Ğ"Ø v¸mğñ ô ğ ğ ğ ğ ğ ñ ğ ğ õ ìñô ğ ğ õ ìğ ñ ô ğ õ ìğ ñ ô ğ ğ õ ìğ #ñ ô ğ õ ìñô ğ ğ õ ìğ ñô ğ õ ìğ ñô ğ ğ ğ õ ìñô ğ ğ õ ìğ (.ñô ğ õ ìğ (.ñô ğ ğ õ ìğ ?Lñô õ ìğñ ô ğ ğ ñ ğ õ õ ìğñ ô ñ ô ğ ğ ğ ğ ğ ğ ğ ğ ğ ğ ĞZ˜sĞZ˜sœxĞZĞZĞZ¨Ô(8ĞZĞ?RĞZĞ(8Ğ(8Ğ?RĞ(SÑ(SÔ(SĞZĞ(SĞZĞ(SĞZĞWYĞZĞWYĞZ˜x˜xĞZÑZÔZĞZˆ<ĞZĞZĞZĞZÑZĞZĞZÕZÔZÑZÔZĞZĞZÕZÔZ¨ÑZÔZĞZÕZÔZ¨ÑZÔZĞZĞZÕZÔZĞ(8ÑZÔZÕZÔZĞ?RÑZÔZÕZÔZĞ(SÑZÔZĞZĞZÑZĞZĞZ×ZÒZĞZÑZÔZĞZĞ(SĞZĞZĞZÕZÔZĞWYÑZÔZĞZÑZĞZĞZ×ZÒZĞZÑZÔZĞZÕZÔZĞZĞZÑZÔZĞZÑZĞZÕZÔZĞZĞZĞZĞZˆ<ĞZĞZÑZÔZÕZÔZˆ<ÑZÔZÕZÔZ˜sÑZÔZÕZÔZ˜xÑZÔZĞZÕZÔZĞZÑZÔZĞZĞZÑZĞZĞZĞZĞZĞZÑZĞZÕZÕZÔZĞZÑZÔZÑZÔZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZĞZr   )r   N)ÚbuiltinsrA   Ú_pytest.assertion.rewriteÚ	assertionÚrewriter?   ÚosÚuuidr   Úpytestr7   Ú%afritech.novaid.webauthn_coordinationr   Úgetenvr:   ÚmarkÚskipifÚ
+pytestmarkr	   r   rd   r
+   r   r   ú<module>rq      sÎ   ğØ  € € € € € € € € € € € € €	€	€	€	Ø Ğ Ğ Ğ Ğ Ğ à €€€Ø €€€à SĞ SĞ SĞ SĞ SĞ Sğ €b„iĞ'Ñ(Ô(€ØŒ[×Ò C Ğ0OĞÑPÔP€
+ğˆSğ ğ ğ ğ ğ[ğ [ğ [ğ [ğ [ğ [r   
+===== tests/novaid/__pycache__/test_phase6d_redis_coordination.cpython-311.pyc =====
+§
+    a'\j  ã                   ó¤   — d dl Z d dlmZ d dlZd dlZd dlmZ  e j        d¦  «        Zej	         
+                    e d¬¦  «        Zdefd„Zd
+d	„ZdS )é    N)Úuuid4)Ú!RedisWebAuthnChallengeCoordinatorÚNOVAID_TEST_REDIS_URLzRedis integration unavailable)ÚreasonÚreturnc                  ó8   — t          t          ¦   «         ¦  «        S )N)Ústrr   © ó    ú/tests/novaid/test_phase6d_redis_coordination.pyÚuidr      s   € İu‰wŒw‰<Œ<Ğr   c                  ó  — t           j                             t          d¬¦  «        } |                      ¦   «          t          | d¬¦  «        }t          ¦   «         t          ¦   «         t          ¦   «         t          ¦   «         f\  }}}}|                     ||d|dd¬¦  «        }|j        dk    sJ ‚|                     ||d|d	d¬¦  «        }|j        dk    sJ ‚|  	                    | 
+                    ||d¦  «        ¦  «        }|d
+         dk    sJ ‚|                     ||d	d¬¦  «        }	|	j        dk    sJ ‚|                     ||d	d¬¦  «        }
+|
+j        dv sJ ‚dd                     |                      d¬¦  «        pg ¦  «        vsJ ‚d S )NT)Údecode_responses)ÚrequiredÚAUTHENTICATIONz
+first-hashé<   )Ú	tenant_idÚsubjectÚpurposeÚchallenge_idÚchallenge_hashÚttl_secondsÚCREATEDzsecond-hashÚstatusÚ
+SUPERSEDED)r   r   r   r   ÚCONSUMED>   r   ÚALREADY_CONSUMEDú znovaid:v1:tenant:*)Úmatch)ÚredisÚRedisÚfrom_urlÚURLÚflushdbr   r   Úcreater   ÚhgetallÚ_challenge_keyÚconsumeÚjoinÚ	scan_iter)ÚclientÚcoordinatorÚtenantr   ÚfirstÚsecondÚcreated_firstÚcreated_secondÚfirst_stateÚconsumedÚsecond_agains              r   Ú8test_redis_challenge_supersession_and_single_consumptionr5      sÔ  € İŒ[×!Ò!¥#¸Ğ!Ñ=Ô=€FØ
+‡N‚NÑÔĞİ3°FÀTĞJÑJÔJ€Kİ%(¡U¤U­C©E¬Eµ3±5´5½#¹%¼%Ğ%?Ñ"€FˆGU˜FØ×&Ò&ØØØ ØØ#Øğ 'ñ ô €Mğ Ô 9Ò,Ğ,Ğ,Ğ,Ø ×'Ò'ØØØ ØØ$Øğ (ñ ô €Nğ Ô  IÒ-Ğ-Ğ-Ğ-Ø—.’. ×!;Ò!;¸FÀEĞK[Ñ!\Ô!\Ñ]Ô]€KØxÔ  LÒ0Ğ0Ğ0Ğ0Ø×"Ò"Ø v¸mĞUeğ #ñ ô €Hğ Œ?˜jÒ(Ğ(Ğ(Ğ(Ø×&Ò&ØØØ$Ø ğ	 'ñ ô €Lğ ÔĞ"BĞBĞBĞBĞBØ˜sŸxšx¨×(8Ò(8Ğ?SĞ(8Ñ(TÔ(TĞ(ZĞXZÑ[Ô[Ğ[Ğ[Ğ[Ğ[Ğ[Ğ[r   )r   N)ÚosÚuuidr   Úpytestr    Ú%afritech.novaid.webauthn_coordinationr   Úgetenvr#   ÚmarkÚskipifÚ
+pytestmarkr	   r   r5   r
+   r   r   ú<module>r>      s´   ğØ 	€	€	€	Ø Ğ Ğ Ğ Ğ Ğ à €€€Ø €€€à SĞ SĞ SĞ SĞ SĞ Sğ €b„iĞ'Ñ(Ô(€ØŒ[×Ò C Ğ0OĞÑPÔP€
+ğˆSğ ğ ğ ğ ğ$\ğ $\ğ $\ğ $\ğ $\ğ $\r   
+===== tests/novaid/redis_phase5f_probe.py =====
+"""Manual real-Redis outage/recovery certificate probe."""
+
+from datetime import UTC, datetime, timedelta
+import os
+import sys
+from uuid import uuid4
+
+import psycopg
+import redis
+
+from afritech.novaid.outbox import RevocationOutbox
+from afritech.novaid.persistence.postgres import PostgresNovaIdUnitOfWork
+from afritech.novaid.revocation_delivery import RevocationConsumer, RevocationPublisher
+
+
+dsn, redis_url, mode = (
+    os.environ["NOVAID_TEST_DATABASE_URL"],
+    os.environ["NOVAID_TEST_REDIS_URL"],
+    sys.argv[1],
+)
+if mode == "prepare":
+    tenant, resource, now = str(uuid4()), str(uuid4()), datetime.now(UTC)
+    with psycopg.connect(dsn) as connection:
+        connection.execute(
+            "INSERT INTO novaid_tenants(tenant_id,name,status,created_at,updated_at) "
+            "VALUES(%s,'Redis Probe','ACTIVE',%s,%s)",
+            (tenant, now, now),
+        )
+    uow = PostgresNovaIdUnitOfWork(dsn)
+    with uow:
+        RevocationOutbox(uow).enqueue(
+            tenant_id=tenant,
+            event_type="SESSION_REVOKED",
+            resource_type="SESSION",
+            resource_id=resource,
+            event_version=1,
+            payload={"reason": "phase5f_probe"},
+        )
+    uow.close()
+    print("prepared")
+elif mode == "fail":
+    uow = PostgresNovaIdUnitOfWork(dsn)
+    publisher = RevocationPublisher(
+        RevocationOutbox(uow),
+        redis.Redis.from_url(redis_url, decode_responses=True),
+        instance_id="phase5f-failure",
+    )
+    assert publisher.publish_once() == 0
+    row = uow.connection.execute(
+        "SELECT status FROM novaid_security_outbox WHERE payload->>'reason'='phase5f_probe' "
+        "ORDER BY created_at DESC LIMIT 1"
+    ).fetchone()
+    assert row["status"] == "FAILED"
+    print(f"outage_retained status=FAILED retries={publisher.retries}")
+    uow.close()
+elif mode == "recover":
+    client, uow = (
+        redis.Redis.from_url(redis_url, decode_responses=True),
+        PostgresNovaIdUnitOfWork(dsn),
+    )
+    with uow:
+        uow.connection.execute(
+            "UPDATE novaid_security_outbox SET next_attempt_at=?,available_at=?,"
+            "lease_expires_at=NULL "
+            "WHERE payload->>'reason'='phase5f_probe' AND status='FAILED'",
+            (
+                (datetime.now(UTC) - timedelta(seconds=1)).isoformat(),
+                (datetime.now(UTC) - timedelta(seconds=1)).isoformat(),
+            ),
+        )
+    publisher = RevocationPublisher(RevocationOutbox(uow), client, instance_id="phase5f-recovery")
+    assert publisher.publish_once() >= 1
+    client.flushdb()
+    rebuilt = RevocationConsumer(client, uow=uow).rebuild_from_database()
+    assert rebuilt > 0
+    print(f"recovered published=1 rebuilt={rebuilt}")
+    uow.close()
+
+===== tests/novaid/test_phase5a_redis_integration.py =====
+from datetime import UTC, datetime, timedelta
+import os
+
+import pytest
+
+from afritech.novaid.revocation import RedisRevocationStore
+
+
+URL = os.getenv("NOVAID_TEST_REDIS_URL")
+pytestmark = pytest.mark.skipif(not URL, reason="NOVAID_TEST_REDIS_URL unavailable")
+
+
+def test_two_clients_observe_tenant_bound_revocation() -> None:
+    redis = pytest.importorskip("redis")
+    first = redis.Redis.from_url(URL, decode_responses=True)
+    second = redis.Redis.from_url(URL, decode_responses=True)
+    first.flushdb()
+    writer, reader = RedisRevocationStore(first), RedisRevocationStore(second)
+    expiry = datetime.now(UTC) + timedelta(minutes=5)
+    writer.revoke_session("tenant-a", "session-a", expiry)
+    writer.revoke_family("tenant-a", "family-a", expiry)
+    assert reader.is_session_revoked("tenant-a", "session-a")
+    assert reader.is_family_revoked("tenant-a", "family-a")
+    assert not reader.is_session_revoked("tenant-b", "session-a")
+    keys = second.keys("*")
+    assert all("token" not in key and "password" not in key and "otp" not in key for key in keys)
+    assert all(0 < second.ttl(key) <= 300 for key in keys)
+
+===== tests/novaid/test_phase6d_redis_coordination.py =====
+import os
+from uuid import uuid4
+
+import pytest
+import redis
+
+from afritech.novaid.webauthn_coordination import RedisWebAuthnChallengeCoordinator
+
+
+URL = os.getenv("NOVAID_TEST_REDIS_URL")
+pytestmark = pytest.mark.skipif(not URL, reason="Redis integration unavailable")
+
+
+def uid() -> str:
+    return str(uuid4())
+
+
+def test_redis_challenge_supersession_and_single_consumption() -> None:
+    client = redis.Redis.from_url(URL, decode_responses=True)
+    client.flushdb()
+    coordinator = RedisWebAuthnChallengeCoordinator(client, required=True)
+    tenant, subject, first, second = uid(), uid(), uid(), uid()
+    created_first = coordinator.create(
+        tenant_id=tenant,
+        subject=subject,
+        purpose="AUTHENTICATION",
+        challenge_id=first,
+        challenge_hash="first-hash",
+        ttl_seconds=60,
+    )
+    assert created_first.status == "CREATED"
+    created_second = coordinator.create(
+        tenant_id=tenant,
+        subject=subject,
+        purpose="AUTHENTICATION",
+        challenge_id=second,
+        challenge_hash="second-hash",
+        ttl_seconds=60,
+    )
+    assert created_second.status == "CREATED"
+    first_state = client.hgetall(coordinator._challenge_key(tenant, first, "AUTHENTICATION"))
+    assert first_state["status"] == "SUPERSEDED"
+    consumed = coordinator.consume(
+        tenant_id=tenant, challenge_id=second, challenge_hash="second-hash", purpose="AUTHENTICATION"
+    )
+    assert consumed.status == "CONSUMED"
+    second_again = coordinator.consume(
+        tenant_id=tenant,
+        challenge_id=second,
+        challenge_hash="second-hash",
+        purpose="AUTHENTICATION",
+    )
+    assert second_again.status in {"ALREADY_CONSUMED", "CONSUMED"}
+    assert "first-hash" not in " ".join(client.scan_iter(match="novaid:v1:tenant:*") or [])
+
+12. Python import and compilation gate
+------------------------------------------------------------
+Preflight compilation: PASS
+
+13. Current preflight result
+------------------------------------------------------------
+Production deployment preflight FAILED: missing required environment values: NOVAID_JWT_ISSUER, NOVAID_JWT_AUDIENCE, NOVAID_SIGNING_KEYS_JSON, NOVAID_ACTIVE_SIGNING_KEY_ID, NOVAID_TOKEN_PEPPER, NOVAID_REDIS_URL
+
+Current preflight exit code: 1
+
+14. Current Redis container evidence
+------------------------------------------------------------
+name=production-redis-1 image=redis:7.4-alpine status=Up 3 hours (healthy)
+
+Redis networks:
+production_infra
+
+Redis health:
+{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-07-30T02:47:23.486916968Z","End":"2026-07-30T02:47:23.589479718Z","ExitCode":0,"Output":"PONG\n"},{"Start":"2026-07-30T02:47:33.592103667Z","End":"2026-07-30T02:47:33.679638917Z","ExitCode":0,"Output":"PONG\n"},{"Start":"2026-07-30T02:47:43.684855547Z","End":"2026-07-30T02:47:43.738315505Z","ExitCode":0,"Output":"PONG\n"},{"Start":"2026-07-30T02:47:53.744841802Z","End":"2026-07-30T02:47:53.794973135Z","ExitCode":0,"Output":"PONG\n"},{"Start":"2026-07-30T02:48:03.799365625Z","End":"2026-07-30T02:48:03.857191209Z","ExitCode":0,"Output":"PONG\n"}]}
+
+15. Secret-safety verification
+------------------------------------------------------------
+Database URL disclosure check: PASS
+
+16. Evidence manifest
+------------------------------------------------------------
+Evidence directory: artifacts/novaid/phase-3b-runtime/security-contract-20260730T024744Z
+Report SHA-256:     bc9522caf566f2b57924abcaf40f770e00b97fcc17a65344ff889a1cb994cad9
+
+============================================================
+PHASE 3B.3A1 COMPLETE
+Classification: DISCOVERY_COMPLETE_PENDING_SCHEMA_REVIEW
+No secrets were generated or displayed intentionally.
+No files outside the evidence directory were modified.
+No containers, databases, networks, or volumes were changed.
+============================================================

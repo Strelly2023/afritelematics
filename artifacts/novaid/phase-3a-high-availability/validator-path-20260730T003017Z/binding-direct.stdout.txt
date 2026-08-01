@@ -1,0 +1,1 @@
+NovaTech product binding validation FAILED: unresolved NovaID modules: ['afritech.novaid', 'afritech.novaid.runtime', 'afritech.api.novaid_api', 'afritech.api.novaid_audit_replay_api', 'afritech.novaid.persistence.postgres', 'afritech.novaid.persistence.sqlite']

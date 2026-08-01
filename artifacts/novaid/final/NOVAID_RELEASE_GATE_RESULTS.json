@@ -1,0 +1,13 @@
+{
+  "NI-DEV-000": "FAIL",
+  "NI-QA-001": "NOT_EVALUATED",
+  "NI-CP-001": "BLOCKED",
+  "NI-PP-001": "BLOCKED",
+  "NI-PRR-001": "BLOCKED",
+  "NI-GA-001": "BLOCKED",
+  "NI-TRUST-001": "BLOCKED",
+  "NI-FED-001": "BLOCKED",
+  "NI-PAM-001": "BLOCKED",
+  "final_release_decision": "NOT_READY",
+  "basis": "Only focused local security and regression evidence was executed."
+}

@@ -1,0 +1,126 @@
+# Direct /v1/novaid references
+
+./afritech/tests/novaid/test_novaid_ecosystem.py:240:    assert openid["issuer"].endswith("/v1/novaid")
+./afritech/tests/novaid/test_novaid_ecosystem.py:257:    assert client.get("/v1/novaid/personal", headers=customer_headers).json()["view"] == "novaid_personal_app"
+./afritech/tests/novaid/test_novaid_ecosystem.py:258:    assert client.get("/v1/novaid/wallet", headers=customer_headers).json()["view"] == "novaid_wallet"
+./afritech/tests/novaid/test_novaid_ecosystem.py:259:    assert client.get("/v1/novaid/business", headers=partner_headers).json()["view"] == "novaid_business_app"
+./afritech/tests/novaid/test_novaid_ecosystem.py:260:    assert client.get("/v1/novaid/employee", headers=customer_headers).json()["view"] == "novaid_employee_app"
+./afritech/tests/novaid/test_novaid_ecosystem.py:261:    assert client.get("/v1/novaid/partner", headers=partner_headers).json()["view"] == "novaid_partner_app"
+./afritech/tests/novaid/test_novaid_ecosystem.py:263:    assert client.get("/v1/novaid/government", headers=operator_headers).status_code == 200
+./afritech/tests/novaid/test_novaid_ecosystem.py:264:    assert client.get("/v1/novaid/enterprise", headers=operator_headers).status_code == 200
+./afritech/tests/novaid/test_novaid_ecosystem.py:265:    assert client.get("/v1/novaid/command-center", headers=operator_headers).status_code == 200
+./afritech/tests/novaid/test_novaid_ecosystem.py:266:    assert client.get("/v1/novaid/core", headers=operator_headers).json()["view"] == "novaid_core_catalog"
+./afritech/tests/novaid/test_novaid_ecosystem.py:267:    assert client.get("/v1/novaid/inspector", headers=verifier_headers).status_code == 200
+./afritech/tests/novaid/test_novaid_ecosystem.py:268:    assert client.get("/v1/novaid/standards", headers=developer_headers).json()["view"] == "novaid_standards"
+./afritech/tests/novaid/test_novaid_ecosystem.py:269:    assert client.get("/v1/novaid/developer/openid-configuration", headers=developer_headers).status_code == 200
+./afritech/tests/novaid/test_novaid_ecosystem.py:270:    assert client.get("/v1/novaid/developer/saml-metadata", headers=developer_headers).status_code == 200
+./afritech/tests/novaid/test_novaid_ecosystem.py:272:    assert client.get("/v1/novaid/command-center", headers=customer_headers).status_code == 403
+./afritech/tests/novaid/test_novaid_ecosystem.py:273:    assert client.get("/v1/novaid/developer", headers=customer_headers).status_code == 403
+./afritech/api/novaid_api.py:177:    router = APIRouter(prefix="/v1/novaid", tags=["novaid"])
+./afritech/novaid/service.py:603:            "issuer": "https://identity.afritech.local/v1/novaid",
+./afritech/novaid/service.py:604:            "authorization_endpoint": "/v1/novaid/auth",
+./afritech/novaid/service.py:605:            "token_endpoint": "/v1/novaid/auth",
+./afritech/novaid/service.py:606:            "userinfo_endpoint": "/v1/novaid/identities",
+./afritech/novaid/service.py:607:            "jwks_uri": "/v1/novaid/developer/jwks.json",
+./afritech/novaid/service.py:624:        xml = """<EntityDescriptor entityID="https://identity.afritech.local/v1/novaid/saml">
+./afritech/novaid/service.py:631:            "entity_id": "https://identity.afritech.local/v1/novaid/saml",
+./afritech/novaid/service.py:632:            "assertion_consumer_service": "/v1/novaid/federation/saml/acs",
+./afritech/novaid/service.py:633:            "single_logout_service": "/v1/novaid/federation/saml/slo",
+./afritech/novaid/surfaces.py:36:            "/v1/novaid/identities",
+./afritech/novaid/surfaces.py:37:            "/v1/novaid/auth",
+./afritech/novaid/surfaces.py:38:            "/v1/novaid/consent",
+./afritech/novaid/surfaces.py:39:            "/v1/novaid/sharing",
+./afritech/novaid/surfaces.py:53:        "endpoints": ["/v1/novaid/credentials", "/v1/novaid/passkeys", "/v1/novaid/devices"],
+./afritech/novaid/surfaces.py:69:        "endpoints": ["/v1/novaid/kyb", "/v1/novaid/enterprise", "/v1/novaid/directory"],
+./afritech/novaid/surfaces.py:85:        "endpoints": ["/v1/novaid/identities", "/v1/novaid/enterprise", "/v1/novaid/sessions"],
+./afritech/novaid/surfaces.py:99:        "endpoints": ["/v1/novaid/developer", "/v1/novaid/federation", "/v1/novaid/trust"],
+./afritech/novaid/surfaces.py:113:        "endpoints": ["/v1/novaid/inspector", "/v1/novaid/trust", "/v1/novaid/devices"],
+./afritech/novaid/surfaces.py:128:        "endpoints": ["/v1/novaid/government", "/v1/novaid/directory", "/v1/novaid/identities"],
+./afritech/novaid/surfaces.py:146:        "endpoints": ["/v1/novaid/enterprise", "/v1/novaid/sessions", "/v1/novaid/risk"],
+./afritech/novaid/surfaces.py:163:            "/v1/novaid/developer",
+./afritech/novaid/surfaces.py:164:            "/v1/novaid/developer/openid-configuration",
+./afritech/novaid/surfaces.py:165:            "/v1/novaid/developer/saml-metadata",
+./afritech/novaid/surfaces.py:182:        "endpoints": ["/v1/novaid/command-center", "/v1/novaid/trust", "/v1/novaid/risk"],
+./afritech/novaid/standards.py:22:    "issuer_template": "https://identity.afritech.local/v1/novaid",
+./afritech/novaid/standards.py:41:    "entity_id": "https://identity.afritech.local/v1/novaid/saml",
+./afritech/novaid/api.py:135:    router = APIRouter(prefix="/v1/novaid", tags=["novaid-authentication"])
+./afritech/api_catalog/domains.py:150:                _endpoint("POST", "/v1/novaid/sessions", "createNovaIdSession", "Create identity session.", ("customer", "partner", "employee"), ("CUSTOMER", "PARTNER", "EMPLOYEE"), authority="NovaID", risk="high", idempotency=True),
+./afritech/api_catalog/domains.py:151:                _endpoint("GET", "/v1/novaid/devices/{device_id}", "getDeviceTrust", "Get device trust posture.", ("partner", "operator", "internal-service"), ("PARTNER", "OPERATOR"), authority="NovaID"),
+./contracts/api/baselines/novaid/latest.openapi.json:125:    "/v1/novaid/devices/{device_id}": {
+./contracts/api/baselines/novaid/latest.openapi.json:183:    "/v1/novaid/sessions": {
+./tests/novaid/test_phase5d_postgres_runtime.py:51:        "/v1/novaid/register",
+./tests/novaid/test_phase5d_postgres_runtime.py:59:            "/v1/novaid/verify",
+./tests/novaid/test_phase5d_postgres_runtime.py:70:        "/v1/novaid/authenticate",
+./tests/novaid/test_phase5d_postgres_runtime.py:77:        "/v1/novaid/mfa/verify",
+./tests/novaid/test_phase5d_postgres_runtime.py:88:    profile = client.get("/v1/novaid/me", headers=protected)
+./tests/novaid/test_phase5d_postgres_runtime.py:91:    assert client.get("/v1/novaid/sessions", headers=protected).status_code == 200
+./tests/novaid/test_phase5d_postgres_runtime.py:92:    assert client.post("/v1/novaid/logout", headers=protected).status_code == 200
+./tests/novaid/test_phase5d_postgres_runtime.py:93:    assert client.get("/v1/novaid/me", headers=protected).status_code == 401
+./tests/novaid/test_phase3_api.py:28:        "/v1/novaid/register",
+./tests/novaid/test_phase3_api.py:35:        "/v1/novaid/verify",
+./tests/novaid/test_phase3_api.py:45:        "/v1/novaid/authenticate",
+./tests/novaid/test_phase3_api.py:52:        "/v1/novaid/mfa/verify",
+./tests/novaid/test_phase3_api.py:76:        "/v1/novaid/authenticate",
+./tests/novaid/test_phase5c_authoritative_router.py:58:        "/v1/novaid/register",
+./tests/novaid/test_phase5c_authoritative_router.py:64:            "/v1/novaid/verify",
+./tests/novaid/test_phase5c_authoritative_router.py:75:        "/v1/novaid/authenticate",
+./tests/novaid/test_phase5c_authoritative_router.py:84:        "/v1/novaid/mfa/challenge",
+./tests/novaid/test_phase5c_authoritative_router.py:89:        "/v1/novaid/mfa/verify",
+./tests/novaid/test_phase5c_authoritative_router.py:99:        client.get("/v1/novaid/me", headers=protected).json()["identity_id"]
+./tests/novaid/test_phase5c_authoritative_router.py:102:    assert len(client.get("/v1/novaid/sessions", headers=protected).json()) == 1
+./tests/novaid/test_phase5c_authoritative_router.py:103:    assert client.post("/v1/novaid/logout", headers=protected).json() == {"logged_out": True}
+./tests/novaid/test_phase5c_authoritative_router.py:104:    assert client.get("/v1/novaid/me", headers=protected).status_code == 401
+./tests/novaid/test_phase5c_authoritative_router.py:127:    assert "/v1/novaid/register" in paths
+./tests/novaid/test_phase5c_authoritative_router.py:128:    assert "/v1/novaid/mfa/challenge" in paths
+./tests/novaid/test_phase5c_authoritative_router.py:129:    assert "/v1/novaid/token/refresh" in paths
+./tests/novaid/test_phase5c_authoritative_router.py:130:    assert "/v1/novaid/me" in paths
+./tests/novaid/test_phase5c_authoritative_router.py:140:        if route.path.startswith("/v1/novaid")
+./tests/novaid/test_phase5c_authoritative_router.py:142:    assert ("/v1/novaid/register", "POST") in pairs
+./tests/novaid/test_phase5c_authoritative_router.py:143:    assert ("/v1/novaid/me", "GET") in pairs
+./tests/novaid/test_phase5c_authoritative_router.py:144:    assert ("/v1/novaid/sessions", "GET") in pairs
+./tests/novaid/test_phase5c_authoritative_router.py:145:    assert ("/v1/novaid/legacy/sessions", "GET") in pairs
+./tests/novaid/test_phase5c_authoritative_router.py:146:    assert ("/v1/novaid/legacy/auth", "POST") in pairs
+./tests/novaid/live_phase5e_probe.py:37:    "/v1/novaid/register",
+./tests/novaid/live_phase5e_probe.py:45:        "/v1/novaid/verify",
+./tests/novaid/live_phase5e_probe.py:56:    "/v1/novaid/authenticate",
+./tests/novaid/live_phase5e_probe.py:61:    "/v1/novaid/mfa/verify",
+./tests/novaid/live_phase5e_probe.py:72:assert b.get("/v1/novaid/me", headers=protected).status_code == 200
+./tests/novaid/live_phase5e_probe.py:74:    "/v1/novaid/token/refresh",
+./tests/novaid/live_phase5e_probe.py:79:assert a.post("/v1/novaid/logout", headers=protected).status_code == 200
+./tests/novaid/live_phase5e_probe.py:80:assert b.get("/v1/novaid/me", headers=protected).status_code == 401
+./tests/novaid/live_phase5e_probe.py:82:    "/v1/novaid/token/refresh",
+./tests/novaid/test_phase6f_checkpoints_and_replay.py:163:    assert "/v1/novaid/internal/webauthn/outbox/dead-letters" in paths
+./tests/novaid/test_phase6f_checkpoints_and_replay.py:164:    assert "/v1/novaid/internal/webauthn/outbox/{event_id}/replay" in paths
+./novaid_business_app/src/services/novaid.service.ts:269:        requestJson<Record<string, unknown>>("/v1/novaid/me"),
+./novaid_business_app/src/services/novaid.service.ts:270:        requestJson<Array<Record<string, unknown>>>("/v1/novaid/sessions"),
+./novaid_business_app/src/services/novaid.service.ts:286:      const options = await requestJson<Record<string, unknown>>("/v1/novaid/webauthn/registration/options", {
+./novaid_partner_app/src/services/novaid.service.ts:269:        requestJson<Record<string, unknown>>("/v1/novaid/me"),
+./novaid_partner_app/src/services/novaid.service.ts:270:        requestJson<Array<Record<string, unknown>>>("/v1/novaid/sessions"),
+./novaid_partner_app/src/services/novaid.service.ts:286:      const options = await requestJson<Record<string, unknown>>("/v1/novaid/webauthn/registration/options", {
+./scripts/novaid/phase6f_operational_verify.py:241:                "/v1/novaid/register",
+./scripts/novaid/phase6f_operational_verify.py:256:                "/v1/novaid/verify",
+./scripts/novaid/phase6f_operational_verify.py:268:                "/v1/novaid/authenticate",
+./scripts/novaid/phase6f_operational_verify.py:283:                "/v1/novaid/mfa/verify",
+./scripts/novaid/phase6f_operational_verify.py:305:            me = client.get("/v1/novaid/me", headers=headers)
+./scripts/novaid/phase6f_operational_verify.py:309:                "/v1/novaid/token/refresh",
+./scripts/novaid/phase6f_operational_verify.py:330:                "/v1/novaid/webauthn/step-up/options",
+./scripts/novaid/phase6f_operational_verify.py:339:                "/v1/novaid/webauthn/step-up/verify",
+./scripts/novaid/phase6f_operational_verify.py:352:                "/v1/novaid/webauthn/policy",
+./scripts/novaid/phase6f_operational_verify.py:378:                "/v1/novaid/webauthn/policy",
+./scripts/novaid/phase6f_operational_verify.py:404:                "/v1/novaid/webauthn/registration/options",
+./scripts/novaid/phase6f_operational_verify.py:412:                "/v1/novaid/webauthn/registration/options",
+./scripts/novaid/phase6f_operational_verify.py:420:                "/v1/novaid/webauthn/registration/verify",
+./scripts/novaid/phase6f_operational_verify.py:431:                "/v1/novaid/webauthn/registration/verify",
+./scripts/novaid/phase6f_operational_verify.py:456:                "/v1/novaid/webauthn/authentication/options",
+./scripts/novaid/phase6f_operational_verify.py:467:                "/v1/novaid/webauthn/passwordless/verify",
+./novaid_employee_app/src/services/novaid.service.ts:269:        requestJson<Record<string, unknown>>("/v1/novaid/me"),
+./novaid_employee_app/src/services/novaid.service.ts:270:        requestJson<Array<Record<string, unknown>>>("/v1/novaid/sessions"),
+./novaid_employee_app/src/services/novaid.service.ts:286:      const options = await requestJson<Record<string, unknown>>("/v1/novaid/webauthn/registration/options", {
+./novaid_inspector_app/src/services/novaid.service.ts:269:        requestJson<Record<string, unknown>>("/v1/novaid/me"),
+./novaid_inspector_app/src/services/novaid.service.ts:270:        requestJson<Array<Record<string, unknown>>>("/v1/novaid/sessions"),
+./novaid_inspector_app/src/services/novaid.service.ts:286:      const options = await requestJson<Record<string, unknown>>("/v1/novaid/webauthn/registration/options", {
+./novaid_personal_app/src/services/novaid.service.ts:269:        requestJson<Record<string, unknown>>("/v1/novaid/me"),
+./novaid_personal_app/src/services/novaid.service.ts:270:        requestJson<Array<Record<string, unknown>>>("/v1/novaid/sessions"),
+./novaid_personal_app/src/services/novaid.service.ts:286:      const options = await requestJson<Record<string, unknown>>("/v1/novaid/webauthn/registration/options", {
+./reports/api-contracts/novaid.openapi.json:125:    "/v1/novaid/devices/{device_id}": {
+./reports/api-contracts/novaid.openapi.json:183:    "/v1/novaid/sessions": {

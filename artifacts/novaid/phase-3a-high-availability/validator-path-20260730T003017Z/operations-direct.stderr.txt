@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/ostrinov/afritelematics/afritech/ci/novatech_platform_operations_validator.py", line 10, in <module>
+    from afritech.platform_operations.policy import PolicyInput, VersionedPolicyEngine
+ModuleNotFoundError: No module named 'afritech.platform_operations'

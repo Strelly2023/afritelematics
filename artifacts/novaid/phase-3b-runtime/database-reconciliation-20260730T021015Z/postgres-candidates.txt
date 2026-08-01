@@ -1,0 +1,4 @@
+novaride-operational-migrations-1|postgres:16-alpine|Exited (3) 8 days ago
+novaride-operational-postgres-1|postgres:16-alpine|Up 3 hours (healthy)
+production-postgres-exporter-1|prometheuscommunity/postgres-exporter:v0.15.0|Up 3 hours
+production-postgres-1|postgres:16-alpine|Up 3 hours (healthy)

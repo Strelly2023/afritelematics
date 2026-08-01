@@ -1,0 +1,5 @@
+# NovaID Phase 5C implementation report
+
+The durable authentication router is mounted in `afritech.api.app`; legacy authentication and session routes are isolated below `/v1/novaid/legacy` and deprecated. The durable surface now includes registration, verification, authentication, MFA issue/resend and verification, refresh, `/me`, session administration, logout, and password lifecycle endpoints. The host application's missing `get_novacodepro_platform` import was repaired and the actual application OpenAPI document verifies the mounted routes.
+
+The application factory provides a complete SQLite development composition and fail-closed validation for production database, issuer, audience, algorithm, signing key, and Redis policy. The mounted application-level PostgreSQL adapter is not complete and startup raises `durable_postgres_application_adapter_not_configured`. Core PostgreSQL repositories and Redis revocation remain locally verified. Low-cardinality metrics and named in-process spans are instrumented and tested, but audit-event completion, full race coverage, Redis outage coverage, telemetry backend export, and two-process API testing remain incomplete.

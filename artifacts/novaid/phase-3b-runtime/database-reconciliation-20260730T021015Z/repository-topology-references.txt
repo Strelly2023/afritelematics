@@ -1,0 +1,41 @@
+deploy/novacodepro/production/production-completion-profile.yml:42:    - NOVACODEPRO_DATABASE_URL
+deploy/afripay/docker-compose.afripay.yml:9:      DATABASE_URL: "postgresql://afripay:<redacted>@postgres:5432/afripay"
+deploy/afripay/docker-compose.afripay.yml:24:      DATABASE_URL: "postgresql://afripay:<redacted>@postgres:5432/afripay"
+deploy/afripay/docker-compose.afripay.yml:37:      POSTGRES_PASSWORD: afripay
+deploy/afripay/kubernetes/postgres-statefulset.yaml:27:            - name: POSTGRES_PASSWORD
+deploy/afripay/kubernetes/postgres-statefulset.yaml:31:                  key: POSTGRES_PASSWORD
+deploy/afripay/kubernetes/secret.example.yaml:11:  DATABASE_URL: "postgresql://afripay:<redacted>@afripay-postgres:5432/afripay"
+deploy/afripay/kubernetes/secret.example.yaml:13:  POSTGRES_PASSWORD: "replace-me"
+deploy/production/docker-compose.trust-node.yml:14:      NOVACODEPRO_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaCodePro PostgreSQL URL required}
+deploy/production/.env.production.trust-node.example:21:DATABASE_URL=postgresql://novatech:<redacted>@managed-postgres:5432/novatech
+deploy/production/.env.production.trust-node.example:22:NOVATECH_CORE_DATABASE_URL=postgresql://novatech:<redacted>@managed-postgres:5432/novatech
+deploy/production/.env.production.trust-node:15:DATABASE_URL=postgresql://afritech:<redacted>@postgres:5432/afritech
+deploy/production/.env.production.trust-node:16:NOVATECH_CORE_DATABASE_URL=postgresql://afritech:<redacted>@postgres:5432/afritech
+deploy/phase0/docker-compose.phase0.yml:8:      NOVAPROGRAMMING_DATABASE_URL: postgresql://novaride:<redacted>@novaride-postgres:5432/novaride_phase0
+deploy/phase0/docker-compose.phase0.yml:34:      POSTGRES_PASSWORD: novaride
+deploy/novaride/compose.operational.yml:5:  NOVARIDE_POSTGRES_DSN: postgresql://novaride:<redacted>@postgres:5432/novaride
+deploy/novaride/compose.operational.yml:6:  NOVATECH_POSTGRES_DSN: postgresql://novaride:<redacted>@postgres:5432/novaride
+deploy/novaride/compose.operational.yml:36:      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+deploy/novaride/compose.operational.yml:49:      PGPASSWORD: ${POSTGRES_PASSWORD:?required}
+deploy/novaride/docker-compose.realtime.yml:9:      AFRIRIDE_DATABASE_URL: postgresql://novaride:<redacted>@postgres:5432/novaride
+deploy/novaride/docker-compose.realtime.yml:25:      AFRIRIDE_DATABASE_URL: postgresql://novaride:<redacted>@postgres:5432/novaride
+deploy/novaride/docker-compose.realtime.yml:49:      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+deploy/novaride/.env.example:1:POSTGRES_PASSWORD=replace-with-local-secret
+scripts/novatech_core_apply_migrations.py:12:    dsn = os.environ.get("DATABASE_URL")
+scripts/novatech_core_apply_migrations.py:14:        raise SystemExit("DATABASE_URL is required")
+scripts/preflight_production_deployment.py:25:    "DATABASE_URL",
+scripts/preflight_production_deployment.py:26:    "NOVATECH_CORE_DATABASE_URL",
+scripts/afriride_postgres_cutover_runbook.sh:113:  psql "$AFRIRIDE_DATABASE_URL" -f "$SCHEMA_SQL" \
+scripts/afriride_postgres_cutover_runbook.sh:122:  psql "$AFRIRIDE_DATABASE_URL" -Atc "
+scripts/afriride_postgres_cutover_runbook.sh:150:    --postgres-url "$AFRIRIDE_DATABASE_URL" \
+scripts/afriride_postgres_cutover_runbook.sh:163:    --target "$AFRIRIDE_DATABASE_URL" \
+scripts/afriride_postgres_cutover_runbook.sh:173:  AFRIRIDE_DATABASE_URL="$AFRIRIDE_DATABASE_URL" \
+scripts/afriride_postgres_cutover_runbook.sh:191:  require_env AFRIRIDE_DATABASE_URL
+scripts/afriride_postgres_cutover_runbook.sh:278:  psql "$AFRIRIDE_DATABASE_URL" -At -F $'\t' -c "
+scripts/afriride_postgres_cutover_runbook.sh:311:    --target "$AFRIRIDE_DATABASE_URL" \
+scripts/novaid/certify_postgres_production.py:64:        NOVAID_DATABASE_URL=dsn,
+scripts/novaid/phase6f_operational_verify.py:111:        self.dsn = os.getenv("NOVAID_DATABASE_URL", "")
+scripts/novaride/start_operational_environment.sh:5:: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD without printing it}"
+scripts/run_phase1_setup.sh:105:    [[ -n "${AFRIRIDE_DATABASE_URL:-}" ]] || fail "AFRIRIDE_DATABASE_URL is required for --with-postgres"
+scripts/run_phase1_setup.sh:107:    psql "$AFRIRIDE_DATABASE_URL" -c '\conninfo'
+scripts/run_phase1_setup.sh:109:    psql "$AFRIRIDE_DATABASE_URL" -f "$ROOT_DIR/scripts/sql/afriride_postgres_schema_v1.sql" >/tmp/phase1_setup_schema.log

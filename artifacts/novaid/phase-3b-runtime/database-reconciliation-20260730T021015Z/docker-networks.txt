@@ -1,0 +1,6 @@
+bridge|bridge|local
+host|host|local
+none|null|local
+novaride-operational|bridge|local
+production_default|bridge|local
+production_infra|bridge|local

@@ -1,0 +1,17 @@
+{
+  "phase": "3A.3C1",
+  "exercise": "portable-safe-credential-review",
+  "timestamp_utc": "20260730T002059Z",
+  "repository_branch": "feature/product-factory-enterprise-sdlc",
+  "repository_commit": "9cbb1d8b656119c39bbd047e6f9c299de51e0f61",
+  "embedded_private_key_blocks": 0,
+  "unsafe_sensitive_example_values": 13,
+  "long_literal_candidates": 54,
+  "generated_tracking_failure": 0,
+  "generated_ignore_rule_failure": 1,
+  "focused_test_failure": 0,
+  "architecture_validation_failures": 2,
+  "static_validation_failure": 0,
+  "classification": "REVIEW_ENVIRONMENT_EXAMPLE",
+  "report_sha256": "0a94f42ff2bbaaffb3296eafba84e43e76bddc1ae2408d5c1992a95334fda20b"
+}

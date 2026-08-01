@@ -1,0 +1,423 @@
+
+1. Repository identity
+------------------------------------------------------------
+UTC timestamp: 2026-07-29T23:01:38Z
+Repository: /Users/ostrinov/afritelematics
+Branch: feature/product-factory-enterprise-sdlc
+Commit: 9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+Short commit: 9cbb1d8b6
+
+Working-tree status:
+ M afritech/ci/novatech_platform_operations_validator.py
+ M afritech/docker/Dockerfile.api
+ M afritech/novaid/persistence/migrations.py
+ M afritech/novaid/persistence/migrations/0002_novaid_runtime.sql
+ M afritech/novaid/persistence/migrations/0009_canonical_identity_profile.sql
+ M afritech/novaid/persistence/migrations/0010_tenant_authorization.sql
+ M afritech/novaid/persistence/postgres.py
+ M afritech/novaid/runtime.py
+ M afritech/novaid/tokens.py
+ M afritech/platform_operations/operations.yaml
+ M artifacts/ga-readiness/release/manifests/release-manifest.json
+ M artifacts/ga-readiness/release/manifests/release-manifest.yaml
+ M deploy/novaride/monitoring/alerts-production.yml
+ M deploy/staging/Dockerfile.api
+ M docs/release/release-artifact-inventory.json
+ M pyproject.toml
+ M requirements-dev.txt
+ M requirements.txt
+ M scripts/novaride/backup_runtime.sh
+ M scripts/novaride/restore_runtime.sh
+ M tests/novaid/test_phase5c_startup.py
+?? afritech/ci/novatech_product_binding_validator.py
+?? afritech/governance/bindings/BIND-NOVAID-PRODUCT.yaml
+?? afritech/governance/bindings/BIND-PLATFORM-OPERATIONS-TOOLING.yaml
+?? afritech/tests/ci/test_novatech_product_binding_validator.py
+?? artifacts/novacodepro/studio-upgrade/
+?? artifacts/novaid/final/NOVAID_ACCESS_TOKEN_AUDIT_MODEL.md
+?? artifacts/novaid/final/NOVAID_ACCESS_TOKEN_MODEL.md
+?? artifacts/novaid/final/NOVAID_ACCOUNT_RECOVERY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_ACCOUNT_RECOVERY_MODEL.md
+?? artifacts/novaid/final/NOVAID_ACCOUNT_RECOVERY_WORKFLOW.md
+?? artifacts/novaid/final/NOVAID_API_CONTRACT.md
+?? artifacts/novaid/final/NOVAID_API_END_TO_END_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_ATTESTATION_POLICY.md
+?? artifacts/novaid/final/NOVAID_AUDIT_AUTHORIZATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_AUDIT_EVENT_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_AUDIT_EVENT_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_AUTHENTICATION_ATTEMPT_MODEL.md
+?? artifacts/novaid/final/NOVAID_AUTHENTICATION_FLOW.md
+?? artifacts/novaid/final/NOVAID_AUTHENTICATION_LOCKOUT_MODEL.md
+?? artifacts/novaid/final/NOVAID_AUTHENTICATOR_AUTHORIZATION_MODEL.md
+?? artifacts/novaid/final/NOVAID_AUTHENTICATOR_LIFECYCLE.md
+?? artifacts/novaid/final/NOVAID_AUTHORITATIVE_ROUTE_MAP.md
+?? artifacts/novaid/final/NOVAID_CONCURRENCY_TEST_REPORT.md
+?? artifacts/novaid/final/NOVAID_CORE_AUTHENTICATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_CORE_AUTHENTICATION_LOCAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_COUNTER_POLICY.md
+?? artifacts/novaid/final/NOVAID_DATA_MODEL.md
+?? artifacts/novaid/final/NOVAID_DEPENDENCY_WIRING.md
+?? artifacts/novaid/final/NOVAID_DISTRIBUTED_AUTHENTICATOR_COMPROMISE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_DISTRIBUTED_AUTHENTICATOR_REVOCATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_DISTRIBUTED_AUTHENTICATOR_SUSPENSION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_DISTRIBUTED_CHALLENGE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_DISTRIBUTED_EVENT_CONTRACT.md
+?? artifacts/novaid/final/NOVAID_DISTRIBUTED_RECOVERY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_DISTRIBUTED_SECURITY_VERSION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_FIDO2_CREDENTIAL_MODEL.md
+?? artifacts/novaid/final/NOVAID_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_INFRASTRUCTURE_ACTIVATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_KNOWN_LIMITATIONS.md
+?? artifacts/novaid/final/NOVAID_LIVE_SERVER_E2E_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_LIVE_SERVER_E2E_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_LOCAL_MULTI_INSTANCE_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_LOCKOUT_MODEL.md
+?? artifacts/novaid/final/NOVAID_LOGOUT_MODEL.md
+?? artifacts/novaid/final/NOVAID_MULTI_INSTANCE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_MULTI_INSTANCE_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_NEGATIVE_API_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_NEGATIVE_LIVE_SERVER_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_NEXT_ACTIONS.md
+?? artifacts/novaid/final/NOVAID_OBSERVABILITY_IMPLEMENTATION.md
+?? artifacts/novaid/final/NOVAID_OBSERVABILITY_MODEL.md
+?? artifacts/novaid/final/NOVAID_OPENTELEMETRY_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_OPENTELEMETRY_EXPORT_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_OPERATIONAL_BLOCKERS.md
+?? artifacts/novaid/final/NOVAID_PASSKEY_MODEL.md
+?? artifacts/novaid/final/NOVAID_PASSWORDLESS_AUTHENTICATION.md
+?? artifacts/novaid/final/NOVAID_PASSWORDLESS_SESSION_MODEL.md
+?? artifacts/novaid/final/NOVAID_PASSWORD_CHANGE_FLOW.md
+?? artifacts/novaid/final/NOVAID_PASSWORD_LIFECYCLE.md
+?? artifacts/novaid/final/NOVAID_PASSWORD_POLICY.md
+?? artifacts/novaid/final/NOVAID_PASSWORD_RESET_FLOW.md
+?? artifacts/novaid/final/NOVAID_PERSISTENCE_PROTOCOLS.md
+?? artifacts/novaid/final/NOVAID_PHASE_2_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_2_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_2_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_2_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_3_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_3_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_3_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_3_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_4_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_4_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_4_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_4_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_5A_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_5A_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_5A_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_5A_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_5B_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_5B_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_5B_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_5B_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_5C_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_5C_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_5C_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_5C_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_5D_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_5D_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_5D_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_5D_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_5E_CONCURRENCY_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_5E_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_5E_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_5E_REDIS_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_5E_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_5E_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_5F_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_5F_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_5F_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_5F_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6B_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_6B_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_6B_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_6B_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_AUDIT_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_CONCURRENCY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_METRICS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_RESOURCE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_TRACING_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6C_TWO_PROCESS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_API_E2E_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_AUDIT_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_CONCURRENCY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_METRICS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_NEGATIVE_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_POSTGRESQL_MIGRATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_RESOURCE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_TRACING_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6D_TWO_PROCESS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_AUDIT_AUTHORIZATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_AUDIT_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_CONCURRENCY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_LIVE_API_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_METRICS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_NEGATIVE_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_OUTBOX_DELIVERY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_REDIS_FAILURE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_RESOURCE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_TRACING_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6E_TWO_PROCESS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_PHASE_6_GAP_MATRIX.md
+?? artifacts/novaid/final/NOVAID_PHASE_6_IMPLEMENTATION_REPORT.md
+?? artifacts/novaid/final/NOVAID_PHASE_6_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_PHASE_6_TEST_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PHISHING_RESISTANT_MFA.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_APPLICATION_RUNTIME.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_CONCURRENCY_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_FULL_RACE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_IMPLEMENTATION.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_MIGRATION_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_RACE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_RACE_REPORT.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_REPOSITORY_MODEL.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_RUNTIME_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_POSTGRESQL_VERIFICATION.md
+?? artifacts/novaid/final/NOVAID_PROMETHEUS_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_PROMETHEUS_EXPORT_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_RECOVERY_APPROVAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_RECOVERY_CODE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_RECOVERY_CODE_MODEL.md
+?? artifacts/novaid/final/NOVAID_RECOVERY_CONTAINMENT_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_RECOVERY_METHOD_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_RECOVERY_RATE_LIMIT_MODEL.md
+?? artifacts/novaid/final/NOVAID_RECOVERY_TERMINAL_STATE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_REDIS_CONSUMER_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_REDIS_EXECUTION_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_REDIS_FAILURE_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_REDIS_FAILURE_POLICY.md
+?? artifacts/novaid/final/NOVAID_REDIS_FAILURE_RECOVERY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_REDIS_OUTAGE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_REDIS_REVOCATION_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_REGISTRATION_AND_VERIFICATION_FLOW.md
+?? artifacts/novaid/final/NOVAID_RELEASE_GATE_RESULTS.json
+?? artifacts/novaid/final/NOVAID_RELEASE_RECOMMENDATION.md
+?? artifacts/novaid/final/NOVAID_RESOURCE_LEAK_REPORT.md
+?? artifacts/novaid/final/NOVAID_RESOURCE_LIFECYCLE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_REVOCATION_OUTBOX_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_REVOCATION_OUTBOX_MODEL.md
+?? artifacts/novaid/final/NOVAID_ROUTER_CONSOLIDATION.md
+?? artifacts/novaid/final/NOVAID_SECURITY_EVENT_CATALOG.md
+?? artifacts/novaid/final/NOVAID_SECURITY_VERSION_MODEL.md
+?? artifacts/novaid/final/NOVAID_SESSION_ADMINISTRATION.md
+?? artifacts/novaid/final/NOVAID_SESSION_ADMINISTRATION_MODEL.md
+?? artifacts/novaid/final/NOVAID_SESSION_AND_TOKEN_MODEL.md
+?? artifacts/novaid/final/NOVAID_SESSION_AUDIT_MODEL.md
+?? artifacts/novaid/final/NOVAID_SESSION_COMPROMISE_MODEL.md
+?? artifacts/novaid/final/NOVAID_SESSION_EXPIRY_MODEL.md
+?? artifacts/novaid/final/NOVAID_SESSION_LIFECYCLE.md
+?? artifacts/novaid/final/NOVAID_SESSION_LIFECYCLE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_SHARED_REVOCATION_MODEL.md
+?? artifacts/novaid/final/NOVAID_SQLITE_ASSUMPTION_AUDIT.md
+?? artifacts/novaid/final/NOVAID_TEMPORARY_LOCKOUT_MODEL.md
+?? artifacts/novaid/final/NOVAID_TENANT_ISOLATION_MODEL.md
+?? artifacts/novaid/final/NOVAID_TENANT_POLICY_DISTRIBUTION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_TENANT_POLICY_ENFORCEMENT_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_TENANT_WEBAUTHN_POLICY.md
+?? artifacts/novaid/final/NOVAID_TENANT_WEBAUTHN_POLICY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_TENANT_WEBAUTHN_POLICY_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_TEST_RESULTS.json
+?? artifacts/novaid/final/NOVAID_TOKEN_ROTATION_AND_REPLAY_MODEL.md
+?? artifacts/novaid/final/NOVAID_TWO_PROCESS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_TWO_PROCESS_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_ARCHITECTURE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_AUDIT_AUTHORIZATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_AUDIT_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_AUDIT_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_AUTHENTICATION_FLOW.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_BROWSER_AUTHENTICATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_BROWSER_E2E_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_BROWSER_REGISTRATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_CHALLENGE_COORDINATION_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_CONCURRENCY_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_CONSUMER_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_CONSUMER_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_DEAD_LETTER_MODEL.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_METRICS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_METRICS_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_NEGATIVE_SECURITY_EVIDENCE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_OUTBOX_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_OUTBOX_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_OUTBOX_MODEL.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_OUTBOX_PUBLISHER_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_PUBLISHER_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_REDIS_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_REDIS_COORDINATION.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_REGISTRATION_FLOW.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_RESOURCE_LIFECYCLE_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_STEP_UP_MODEL.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_TRACING_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_TRACING_FINAL_CERTIFICATE.md
+?? artifacts/novaid/final/NOVAID_WEBAUTHN_TWO_PROCESS_CERTIFICATE.md
+?? artifacts/novaid/phase-2-security/
+?? artifacts/novaid/phase-3a-high-availability/
+?? artifacts/novaid/production-database-certification/
+?? artifacts/novaid/step-4f4a/
+?? artifacts/novaid/step-4f4b/
+?? artifacts/novaride/completion-matrix/
+?? artifacts/novaride/database/
+?? artifacts/novaride/docker-recovery/
+?? artifacts/novaride/e2e/
+?? artifacts/novaride/final/
+?? artifacts/novaride/ga/
+?? artifacts/novaride/mobile/
+?? artifacts/novaride/native-identity-audit/
+?? artifacts/novaride/observability/
+?? artifacts/novaride/operational/
+?? artifacts/novaride/performance/
+?? artifacts/novaride/pilot/
+?? artifacts/novaride/production-operations/
+?? artifacts/novaride/prr/
+?? artifacts/novaride/public-pilot/
+?? artifacts/novaride/quality/
+?? artifacts/novaride/runtime/
+?? artifacts/novaride/security/
+?? artifacts/novaride/storage-recovery/
+?? artifacts/product-factory-enterprise/
+?? artifacts/release-baseline/
+?? deployment-evidence/
+?? novapay_agent_app/node_modules
+?? scripts/novaid/certify_postgres_production.py
+?? scripts/novaride/certify_production_operations.py
+?? scripts/novaride/completion_generator_matrix_report.py
+?? tests/novaid/test_phase2_security_validation.py
+?? tests/novaid/test_production_database_migrations.py
+?? tests/novaride_runtime/deployment/test_production_operations_certification.py
+
+2. Local tool inventory
+------------------------------------------------------------
+docker               AVAILABLE: /usr/local/bin/docker
+kubectl              AVAILABLE: /usr/local/bin/kubectl
+helm                 NOT FOUND
+psql                 AVAILABLE: /opt/homebrew/bin/psql
+pg_isready           AVAILABLE: /opt/homebrew/bin/pg_isready
+jq                   AVAILABLE: /opt/homebrew/bin/jq
+curl                 AVAILABLE: /usr/bin/curl
+openssl              AVAILABLE: /opt/homebrew/bin/openssl
+sha256sum            AVAILABLE: /sbin/sha256sum
+shasum               AVAILABLE: /usr/bin/shasum
+aws                  NOT FOUND
+gcloud               NOT FOUND
+az                   NOT FOUND
+doctl                NOT FOUND
+flyctl               NOT FOUND
+terraform            NOT FOUND
+ansible              NOT FOUND
+
+3. Docker environment
+------------------------------------------------------------
+Docker daemon: UNAVAILABLE
+
+4. Kubernetes context
+------------------------------------------------------------
+Current context:
+No current Kubernetes context.
+
+Available contexts:
+CURRENT   NAME   CLUSTER   AUTHINFO   NAMESPACE
+Cluster access: UNAVAILABLE
+
+5. Repository deployment inventory
+------------------------------------------------------------
+FOUND: deploy
+FOUND: infra
+
+Potential HA configuration files:
+./afriride_backend/network/__pycache__/failover.cpython-311.pyc
+./afriride_backend/network/failover.py
+./afritech/novaid/persistence/__pycache__/postgres.cpython-311.pyc
+./afritech/novaid/persistence/postgres.py
+./afritech/novaride_runtime/replay/__pycache__/postgres_repository.cpython-311.pyc
+./afritech/novaride_runtime/replay/postgres_repository.py
+./afritech/platform_runtime/adapters/__pycache__/postgres.cpython-311.pyc
+./afritech/platform_runtime/adapters/postgres.py
+./afritech/storage/__pycache__/postgres_event_store.cpython-311.pyc
+./afritech/storage/postgres_event_store.py
+./afritech/tests/governance/__pycache__/test_novaride_phase0_postgres_deployment.cpython-311-pytest-9.0.3.pyc
+./afritech/tests/governance/__pycache__/test_novaride_phase0_postgres_deployment.cpython-311-pytest-9.1.1.pyc
+./afritech/tests/governance/__pycache__/test_novaride_phase0_postgres_deployment.cpython-311.pyc
+./afritech/tests/governance/test_novaride_phase0_postgres_deployment.py
+./afritech/tests/novapay/__pycache__/test_postgres_repository.cpython-311-pytest-9.0.3.pyc
+./afritech/tests/novapay/__pycache__/test_postgres_repository.cpython-311.pyc
+./afritech/tests/novapay/test_postgres_repository.py
+./afritech/tests/platform_runtime_operational/__pycache__/test_postgres_adapter.cpython-311-pytest-9.0.3.pyc
+./afritech/tests/platform_runtime_operational/__pycache__/test_postgres_adapter.cpython-311-pytest-9.1.1.pyc
+./afritech/tests/platform_runtime_operational/__pycache__/test_postgres_adapter.cpython-311.pyc
+./afritech/tests/platform_runtime_operational/test_postgres_adapter.py
+./afritech/tests/storage/__pycache__/test_platform_store_postgres_adapter.cpython-311-pytest-9.0.3.pyc
+./afritech/tests/storage/__pycache__/test_platform_store_postgres_adapter.cpython-311-pytest-9.1.1.pyc
+./afritech/tests/storage/__pycache__/test_platform_store_postgres_adapter.cpython-311.pyc
+./afritech/tests/storage/test_platform_store_postgres_adapter.py
+./artifacts/novaid/final/NOVAID_PHASE_6D_POSTGRESQL_MIGRATION_CERTIFICATE.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_APPLICATION_RUNTIME.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_CONCURRENCY_EVIDENCE.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_FULL_RACE_CERTIFICATE.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_IMPLEMENTATION.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_MIGRATION_EVIDENCE.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_RACE_CERTIFICATE.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_RACE_REPORT.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_REPOSITORY_MODEL.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_RUNTIME_FINAL_CERTIFICATE.md
+./artifacts/novaid/final/NOVAID_POSTGRESQL_VERIFICATION.md
+./artifacts/novaid/production-database-certification/POSTGRESQL_PRODUCTION_AUTHORITY_CERTIFICATE.md
+./artifacts/novaid/production-database-certification/postgresql-production-certification.json
+./artifacts/novaride/database/POSTGRES_CONCURRENCY_RESULTS.json
+./artifacts/novaride/database/POSTGRES_MIGRATION_RESULTS.json
+./artifacts/novaride/database/POSTGRES_SCHEMA_CERTIFICATE.md
+./artifacts/novaride/ga-readiness/FAILOVER_RESULTS.json
+./artifacts/novaride/operational/FAILOVER_CERTIFICATE.md
+./deploy/afripay/kubernetes/postgres-service.yaml
+./deploy/afripay/kubernetes/postgres-statefulset.yaml
+./deploy/novaride/monitoring/dashboards/08-postgresql-outbox.json
+./deploy/novaride/production/pdb.yaml
+./docs/architecture/AFRIRIDE_POSTGRES_SCHEMA_V1.md
+./docs/pilot/AFRIRIDE_POSTGRES_CUTOVER_RUNBOOK.md
+./docs/pilot/AFRIRIDE_POSTGRES_RUNTIME_VALIDATION_CHECKLIST.md
+./scripts/afriride_postgres_cutover_runbook.sh
+./scripts/afriride_sqlite_to_postgres_migrate.py
+./scripts/novaid/certify_postgres_production.py
+./scripts/sql/afriride_postgres_schema_v1.sql
+./shared/config/postgres.py
+./tests/novaid/__pycache__/test_canonical_identity_postgres_mapping.cpython-311-pytest-9.0.3.pyc
+./tests/novaid/__pycache__/test_canonical_identity_postgres_mapping.cpython-311.pyc
+./tests/novaid/__pycache__/test_phase5a_postgres_integration.cpython-311-pytest-9.0.3.pyc
+./tests/novaid/__pycache__/test_phase5a_postgres_integration.cpython-311-pytest-9.1.1.pyc
+./tests/novaid/__pycache__/test_phase5a_postgres_integration.cpython-311.pyc
+./tests/novaid/__pycache__/test_phase5d_postgres_runtime.cpython-311-pytest-9.0.3.pyc
+./tests/novaid/__pycache__/test_phase5d_postgres_runtime.cpython-311-pytest-9.1.1.pyc
+./tests/novaid/__pycache__/test_phase5d_postgres_runtime.cpython-311.pyc
+./tests/novaid/__pycache__/test_phase5e_postgres_races.cpython-311-pytest-9.0.3.pyc
+./tests/novaid/__pycache__/test_phase5e_postgres_races.cpython-311-pytest-9.1.1.pyc
+./tests/novaid/__pycache__/test_phase5e_postgres_races.cpython-311.pyc
+./tests/novaid/__pycache__/test_phase6_webauthn_postgres.cpython-311-pytest-9.0.3.pyc
+./tests/novaid/__pycache__/test_phase6_webauthn_postgres.cpython-311-pytest-9.1.1.pyc
+./tests/novaid/__pycache__/test_phase6_webauthn_postgres.cpython-311.pyc
+./tests/novaid/__pycache__/test_phase6d_postgres_recovery_races.cpython-311-pytest-9.0.3.pyc
+./tests/novaid/__pycache__/test_phase6d_postgres_recovery_races.cpython-311-pytest-9.1.1.pyc
+./tests/novaid/__pycache__/test_phase6d_postgres_recovery_races.cpython-311.pyc
+./tests/novaid/test_canonical_identity_postgres_mapping.py
+./tests/novaid/test_phase5a_postgres_integration.py
+./tests/novaid/test_phase5d_postgres_runtime.py
+./tests/novaid/test_phase5e_postgres_races.py
+./tests/novaid/test_phase6_webauthn_postgres.py
+./tests/novaid/test_phase6d_postgres_recovery_races.py
+./tests/novaride_runtime/persistence/__pycache__/test_postgres_resilience_repositories.cpython-311-pytest-9.0.3.pyc
+./tests/novaride_runtime/persistence/__pycache__/test_postgres_resilience_repositories.cpython-311-pytest-9.1.1.pyc
+./tests/novaride_runtime/persistence/test_postgres_resilience_repositories.py
+deploy/afripay/kubernetes/postgres-service.yaml
+deploy/afripay/kubernetes/postgres-statefulset.yaml
+deploy/novaride/monitoring/dashboards/08-postgresql-outbox.json
+deploy/novaride/production/pdb.yaml

@@ -1,0 +1,256 @@
+============================================================
+PHASE 3B.3A5 — API IMAGE REBUILD AND RUNTIME CERTIFICATION
+============================================================
+
+1. Repository baseline
+------------------------------------------------------------
+Repository: /Users/ostrinov/afritelematics
+Branch:     feature/product-factory-enterprise-sdlc
+Commit:     9cbb1d8b656119c39bbd047e6f9c299de51e0f61
+UTC:        2026-07-30T05:30:35Z
+
+2. Required inputs
+------------------------------------------------------------
+Present: deploy/production/.env.production.trust-node
+Present: deploy/production/docker-compose.trust-node.yml
+Present: scripts/preflight_production_deployment.py
+Protected environment mode: 600
+
+3. Confirm Docker runtime
+------------------------------------------------------------
+Docker daemon: PASS
+Client=29.5.3 Server=29.5.3
+
+4. Production preflight
+------------------------------------------------------------
+Production deployment preflight PASSED
+Production preflight: PASS
+
+5. Compose resolution
+------------------------------------------------------------
+Compose configuration: PASS
+
+6. Resolve API build configuration
+------------------------------------------------------------
+Resolved service: afritech-api
+Build configured: True
+Image reference:  not explicitly declared
+Build context:    /Users/ostrinov/afritelematics
+Dockerfile:       deploy/staging/Dockerfile.api
+
+7. Dockerfile runtime-library verification
+------------------------------------------------------------
+
+===== deploy/staging/Dockerfile.api =====
+6:RUN apk add --no-cache build-base
+25:RUN apk add --no-cache libgomp libstdc++ \
+32:    && python -c "from sklearn.ensemble import IsolationForest" \
+Runtime-library declarations: PASS
+
+8. Build API image
+------------------------------------------------------------
+ Image production-afritech-api Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 581B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile.api
+#2 transferring dockerfile: 1.39kB 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.11-alpine
+#3 ...
+
+#4 [auth] library/python:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.11-alpine
+#3 DONE 1.8s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 1.41kB 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 DONE 0.0s
+
+#7 [builder 1/9] FROM docker.io/library/python:3.11-alpine@sha256:25976e9d34a0fab1f278cae931f34c8303d97bf0c0d7f85b6b4dcf641d7702a4
+#7 resolve docker.io/library/python:3.11-alpine@sha256:25976e9d34a0fab1f278cae931f34c8303d97bf0c0d7f85b6b4dcf641d7702a4 0.0s done
+#7 DONE 0.0s
+
+#8 [runtime 2/5] WORKDIR /app
+#8 CACHED
+
+#6 [internal] load build context
+#6 transferring context: 297.39kB 0.5s done
+#6 DONE 0.6s
+
+#9 [builder 4/9] COPY pyproject.toml README.md /build/
+#9 CACHED
+
+#10 [builder 6/9] COPY architecture_validator /build/architecture_validator
+#10 CACHED
+
+#11 [builder 7/9] COPY afriride_system /build/afriride_system
+#11 CACHED
+
+#12 [builder 5/9] COPY afritech /build/afritech
+#12 CACHED
+
+#13 [builder 8/9] COPY ecosystems /build/ecosystems
+#13 CACHED
+
+#14 [builder 2/9] WORKDIR /build
+#14 CACHED
+
+#15 [builder 3/9] RUN apk add --no-cache build-base
+#15 CACHED
+
+#16 [builder 9/9] RUN python -m pip wheel --no-cache-dir --wheel-dir /wheels . uvicorn
+#16 CACHED
+
+#17 [runtime 3/5] RUN apk add --no-cache libgomp libstdc++     && addgroup --gid 10001 --system afritech     && adduser --uid 10001 --ingroup afritech --system        --disabled-password --no-create-home afritech
+#17 1.766 (1/3) Installing libgomp (15.2.0-r5)
+#17 1.851 (2/3) Installing libgcc (15.2.0-r5)
+#17 1.864 (3/3) Installing libstdc++ (15.2.0-r5)
+#17 1.904 OK: 18.0 MiB in 41 packages
+#17 DONE 2.0s
+
+#18 [runtime 4/5] COPY --from=builder /wheels /wheels
+#18 DONE 3.5s
+
+#19 [runtime 5/5] RUN python -m pip install --no-cache-dir --no-index --find-links=/wheels afritech uvicorn     && python -c "from sklearn.ensemble import IsolationForest"     && python -m pip uninstall --yes wheel setuptools jaraco.context     && rm -rf /wheels
+#19 3.019 Looking in links: /wheels
+#19 3.031 Processing /wheels/afritech-0.1.0-py3-none-any.whl
+#19 3.323 Processing /wheels/uvicorn-0.52.0-py3-none-any.whl
+#19 3.350 Processing /wheels/django-5.2.16-py3-none-any.whl (from afritech)
+#19 3.536 Processing /wheels/djangorestframework-3.17.1-py3-none-any.whl (from afritech)
+#19 3.542 Processing /wheels/fastapi-0.141.1-py3-none-any.whl (from afritech)
+#19 3.547 Processing /wheels/starlette-1.3.1-py3-none-any.whl (from afritech)
+#19 3.555 Processing /wheels/gitpython-3.1.57-py3-none-any.whl (from afritech)
+#19 3.560 Processing /wheels/httpx-0.28.1-py3-none-any.whl (from afritech)
+#19 3.565 Processing /wheels/pydantic-2.13.4-py3-none-any.whl (from afritech)
+#19 3.572 Processing /wheels/psycopg-3.3.4-py3-none-any.whl (from afritech)
+#19 3.578 Processing /wheels/redis-8.0.1-py3-none-any.whl (from afritech)
+#19 3.587 Processing /wheels/stripe-15.4.0-py3-none-any.whl (from afritech)
+#19 3.601 Processing /wheels/cryptography-49.0.0-cp311-abi3-musllinux_1_2_aarch64.whl (from afritech)
+#19 3.640 Processing /wheels/webauthn-3.0.0-py3-none-any.whl (from afritech)
+#19 3.646 Processing /wheels/pynacl-1.6.2-cp38-abi3-musllinux_1_2_aarch64.whl (from afritech)
+#19 3.674 Processing /wheels/web3-7.16.0-py3-none-any.whl (from afritech)
+#19 3.680 Processing /wheels/hexbytes-1.3.1-py3-none-any.whl (from afritech)
+#19 3.682 Processing /wheels/eth_typing-6.0.0-py3-none-any.whl (from afritech)
+#19 3.686 Processing /wheels/joblib-1.5.3-py3-none-any.whl (from afritech)
+#19 3.690 Processing /wheels/numpy-2.4.6-cp311-cp311-musllinux_1_2_aarch64.whl (from afritech)
+#19 3.786 Processing /wheels/scikit_learn-1.9.0-cp311-cp311-linux_aarch64.whl (from afritech)
+#19 3.912 Processing /wheels/jsonschema-4.26.0-py3-none-any.whl (from afritech)
+#19 3.914 Processing /wheels/pyyaml-6.0.3-cp311-cp311-musllinux_1_2_aarch64.whl (from afritech)
+#19 3.925 Processing /wheels/opentelemetry_api-1.44.0-py3-none-any.whl (from afritech)
+#19 3.927 Processing /wheels/opentelemetry_sdk-1.44.0-py3-none-any.whl (from afritech)
+#19 3.929 Processing /wheels/opentelemetry_exporter_otlp-1.44.0-py3-none-any.whl (from afritech)
+#19 3.933 Processing /wheels/opentelemetry_instrumentation_fastapi-0.65b0-py3-none-any.whl (from afritech)
+#19 3.936 Processing /wheels/opentelemetry_instrumentation_logging-0.65b0-py3-none-any.whl (from afritech)
+#19 3.938 Processing /wheels/opentelemetry_instrumentation_requests-0.65b0-py3-none-any.whl (from afritech)
+#19 3.941 Processing /wheels/opentelemetry_instrumentation_sqlalchemy-0.65b0-py3-none-any.whl (from afritech)
+#19 3.948 Processing /wheels/click-8.4.2-py3-none-any.whl (from uvicorn)
+#19 3.950 Processing /wheels/h11-0.16.0-py3-none-any.whl (from uvicorn)
+#19 3.960 Processing /wheels/gitdb-4.0.12-py3-none-any.whl (from GitPython>=3.1.55->afritech)
+#19 3.972 Processing /wheels/attrs-26.1.0-py3-none-any.whl (from jsonschema>=4.23.0->afritech)
+#19 3.974 Processing /wheels/jsonschema_specifications-2025.9.1-py3-none-any.whl (from jsonschema>=4.23.0->afritech)
+#19 3.975 Processing /wheels/referencing-0.37.0-py3-none-any.whl (from jsonschema>=4.23.0->afritech)
+#19 3.977 Processing /wheels/rpds_py-2026.6.3-cp311-cp311-musllinux_1_2_aarch64.whl (from jsonschema>=4.23.0->afritech)
+#19 3.987 Processing /wheels/typing_extensions-4.16.0-py3-none-any.whl (from opentelemetry-api>=1.25.0->afritech)
+#19 3.991 Processing /wheels/opentelemetry_exporter_otlp_proto_grpc-1.44.0-py3-none-any.whl (from opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 3.992 Processing /wheels/opentelemetry_exporter_otlp_proto_http-1.44.0-py3-none-any.whl (from opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 3.999 Processing /wheels/googleapis_common_protos-1.75.0-py3-none-any.whl (from opentelemetry-exporter-otlp-proto-grpc==1.44.0->opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 4.002 Processing /wheels/grpcio-1.83.0-cp311-cp311-musllinux_1_2_aarch64.whl (from opentelemetry-exporter-otlp-proto-grpc==1.44.0->opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 4.019 Processing /wheels/opentelemetry_exporter_otlp_proto_common-1.44.0-py3-none-any.whl (from opentelemetry-exporter-otlp-proto-grpc==1.44.0->opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 4.021 Processing /wheels/opentelemetry_proto-1.44.0-py3-none-any.whl (from opentelemetry-exporter-otlp-proto-grpc==1.44.0->opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 4.027 Processing /wheels/requests-2.34.2-py3-none-any.whl (from opentelemetry-exporter-otlp-proto-http==1.44.0->opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 4.033 Processing /wheels/protobuf-7.35.1-py3-none-any.whl (from opentelemetry-proto==1.44.0->opentelemetry-exporter-otlp-proto-grpc==1.44.0->opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 4.041 Processing /wheels/opentelemetry_instrumentation_asgi-0.65b0-py3-none-any.whl (from opentelemetry-instrumentation-fastapi>=0.46b0->afritech)
+#19 4.043 Processing /wheels/opentelemetry_instrumentation-0.65b0-py3-none-any.whl (from opentelemetry-instrumentation-fastapi>=0.46b0->afritech)
+#19 4.045 Processing /wheels/opentelemetry_semantic_conventions-0.65b0-py3-none-any.whl (from opentelemetry-instrumentation-fastapi>=0.46b0->afritech)
+#19 4.048 Processing /wheels/opentelemetry_util_http-0.65b0-py3-none-any.whl (from opentelemetry-instrumentation-fastapi>=0.46b0->afritech)
+#19 4.053 Requirement already satisfied: packaging>=18.0 in /usr/local/lib/python3.11/site-packages (from opentelemetry-instrumentation==0.65b0->opentelemetry-instrumentation-fastapi>=0.46b0->afritech) (26.2)
+#19 4.055 Processing /wheels/wrapt-2.3.0-cp311-cp311-musllinux_1_2_aarch64.whl (from opentelemetry-instrumentation==0.65b0->opentelemetry-instrumentation-fastapi>=0.46b0->afritech)
+#19 4.061 Processing /wheels/asgiref-3.12.1-py3-none-any.whl (from opentelemetry-instrumentation-asgi==0.65b0->opentelemetry-instrumentation-fastapi>=0.46b0->afritech)
+#19 4.201 Processing /wheels/scipy-1.17.1-cp311-cp311-musllinux_1_2_aarch64.whl (from scikit-learn>=1.5.0->afritech)
+#19 4.362 Processing /wheels/narwhals-2.24.0-py3-none-any.whl (from scikit-learn>=1.5.0->afritech)
+#19 4.366 Processing /wheels/threadpoolctl-3.6.0-py3-none-any.whl (from scikit-learn>=1.5.0->afritech)
+#19 4.379 Processing /wheels/anyio-4.14.2-py3-none-any.whl (from starlette>=1.3.1->afritech)
+#19 4.391 Processing /wheels/pyasn1-0.6.4-py3-none-any.whl (from webauthn<4,>=3.0.0->afritech)
+#19 4.393 Processing /wheels/pyasn1_modules-0.4.2-py3-none-any.whl (from webauthn<4,>=3.0.0->afritech)
+#19 4.396 Processing /wheels/cbor2-6.1.3-cp311-cp311-musllinux_1_2_aarch64.whl (from webauthn<4,>=3.0.0->afritech)
+#19 4.400 Processing /wheels/pyopenssl-26.3.0-py3-none-any.whl (from webauthn<4,>=3.0.0->afritech)
+#19 4.410 Processing /wheels/cffi-2.1.0-cp311-cp311-musllinux_1_2_aarch64.whl (from cryptography->afritech)
+#19 4.421 Processing /wheels/sqlparse-0.5.5-py3-none-any.whl (from django->afritech)
+#19 4.457 Processing /wheels/typing_inspection-0.4.2-py3-none-any.whl (from fastapi->afritech)
+#19 4.458 Processing /wheels/annotated_doc-0.0.5-py3-none-any.whl (from fastapi->afritech)
+#19 4.468 Processing /wheels/annotated_types-0.8.0-py3-none-any.whl (from pydantic->afritech)
+#19 4.471 Processing /wheels/pydantic_core-2.46.4-cp311-cp311-musllinux_1_1_aarch64.whl (from pydantic->afritech)
+#19 4.516 Processing /wheels/certifi-2026.7.22-py3-none-any.whl (from httpx->afritech)
+#19 4.518 Processing /wheels/httpcore-1.0.9-py3-none-any.whl (from httpx->afritech)
+#19 4.519 Processing /wheels/idna-3.18-py3-none-any.whl (from httpx->afritech)
+#19 4.542 Processing /wheels/psycopg_binary-3.3.4-cp311-cp311-musllinux_1_2_aarch64.whl (from psycopg[binary]->afritech)
+#19 4.595 Processing /wheels/eth_abi-5.2.0-py3-none-any.whl (from web3->afritech)
+#19 4.597 Processing /wheels/eth_account-0.13.7-py3-none-any.whl (from web3->afritech)
+#19 4.600 Processing /wheels/eth_hash-0.8.0-py3-none-any.whl (from eth-hash[pycryptodome]>=0.5.1->web3->afritech)
+#19 4.602 Processing /wheels/eth_utils-6.0.0-py3-none-any.whl (from web3->afritech)
+#19 4.605 Processing /wheels/aiohttp-3.14.3-cp311-cp311-musllinux_1_2_aarch64.whl (from web3->afritech)
+#19 4.612 Processing /wheels/types_requests-2.33.0.20260712-py3-none-any.whl (from web3->afritech)
+#19 4.614 Processing /wheels/websockets-15.0.1-cp311-cp311-musllinux_1_2_aarch64.whl (from web3->afritech)
+#19 4.616 Processing /wheels/pyunormalize-17.0.0-py3-none-any.whl (from web3->afritech)
+#19 4.630 Processing /wheels/aiohappyeyeballs-2.7.1-py3-none-any.whl (from aiohttp>=3.7.4.post0->web3->afritech)
+#19 4.632 Processing /wheels/aiosignal-1.4.0-py3-none-any.whl (from aiohttp>=3.7.4.post0->web3->afritech)
+#19 4.634 Processing /wheels/frozenlist-1.8.0-cp311-cp311-musllinux_1_2_aarch64.whl (from aiohttp>=3.7.4.post0->web3->afritech)
+#19 4.636 Processing /wheels/multidict-6.7.1-cp311-cp311-musllinux_1_2_aarch64.whl (from aiohttp>=3.7.4.post0->web3->afritech)
+#19 4.639 Processing /wheels/propcache-0.5.2-cp311-cp311-musllinux_1_2_aarch64.whl (from aiohttp>=3.7.4.post0->web3->afritech)
+#19 4.642 Processing /wheels/yarl-1.24.5-cp311-cp311-musllinux_1_2_aarch64.whl (from aiohttp>=3.7.4.post0->web3->afritech)
+#19 4.688 Processing /wheels/pycparser-3.0-py3-none-any.whl (from cffi>=2.0.0->cryptography->afritech)
+#19 4.711 Processing /wheels/parsimonious-0.10.0-py3-none-any.whl (from eth-abi>=5.0.1->web3->afritech)
+#19 4.732 Processing /wheels/bitarray-3.9.2-cp311-cp311-musllinux_1_2_aarch64.whl (from eth-account>=0.13.6->web3->afritech)
+#19 4.735 Processing /wheels/eth_keyfile-0.8.1-py3-none-any.whl (from eth-account>=0.13.6->web3->afritech)
+#19 4.737 Processing /wheels/eth_keys-0.7.0-py3-none-any.whl (from eth-account>=0.13.6->web3->afritech)
+#19 4.739 Processing /wheels/eth_rlp-2.2.0-py3-none-any.whl (from eth-account>=0.13.6->web3->afritech)
+#19 4.741 Processing /wheels/rlp-4.1.0-py3-none-any.whl (from eth-account>=0.13.6->web3->afritech)
+#19 4.742 Processing /wheels/ckzg-2.1.8-cp311-cp311-musllinux_1_2_aarch64.whl (from eth-account>=0.13.6->web3->afritech)
+#19 4.772 Processing /wheels/pycryptodome-3.23.0-cp37-abi3-musllinux_1_2_aarch64.whl (from eth-hash[pycryptodome]>=0.5.1->web3->afritech)
+#19 4.793 Processing /wheels/cytoolz-1.1.0-cp311-cp311-musllinux_1_2_aarch64.whl (from eth-utils>=5.0.0->web3->afritech)
+#19 4.808 Processing /wheels/smmap-5.0.3-py3-none-any.whl (from gitdb<5,>=4.0.1->GitPython>=3.1.55->afritech)
+#19 4.878 Processing /wheels/charset_normalizer-3.4.9-cp311-cp311-musllinux_1_2_aarch64.whl (from requests~=2.7->opentelemetry-exporter-otlp-proto-http==1.44.0->opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 4.881 Processing /wheels/urllib3-2.7.0-py3-none-any.whl (from requests~=2.7->opentelemetry-exporter-otlp-proto-http==1.44.0->opentelemetry-exporter-otlp>=1.25.0->afritech)
+#19 5.036 Processing /wheels/toolz-1.1.0-py3-none-any.whl (from cytoolz>=0.10.1->eth-utils>=5.0.0->web3->afritech)
+#19 5.135 Processing /wheels/regex-2026.7.19-cp311-cp311-musllinux_1_2_aarch64.whl (from parsimonious<0.11.0,>=0.10.0->eth-abi>=5.0.1->web3->afritech)
+#19 5.702 Installing collected packages: ckzg, wrapt, websockets, urllib3, typing-extensions, toolz, threadpoolctl, sqlparse, smmap, rpds-py, regex, redis, PyYAML, pyunormalize, pycryptodome, pycparser, pyasn1, psycopg-binary, protobuf, propcache, opentelemetry-util-http, numpy, narwhals, multidict, joblib, idna, hexbytes, h11, frozenlist, eth-hash, click, charset_normalizer, certifi, cbor2, bitarray, attrs, asgiref, annotated-types, annotated-doc, aiohappyeyeballs, yarl, uvicorn, typing-inspection, types-requests, scipy, requests, referencing, pydantic-core, pyasn1-modules, psycopg, parsimonious, opentelemetry-proto, opentelemetry-api, httpcore, grpcio, googleapis-common-protos, gitdb, eth-typing, django, cytoolz, cffi, anyio, aiosignal, stripe, starlette, scikit-learn, PyNaCl, pydantic, opentelemetry-semantic-conventions, opentelemetry-exporter-otlp-proto-common, jsonschema-specifications, httpx, GitPython, djangorestframework, cryptography, aiohttp, pyOpenSSL, opentelemetry-sdk, opentelemetry-instrumentation, jsonschema, fastapi, eth-utils, webauthn, rlp, opentelemetry-instrumentation-sqlalchemy, opentelemetry-instrumentation-requests, opentelemetry-instrumentation-logging, opentelemetry-instrumentation-asgi, opentelemetry-exporter-otlp-proto-http, opentelemetry-exporter-otlp-proto-grpc, eth-keys, eth-abi, opentelemetry-instrumentation-fastapi, opentelemetry-exporter-otlp, eth-rlp, eth-keyfile, eth-account, web3, afritech
+#19 29.28 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+#19 29.28 Successfully installed GitPython-3.1.57 PyNaCl-1.6.2 PyYAML-6.0.3 afritech-0.1.0 aiohappyeyeballs-2.7.1 aiohttp-3.14.3 aiosignal-1.4.0 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.14.2 asgiref-3.12.1 attrs-26.1.0 bitarray-3.9.2 cbor2-6.1.3 certifi-2026.7.22 cffi-2.1.0 charset_normalizer-3.4.9 ckzg-2.1.8 click-8.4.2 cryptography-49.0.0 cytoolz-1.1.0 django-5.2.16 djangorestframework-3.17.1 eth-abi-5.2.0 eth-account-0.13.7 eth-hash-0.8.0 eth-keyfile-0.8.1 eth-keys-0.7.0 eth-rlp-2.2.0 eth-typing-6.0.0 eth-utils-6.0.0 fastapi-0.141.1 frozenlist-1.8.0 gitdb-4.0.12 googleapis-common-protos-1.75.0 grpcio-1.83.0 h11-0.16.0 hexbytes-1.3.1 httpcore-1.0.9 httpx-0.28.1 idna-3.18 joblib-1.5.3 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 multidict-6.7.1 narwhals-2.24.0 numpy-2.4.6 opentelemetry-api-1.44.0 opentelemetry-exporter-otlp-1.44.0 opentelemetry-exporter-otlp-proto-common-1.44.0 opentelemetry-exporter-otlp-proto-grpc-1.44.0 opentelemetry-exporter-otlp-proto-http-1.44.0 opentelemetry-instrumentation-0.65b0 opentelemetry-instrumentation-asgi-0.65b0 opentelemetry-instrumentation-fastapi-0.65b0 opentelemetry-instrumentation-logging-0.65b0 opentelemetry-instrumentation-requests-0.65b0 opentelemetry-instrumentation-sqlalchemy-0.65b0 opentelemetry-proto-1.44.0 opentelemetry-sdk-1.44.0 opentelemetry-semantic-conventions-0.65b0 opentelemetry-util-http-0.65b0 parsimonious-0.10.0 propcache-0.5.2 protobuf-7.35.1 psycopg-3.3.4 psycopg-binary-3.3.4 pyOpenSSL-26.3.0 pyasn1-0.6.4 pyasn1-modules-0.4.2 pycparser-3.0 pycryptodome-3.23.0 pydantic-2.13.4 pydantic-core-2.46.4 pyunormalize-17.0.0 redis-8.0.1 referencing-0.37.0 regex-2026.7.19 requests-2.34.2 rlp-4.1.0 rpds-py-2026.6.3 scikit-learn-1.9.0 scipy-1.17.1 smmap-5.0.3 sqlparse-0.5.5 starlette-1.3.1 stripe-15.4.0 threadpoolctl-3.6.0 toolz-1.1.0 types-requests-2.33.0.20260712 typing-extensions-4.16.0 typing-inspection-0.4.2 urllib3-2.7.0 uvicorn-0.52.0 web3-7.16.0 webauthn-3.0.0 websockets-15.0.1 wrapt-2.3.0 yarl-1.24.5
+#19 33.28 Found existing installation: wheel 0.46.3
+#19 33.28 Uninstalling wheel-0.46.3:
+#19 33.30   Successfully uninstalled wheel-0.46.3
+#19 33.31 Found existing installation: setuptools 79.0.1
+#19 33.34 Uninstalling setuptools-79.0.1:
+#19 33.89   Successfully uninstalled setuptools-79.0.1
+#19 33.93 WARNING: Skipping jaraco.context as it is not installed.
+#19 33.93 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+#19 DONE 34.1s
+
+#20 exporting to image
+#20 exporting layers
+#20 exporting layers 19.7s done
+#20 exporting manifest sha256:c239a629c4570143957ba4b75560ae60908f864876dcbcede9afa93585b49706 done
+#20 exporting config sha256:21dc7f7e96f83191c75765a2032090b30f0158a4b376b9018f017e26acf26ffc done
+#20 exporting attestation manifest sha256:2f1fd41b8940affaf7eebd6500f3b8b6c867efc4ccf2b9cac566e573c064e322 0.0s done
+#20 exporting manifest list sha256:37cb969e55c0e19cd86717657a04bfa58f9d7ffcdb2f15fcc9b8e4898cb1dcb2 0.0s done
+#20 naming to docker.io/library/production-afritech-api:latest done
+#20 unpacking to docker.io/library/production-afritech-api:latest
+#20 unpacking to docker.io/library/production-afritech-api:latest 7.8s done
+#20 DONE 27.6s
+
+#21 resolving provenance for metadata file
+#21 DONE 0.0s
+ Image production-afritech-api Built 
+API image build: PASS
+
+9. Resolve newly built image
+------------------------------------------------------------
+Error response from daemon: No such image: sha256:7d875c85a0187894f3be4d1e6bc3c9e55396bebd987587b09e94e122c29294dc
