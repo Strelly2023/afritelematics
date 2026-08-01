@@ -1,0 +1,29 @@
+{
+  "env_path": "/Users/ostrinov/afritelematics/deploy/production/.env.production.trust-node",
+  "exists": true,
+  "permissions_octal": "0o644",
+  "ignored": true,
+  "required_count": 8,
+  "present_count": 103,
+  "missing": [
+    "AFRITECH_OTEL_ENABLED",
+    "GF_SECURITY_ADMIN_PASSWORD",
+    "GF_SECURITY_ADMIN_USER",
+    "POSTGRES_EXPORTER_DATA_SOURCE_NAME",
+    "PWD",
+    "VITE_AFRITECH_PUBLIC_API_URL"
+  ],
+  "placeholder_keys": [
+    "AFRITECH_DOMAIN",
+    "AFRITECH_TLS_EMAIL",
+    "NOVAPAY_PAYID_CALLBACK_URL",
+    "NOVAPAY_MPESA_KE_CALLBACK_URL",
+    "NOVAPAY_AIRTEL_KE_CALLBACK_URL",
+    "NOVAPAY_LUMICASH_BI_CALLBACK_URL",
+    "NOVAPAY_ECOCASH_BI_CALLBACK_URL",
+    "NOVAPAY_ORANGE_CD_CALLBACK_URL",
+    "NOVAPAY_AIRTEL_CD_CALLBACK_URL",
+    "NOVAPAY_MPESA_CD_CALLBACK_URL",
+    "VITE_AFRIRIDE_API_URL"
+  ]
+}

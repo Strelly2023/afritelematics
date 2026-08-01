@@ -17,7 +17,7 @@
     "npm run build --prefix novacodepro_portal"
   ],
   "checksum_manifest": "artifacts/ga-readiness/release/checksums/SHA256SUMS",
-  "commit_sha": "a0532798456283c76e7e94ff8731b8572a0ff358",
+  "commit_sha": "d364bcbe56fc09a412849fa43654ac867c559bfa",
   "components": [
     {
       "artifact_type": "web_portal",
@@ -77,7 +77,7 @@
     }
   ],
   "container_digests": [],
-  "created_at": "2026-07-24T06:31:09.000Z",
+  "created_at": "2026-07-24T07:05:59.000Z",
   "database_migrations": [],
   "external_blockers": [
     "production signing material unavailable"
@@ -99,7 +99,7 @@
   "prr_evidence": [],
   "release_candidate": "novatech-2026.1.0-rc.1",
   "release_id": "novatech-2026.1.0",
-  "remote_commit_sha": "a0532798456283c76e7e94ff8731b8572a0ff358",
+  "remote_commit_sha": "d364bcbe56fc09a412849fa43654ac867c559bfa",
   "repository": "afritelematics",
   "reproducibility_report": "artifacts/ga-readiness/release/reproducibility/report.json",
   "runtime_versions": {
@@ -121,7 +121,7 @@
     "docs/release/GA_READINESS_BLOCKER_MATRIX.md"
   ],
   "signature_status": "EXTERNALLY_BLOCKED",
-  "source_date_epoch": 1784874669,
+  "source_date_epoch": 1784876759,
   "status": "BASELINE_IN_PROGRESS",
   "tag": null,
   "test_commands": [

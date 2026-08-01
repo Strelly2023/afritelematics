@@ -1,7 +1,7 @@
 {
   "branch": "feature/product-factory-enterprise-sdlc",
-  "commit": "a0532798456283c76e7e94ff8731b8572a0ff358",
-  "generated_at": "2026-07-24T06:38:42.083972+00:00",
+  "commit": "d364bcbe56fc09a412849fa43654ac867c559bfa",
+  "generated_at": "2026-07-24T21:07:16.715516+00:00",
   "items": [
     {
       "archive": false,
@@ -8023,7 +8023,7 @@
     }
   ],
   "worktree": [
-    "## feature/product-factory-enterprise-sdlc...origin/feature/product-factory-enterprise-sdlc [ahead 1]",
+    "## feature/product-factory-enterprise-sdlc...origin/feature/product-factory-enterprise-sdlc",
     "?? artifacts/novacodepro/studio-upgrade/",
     "?? artifacts/novaid/",
     "?? artifacts/novaride/completion-matrix/",

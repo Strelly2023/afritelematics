@@ -1,0 +1,69 @@
+{
+  "administration_service": "PASS",
+  "event_contracts": "PASS",
+  "imports": {
+    "fastapi": {
+      "module": "/usr/local/lib/python3.11/site-packages/fastapi/__init__.py",
+      "status": "PASS",
+      "version": "0.141.1"
+    },
+    "numpy": {
+      "module": "/usr/local/lib/python3.11/site-packages/numpy/__init__.py",
+      "status": "PASS",
+      "version": "2.4.6"
+    },
+    "psycopg": {
+      "module": "/usr/local/lib/python3.11/site-packages/psycopg/__init__.py",
+      "status": "PASS",
+      "version": "3.3.4"
+    },
+    "redis": {
+      "module": "/usr/local/lib/python3.11/site-packages/redis/__init__.py",
+      "status": "PASS",
+      "version": "8.1.0"
+    },
+    "scipy": {
+      "module": "/usr/local/lib/python3.11/site-packages/scipy/__init__.py",
+      "status": "PASS",
+      "version": "1.17.1"
+    },
+    "sklearn": {
+      "module": "/usr/local/lib/python3.11/site-packages/sklearn/__init__.py",
+      "status": "PASS",
+      "version": "1.9.0"
+    },
+    "uvicorn": {
+      "module": "/usr/local/lib/python3.11/site-packages/uvicorn/__init__.py",
+      "status": "PASS",
+      "version": "0.52.0"
+    },
+    "yaml": {
+      "module": "/usr/local/lib/python3.11/site-packages/yaml/__init__.py",
+      "status": "PASS",
+      "version": "6.0.3"
+    }
+  },
+  "opentelemetry_initialization": "PASS",
+  "python": "3.11.13",
+  "resources": {
+    "event_registry": {
+      "entries": 18,
+      "path": "/app/resources/NOVARIDE_EVENT_REGISTRY.yaml",
+      "status": "PASS"
+    },
+    "json_schemas": {
+      "count": 13,
+      "status": "PASS"
+    },
+    "sql_migrations": {
+      "count": 26,
+      "status": "PASS"
+    },
+    "yaml_resources": {
+      "count": 336,
+      "status": "PASS"
+    }
+  },
+  "status": "PASS",
+  "validated_at": "2026-07-30T09:24:49.449876Z"
+}

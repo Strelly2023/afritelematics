@@ -1,0 +1,16 @@
+{
+  "error": "HTTP health/readiness gates failed",
+  "gates": {
+    "docker_build": "PASS",
+    "governance": "PASS",
+    "health": "FAIL",
+    "novaid_database_migrations": "PASS",
+    "postgresql": "BLOCKED",
+    "production_preflight": "PASS",
+    "ready": "FAIL",
+    "redis": "BLOCKED",
+    "runtime_imports_and_resources": "PASS"
+  },
+  "schema_version": 1,
+  "status": "FAIL"
+}

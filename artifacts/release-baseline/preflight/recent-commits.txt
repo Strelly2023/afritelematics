@@ -1,0 +1,30 @@
+fbca1e0d47dc05b121dd796bc884ce4f8e1711e8 2026-07-21T04:06:22+10:00 Djuma Kikombe docs(novaride-operations): publish functional browser certification
+0b9e4ad73e0d00680cac5c8e442c27d7be72d5b3 2026-07-21T03:59:01+10:00 Djuma Kikombe fix(novaride-operations): complete positive browser workflow certification
+c706d3889d73e620eca69daf714fd2ab7b5b4e28 2026-07-20T22:42:15+10:00 Djuma Kikombe fix(novaride-operations): restore payment investigations browser flow
+0d0d15b35e5eb974bb81010dad012d2ea66a7ec3 2026-07-20T20:31:24+10:00 Djuma Kikombe feat(platform): harden NovaID and NovaRide operations
+6d5996ee02030d65c8583fb7a04ddcb6bcb6d33f 2026-07-20T18:26:21+10:00 Djuma Kikombe chore(repo): ignore browser test run outputs
+faa846b10ca50214510d824678e247db558e483f 2026-07-20T17:41:35+10:00 Djuma Kikombe docs(novaride-operations): publish browser certification evidence
+796cc5483eefb00f175e51eaba6e6171b75e0341 2026-07-20T16:48:12+10:00 Djuma Kikombe test(novaride-operations): add authenticated browser certification harness
+5969f6dbb9e4294fa5eeeb4c81f416d90a35a1a1 2026-07-20T14:02:11+10:00 Djuma Kikombe feat(novaride-operations): connect authoritative operations APIs
+da30a0a689faab3a843dbb204e018d5f78c03ec1 2026-07-20T10:51:59+10:00 Djuma Kikombe docs(novaride-ui): publish UI UX evidence and prototype spec
+0ebce8bc57f568033f48035ac16a74562dff17e4 2026-07-20T10:28:00+10:00 Djuma Kikombe feat(novaride-ui): expand operations portal and design system
+92cf8f7db0a737a2ce9ddedf96cf56e040ffd17b 2026-07-20T09:39:11+10:00 Djuma Kikombe docs(novaride): record commit and push register
+1a6c624b78dbb9b439eda9adb1e629d7ceb8738d 2026-07-20T09:19:03+10:00 Djuma Kikombe docs(novaride): record storage and runtime contract blockers
+db3c8956fea334b0313b40f8f1dd2ac4c98bd094 2026-07-20T08:40:03+10:00 Djuma Kikombe test(novaride): record ride lifecycle and blocked runtime evidence
+6e5c695b8a6d1abf1dca990d364e3ee52c38e383 2026-07-20T08:32:42+10:00 Djuma Kikombe docs(novaride): record GA readiness blockers and infrastructure evidence
+6e637925b16dbc83e4eac6903b93ca6b219d3205 2026-07-20T08:25:44+10:00 Djuma Kikombe docs(novaride): establish truthful GA readiness baseline
+495e44d81b1230ab372452f64be9d52df948f60b 2026-07-20T07:29:34+10:00 Djuma Kikombe docs(novaride): update implementation evidence and capability matrix
+a4f8739ca49b78c9088df078a42a8ea57a6fbe77 2026-07-20T07:28:12+10:00 Djuma Kikombe fix(novaride-admin): restore real React/Vite toolchain
+f644c98608058efd8012974151ea891ad3c0588e 2026-07-20T07:27:27+10:00 Djuma Kikombe fix(novaride-corporate): restore real React/Vite toolchain
+bbe930ae1df985d2922f602469b8144f3d5a28ce 2026-07-20T07:22:27+10:00 Djuma Kikombe fix(novaride-fraud-center): restore real React/Vite toolchain
+c1369b93f03d74df9c26c52aa0c47de0ee6ea6c5 2026-07-20T07:21:04+10:00 Djuma Kikombe fix(novaid): restore replay-safe assurance hashing
+63ef5e0c94333d5482ede1c19b13db908ad76e7d 2026-07-19T06:27:43+10:00 Djuma Kikombe NCP-008: operations studio and governed runtime operations
+a3a9144d3401e2b9c263ccf1159ce18906a046d8 2026-07-19T01:41:11+10:00 Djuma Kikombe NCP-007: fix live portal runtime routing
+1290fc258216bb812f9b751610005846d97b0e2e 2026-07-18T21:48:04+10:00 Djuma Kikombe NCP-007: governed development studio and code generation
+e4c274fc159f6861b9f2d1d88dc6483b4793aa77 2026-07-18T18:06:05+10:00 Djuma Kikombe NCP-006B: design studio and experience system
+c03f9f8d7de992402663e7a24c7c2f1b214fca91 2026-07-18T16:21:59+10:00 Djuma Kikombe NCP-006A: architecture studio and governance bridge
+a9bb68cdf797df9061dab9216035b455427a5875 2026-07-18T15:15:37+10:00 Djuma Kikombe NCP-005: requirements traceability and knowledge hub
+9009181dc7bbecd58b6c863000fc1d291032d112 2026-07-18T13:31:26+10:00 Djuma Kikombe NCP-004: governed NovaAI orchestration and agent runtime
+d6e94ed74f5d8f62804cf342e1fbc5d097d0d421 2026-07-18T12:18:31+10:00 Djuma Kikombe NCP-003: complete workspace project and request workflows
+2c300572b49e5bfa2fdbcc5d3615a2b300973188 2026-07-18T10:49:58+10:00 Djuma Kikombe Upgrade NovaCodePro mobile app lifecycle
+f6bc8b366ed2bd71c36c520eb0863c6fb905aa93 2026-07-18T10:05:13+10:00 Djuma Kikombe NCP-002: secure sessions tenancy and authorization

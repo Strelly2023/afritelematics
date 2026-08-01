@@ -1,0 +1,58 @@
+{
+  "completed_at": "2026-07-30T09:29:04.797278Z",
+  "error": "HTTP health/readiness gates failed",
+  "gates": {
+    "api_deployment": {
+      "exit_code": 0,
+      "seconds": 5.316,
+      "status": "PASS"
+    },
+    "dependency_inventory": {
+      "exit_code": 0,
+      "seconds": 3.543,
+      "status": "PASS"
+    },
+    "docker_build": {
+      "exit_code": 0,
+      "seconds": 97.581,
+      "status": "PASS"
+    },
+    "governance_tests": {
+      "exit_code": 0,
+      "seconds": 1.342,
+      "status": "PASS"
+    },
+    "health_http": {
+      "error": "RemoteDisconnected",
+      "http_status": null,
+      "status": "FAIL"
+    },
+    "image_inspection": {
+      "exit_code": 0,
+      "seconds": 0.1,
+      "status": "PASS"
+    },
+    "in_image_validation": {
+      "exit_code": 0,
+      "seconds": 11.516,
+      "status": "PASS"
+    },
+    "novaid_database_migrations": {
+      "exit_code": 0,
+      "seconds": 2.377,
+      "status": "PASS"
+    },
+    "production_preflight": {
+      "exit_code": 0,
+      "seconds": 0.201,
+      "status": "PASS"
+    },
+    "ready_http": {
+      "error": "TimeoutError",
+      "http_status": null,
+      "status": "FAIL"
+    }
+  },
+  "started_at": "2026-07-30T09:23:07.194971Z",
+  "status": "FAIL"
+}

@@ -1,0 +1,204 @@
+{
+  "admin_token_scoped": true,
+  "credential_id": "_cJXA8quQManQ5ldn4ig6g",
+  "db": {
+    "outbox_count": 111,
+    "replay_requests": 3,
+    "security_events": 278,
+    "session": [
+      "ACTIVE",
+      "PHISHING_RESISTANT",
+      "676e937f-ee44-4a01-8abf-174f346ce6ff",
+      "07cbcdd0-119b-466f-afe1-8507e29637d2",
+      "cdc7080a-65ee-4400-a1b7-9f6cbdb20a50"
+    ]
+  },
+  "identity_id": "676e937f-ee44-4a01-8abf-174f346ce6ff",
+  "passwordless_access_token_scoped": true,
+  "replay_request_id": "ae0335f5-81ec-4835-af6c-0e258362bee1",
+  "session_id": "7b043fff-fcef-44e8-b3aa-b29c9c82cda3",
+  "steps": [
+    {
+      "code": null,
+      "detail": "{\"status\": \"live\"}",
+      "name": "a_live",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"status\": \"ready\"}",
+      "name": "a_ready",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"status\": \"live\"}",
+      "name": "b_live",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"status\": \"ready\"}",
+      "name": "b_ready",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"challenge_id\": \"19def14c-cf71-4997-aceb-d6cf20fd2a0b\", \"identity_id\": \"676e937f-ee44-4a01-8abf-174f346ce6ff\", \"membership_id\": \"07cbcdd0-119b-466f-afe1-8507e29637d2\", \"verification_code\": \"536159\"}",
+      "name": "register",
+      "status": 202
+    },
+    {
+      "code": null,
+      "detail": "",
+      "name": "verify",
+      "status": 204
+    },
+    {
+      "code": null,
+      "detail": "{\"challenge_id\": \"56086000-63b8-48d6-ba2f-d61a514d7b86\", \"mfa_code\": \"412040\", \"outcome\": \"MFA_REQUIRED\", \"session_id\": \"7b043fff-fcef-44e8-b3aa-b29c9c82cda3\"}",
+      "name": "authenticate",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJub3ZhaWQtdGVzdCIsImF1ZCI6Im5vdmFpZC10ZXN0LWNsaWVudHMiLCJzdWIiOiI2NzZlOTM3Zi1lZTQ0LTRhMDEtOGFiZi0xNzRmMzQ2Y2U2ZmYiLCJqdGkiOiJkNjkxZDJkYS05ZDhiLTQzNzUtOTY1MC1mNDkzMDQ1MmQ0ZGMiLCJpYXQiOjE3ODQ0MjU1OTcsIm5iZiI6MTc4NDQyNTU5NywiZXhwIjoxNzg0N",
+      "name": "mfa_verify",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"authentication_strength\": \"PASSWORD_OTP\", \"authentication_time\": \"2026-07-19 11:46:37.561086+10:00\", \"expires_at\": \"2026-07-19 23:46:37.561086+10:00\", \"identity_id\": \"676e937f-ee44-4a01-8abf-174f346ce6ff\", \"identity_status\": \"ACTIVE\", \"membership_id\": \"07cbcdd0-119b-466f-afe1-8507e29637d2\", \"membe",
+      "name": "b_me",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"refresh_token\": \"e7fc1a82-7838-45cd-90fb-243f9d2f9ec6.Ta8lQ_wu6kVMUPdnmnoZX3XUCkvmX_YUNzQCB8hlxK7fb8LHWlvYvgtpBAvwPKdK\"}",
+      "name": "b_refresh",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"challenge_id\": \"e2481db8-32c1-4414-8d86-bce03f3b6b8c\", \"public_key\": {\"attestation\": \"none\", \"authenticatorSelection\": {\"requireResidentKey\": false, \"residentKey\": \"preferred\", \"userVerification\": \"required\"}, \"challenge\": \"oyPqpzo7UYNsaG76Hc2DAK8117WiZD_0cYsPvo2TgMU\", \"excludeCredentials\": [], \"p",
+      "name": "registration_options_a2",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"challenge_id\": \"5f1712b7-f047-4f9f-ae91-f4f0371ceb39\", \"public_key\": {\"attestation\": \"none\", \"authenticatorSelection\": {\"requireResidentKey\": false, \"residentKey\": \"preferred\", \"userVerification\": \"required\"}, \"challenge\": \"esgcxgMc4j0fw83WJEiIgVtutKnhQA_0IjINym4EtsQ\", \"excludeCredentials\": [], \"p",
+      "name": "registration_options_b",
+      "status": 200
+    },
+    {
+      "code": "WEBAUTHN_CEREMONY_REJECTED",
+      "detail": "{\"detail\": {\"code\": \"WEBAUTHN_CEREMONY_REJECTED\"}}",
+      "name": "registration_verify_superseded",
+      "status": 401
+    },
+    {
+      "code": null,
+      "detail": "{\"backup_eligible\": false, \"backup_state\": false, \"credential_id\": \"_cJXA8quQManQ5ldn4ig6g\", \"status\": \"ACTIVE\"}",
+      "name": "registration_verify_active",
+      "status": 201
+    },
+    {
+      "code": null,
+      "detail": "{\"challenge_id\": \"d2916e5e-8eaa-4a1a-b458-ff640c82eb4f\", \"public_key\": {\"allowCredentials\": [{\"id\": \"_cJXA8quQManQ5ldn4ig6g\", \"type\": \"public-key\"}], \"challenge\": \"-MCBWDIz8lQTOumlMUIfQC4Bu_wZ2jfnUzfZ-pPyUv4\", \"rpId\": \"localhost\", \"timeout\": 60000, \"userVerification\": \"required\"}}",
+      "name": "step_up_options",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJub3ZhaWQtdGVzdCIsImF1ZCI6Im5vdmFpZC10ZXN0LWNsaWVudHMiLCJzdWIiOiI2NzZlOTM3Zi1lZTQ0LTRhMDEtOGFiZi0xNzRmMzQ2Y2U2ZmYiLCJqdGkiOiJiYzFhNTRhMC04MWM2LTRmOTQtOTVlNS0zZGZjYTY4MzUwYTUiLCJpYXQiOjE3ODQ0MjU1OTcsIm5iZiI6MTc4NDQyNTU5NywiZXhwIjoxNzg0N",
+      "name": "step_up_verify",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"attestation\": \"none\", \"maximum_credentials\": 10, \"passkeys_enabled\": true, \"passwordless_enabled\": true, \"recovery_approval_count\": 1, \"recovery_code_count\": 8, \"recovery_code_expiry_days\": 365, \"recovery_codes_enabled\": true, \"recovery_requires_new_authenticator\": true, \"require_phishing_resistan",
+      "name": "policy_get",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"attestation\": \"none\", \"enabled\": true, \"maximum_credentials\": 10, \"passkeys_enabled\": true, \"passwordless_enabled\": true, \"phishing_resistant_step_up_required\": true, \"recovery_approval_count\": 1, \"recovery_code_count\": 8, \"recovery_code_expiry_days\": 365, \"recovery_codes_enabled\": true, \"recovery",
+      "name": "policy_put",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"challenge_id\": \"9740769a-17bb-42bc-ad0b-1e333ed40240\", \"public_key\": {\"allowCredentials\": [{\"id\": \"_cJXA8quQManQ5ldn4ig6g\", \"type\": \"public-key\"}], \"challenge\": \"QFbsVY2Dv1ZqUpQJWHVKyoVMTeGIJSObQm_ExUPfzLY\", \"rpId\": \"localhost\", \"timeout\": 60000, \"userVerification\": \"required\"}}",
+      "name": "authentication_options_b",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJub3ZhaWQtdGVzdCIsImF1ZCI6Im5vdmFpZC10ZXN0LWNsaWVudHMiLCJzdWIiOiI2NzZlOTM3Zi1lZTQ0LTRhMDEtOGFiZi0xNzRmMzQ2Y2U2ZmYiLCJqdGkiOiJmYjU3YjNmZS1mZDkwLTQyMTEtOWYwNC1jMzhjYjAyYWNhZTkiLCJpYXQiOjE3ODQ0MjU1OTcsIm5iZiI6MTc4NDQyNTU5NywiZXhwIjoxNzg0N",
+      "name": "passwordless_verify",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"detail\":\"bearer token required\"}",
+      "name": "replay_unauthorized",
+      "status": 401
+    },
+    {
+      "code": null,
+      "detail": "[{\"aggregate_filters\": \"{}\", \"approved_at\": \"2026-07-19 11:42:44.640943+10:00\", \"approved_by\": \"3437b02e-ca2c-4e2a-a9b5-70d151d34c2b\", \"cancelled_at\": null, \"completed_at\": \"2026-07-19 11:42:44.648793+10:00\", \"correlation_id\": \"0fa2ca6d-6bbf-4200-a6c5-9dfa476098c3\", \"created_at\": \"2026-07-19 11:42:4",
+      "name": "replay_list",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"aggregate_filters\": {}, \"approved_at\": null, \"approved_by\": null, \"cancelled_at\": null, \"completed_at\": null, \"correlation_id\": \"5cb96976-2ea0-4418-acf6-6b7f13f27e57\", \"created_at\": \"2026-07-19 11:46:37.773384+10:00\", \"dry_run\": true, \"end_time\": null, \"environment_id\": \"\", \"event_type_filters\": [",
+      "name": "replay_request",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"denied_events\": 0, \"eligible_events\": 25, \"malformed_events\": 0, \"matched_events\": 25, \"replay_request_id\": \"ae0335f5-81ec-4835-af6c-0e258362bee1\", \"required_approval\": false, \"risk_level\": \"moderate\", \"warnings\": [], \"would_apply\": 0, \"would_skip\": 25}",
+      "name": "replay_evaluate",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"approval_id\": \"bce4fd91-b90c-4373-915d-3bd594216796\", \"status\": \"approval_pending\"}",
+      "name": "replay_approval_request",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"approval_id\": \"b46c78ca-869d-4054-8ed3-33be00e81523\", \"status\": \"approved\"}",
+      "name": "replay_approve",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"applied_events\": 0, \"evidence_id\": \"bae9920c-53ad-4daf-ad74-74afeec6f221\", \"replay_request_id\": \"ae0335f5-81ec-4835-af6c-0e258362bee1\", \"skipped_events\": 25, \"status\": \"completed\"}",
+      "name": "replay_execute",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "{\"counts\": {\"applied\": 0, \"matched\": 25, \"skipped\": 25}, \"request\": {\"aggregate_filters\": {}, \"approved_at\": \"2026-07-19 11:46:37.786493+10:00\", \"approved_by\": \"27cd8731-27b4-4697-919d-ce75613357db\", \"cancelled_at\": null, \"completed_at\": \"2026-07-19 11:46:37.788865+10:00\", \"correlation_id\": \"5cb9697",
+      "name": "replay_evidence",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "[{\"applied_at\": \"2026-07-19 10:55:32.915112+10:00\", \"consumer_name\": \"novaid-a\", \"event_version\": 1, \"last_event_id\": \"fd345d26-d040-44bb-83b9-eff7eb159bd8\", \"last_stream_id\": \"1784422532635-0\", \"resource_reference\": \"2b5f84f5-6abe-45c8-8305-ff2c0ff582b0\", \"resource_type\": \"WEBAUTHN_CHALLENGE\", \"ten",
+      "name": "checkpoint_list",
+      "status": 200
+    },
+    {
+      "code": null,
+      "detail": "[]",
+      "name": "dead_letter_list",
+      "status": 200
+    }
+  ],
+  "tenant_a": "710a798a-7a55-4329-a314-5a619059d376",
+  "tenant_b": "a8b72d5d-c109-49b1-b818-e36efe6ea294"
+}
