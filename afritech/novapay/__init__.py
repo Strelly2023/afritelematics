@@ -25,4 +25,111 @@ __all__ = [
     "build_trust_surfaces",
     "novapay_ecosystem_contract",
     "validate_database_runtime",
+    "AuthorityKind",
+    "CapabilityAuthority",
+    "CapabilityStatus",
+    "CANONICAL_NOVAPAY_PACKAGE",
+    "CAPABILITY_AUTHORITIES",
+    "LEGACY_PAYMENT_ENGINE",
+    "NOVAPAY_PRODUCT_OWNER",
+    "PROHIBITED_DUPLICATION",
+    "authority_for",
+    "financial_source_of_truth",
+    "validate_authority_map",
+    "Currency",
+    "DEFAULT_MINOR_UNITS",
+    "Money",
+    "freeze_money_payload",
+    "Wallet",
+    "WalletId",
+    "WalletMetadata",
+    "WalletStatus",
+    "WalletType",
+    "LedgerAccount",
+    "LedgerAccountId",
+    "LedgerAccountMetadata",
+    "LedgerAccountStatus",
+    "LedgerAccountType",
+    "NormalBalanceSide",
+    "Transaction",
+    "TransactionDirection",
+    "TransactionId",
+    "TransactionMetadata",
+    "TransactionStatus",
+    "TransactionType",
+    "JournalEntry",
+    "JournalEntryId",
+    "JournalEntryMetadata",
+    "JournalEntryStatus",
+    "JournalEntryType",
+    "PostingLine",
+    "PostingLineId",
+    "PostingLineMetadata",
+    "PostingSide",
 ]
+# NovaPay WP-001B authority exports
+from .authority import (
+    AuthorityKind,
+    CapabilityAuthority,
+    CapabilityStatus,
+    CANONICAL_NOVAPAY_PACKAGE,
+    CAPABILITY_AUTHORITIES,
+    LEGACY_PAYMENT_ENGINE,
+    NOVAPAY_PRODUCT_OWNER,
+    PROHIBITED_DUPLICATION,
+    authority_for,
+    financial_source_of_truth,
+    validate_authority_map,
+)
+
+# NovaPay WP-001C1 domain exports
+from .domain import (
+    Currency,
+    DEFAULT_MINOR_UNITS,
+    Money,
+    freeze_money_payload,
+)
+
+# NovaPay WP-001C2 wallet exports
+from .domain import (
+    Wallet,
+    WalletId,
+    WalletMetadata,
+    WalletStatus,
+    WalletType,
+)
+
+# NovaPay WP-001C3 ledger account exports
+from .domain import (
+    LedgerAccount,
+    LedgerAccountId,
+    LedgerAccountMetadata,
+    LedgerAccountStatus,
+    LedgerAccountType,
+    NormalBalanceSide,
+)
+
+
+# NovaPay WP-001C5 transaction exports
+from .domain import (
+    Transaction,
+    TransactionDirection,
+    TransactionId,
+    TransactionMetadata,
+    TransactionStatus,
+    TransactionType,
+)
+
+
+# NovaPay WP-001C4 journal-entry exports
+from .domain import (
+    JournalEntry,
+    JournalEntryId,
+    JournalEntryMetadata,
+    JournalEntryStatus,
+    JournalEntryType,
+    PostingLine,
+    PostingLineId,
+    PostingLineMetadata,
+    PostingSide,
+)

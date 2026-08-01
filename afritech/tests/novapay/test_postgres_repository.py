@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from afritech.novapay.repository import PostgresNovaPayRepository
+from afritech.novapay.schema import TABLE_NAMES, create_postgres_table_sql
 
 
 @dataclass
@@ -37,6 +38,31 @@ class _Connection:
 
     def close(self) -> None:  # pragma: no cover - compatibility hook
         return None
+
+
+def test_postgres_ddl_has_no_duplicate_base_columns() -> None:
+    base_columns = (
+        "record_id",
+        "organization_id",
+        "status",
+        "version",
+        "idempotency_key",
+        "payload_json",
+        "created_at",
+        "updated_at",
+    )
+
+    for table_name in TABLE_NAMES:
+        definitions = [
+            line.strip().split(maxsplit=1)[0].lower()
+            for line in create_postgres_table_sql(table_name).splitlines()
+            if line.strip() and not line.lstrip().upper().startswith(("CREATE ", ")"))
+        ]
+        for column in base_columns:
+            assert definitions.count(column) == 1, (
+                f"{table_name} defines base column {column!r} "
+                f"{definitions.count(column)} times"
+            )
 
 
 def test_postgres_repository_uses_normalized_schema_and_columns(monkeypatch) -> None:

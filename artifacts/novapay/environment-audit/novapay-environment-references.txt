@@ -1,0 +1,305 @@
+
+===== AFRIPAY_CELERY_ALWAYS_EAGER =====
+afritech/afripay/celery_app.py:32:    always_eager = os.environ.get("AFRIPAY_CELERY_ALWAYS_EAGER", "0").lower() in {
+
+===== AFRIPAY_COMPLIANCE_ACTIVATION_REFERENCE =====
+afritech/afripay/config.py:18:        activation = os.environ.get("AFRIPAY_COMPLIANCE_ACTIVATION_REFERENCE") or None
+deploy/afripay/kubernetes/secret.example.yaml:12:  AFRIPAY_COMPLIANCE_ACTIVATION_REFERENCE: ""
+
+===== AFRIPAY_GROTH16_VERIFICATION_KEY_PATH =====
+afritech/afripay/protocol.py:287:    verification_key_path = os.getenv("AFRIPAY_GROTH16_VERIFICATION_KEY_PATH")
+afritech/tests/afripay/test_afripay_end_to_end_verifiability.py:231:    verification_key_path = os.environ.get("AFRIPAY_GROTH16_VERIFICATION_KEY_PATH")
+afritech/tests/afripay/test_afripay_proof_execution_evidence.py:200:    verification_key_path = os.environ.get("AFRIPAY_GROTH16_VERIFICATION_KEY_PATH")
+
+===== AFRIPAY_GROTH16_WASM_PATH =====
+afritech/afripay/protocol.py:285:    wasm_path = os.getenv("AFRIPAY_GROTH16_WASM_PATH")
+afritech/tests/afripay/test_afripay_end_to_end_verifiability.py:229:    wasm_path = os.environ.get("AFRIPAY_GROTH16_WASM_PATH")
+afritech/tests/afripay/test_afripay_proof_execution_evidence.py:198:    wasm_path = os.environ.get("AFRIPAY_GROTH16_WASM_PATH")
+
+===== AFRIPAY_GROTH16_ZKEY_PATH =====
+afritech/afripay/protocol.py:286:    zkey_path = os.getenv("AFRIPAY_GROTH16_ZKEY_PATH")
+afritech/tests/afripay/test_afripay_end_to_end_verifiability.py:230:    zkey_path = os.environ.get("AFRIPAY_GROTH16_ZKEY_PATH")
+afritech/tests/afripay/test_afripay_proof_execution_evidence.py:199:    zkey_path = os.environ.get("AFRIPAY_GROTH16_ZKEY_PATH")
+
+===== AFRIPAY_LIVE_SETTLEMENT_ENABLED =====
+afritech/afripay/config.py:17:        live = os.environ.get("AFRIPAY_LIVE_SETTLEMENT_ENABLED", "false").lower() == "true"
+deploy/afripay/README.md:20:`AFRIPAY_LIVE_SETTLEMENT_ENABLED` without a compliance activation reference,
+deploy/afripay/docker-compose.afripay.yml:7:      AFRIPAY_LIVE_SETTLEMENT_ENABLED: "false"
+deploy/afripay/docker-compose.afripay.yml:23:      AFRIPAY_LIVE_SETTLEMENT_ENABLED: "false"
+deploy/afripay/kubernetes/configmap.yaml:7:  AFRIPAY_LIVE_SETTLEMENT_ENABLED: "false"
+
+===== AFRIPAY_PROVIDER_MODE =====
+afritech/afripay/providers.py:123:    mode = os.environ.get("AFRIPAY_PROVIDER_MODE", "simulated").lower()
+afritech/afripay/providers.py:159:    previous = os.environ.get("AFRIPAY_PROVIDER_MODE")
+afritech/afripay/providers.py:160:    os.environ["AFRIPAY_PROVIDER_MODE"] = mode
+afritech/afripay/providers.py:165:            os.environ.pop("AFRIPAY_PROVIDER_MODE", None)
+afritech/afripay/providers.py:167:            os.environ["AFRIPAY_PROVIDER_MODE"] = previous
+deploy/afripay/README.md:38:- Sandbox provider mode is enabled with `AFRIPAY_PROVIDER_MODE=sandbox`
+deploy/afripay/kubernetes/configmap.yaml:8:  AFRIPAY_PROVIDER_MODE: "sandbox"
+
+===== AFRIPAY_SANDBOX_PROVIDER =====
+afritech/afripay/providers_sandbox.py:396:    provider_mode = os.environ.get("AFRIPAY_SANDBOX_PROVIDER", "").strip().lower()
+
+===== AFRIPAY_SNARKJS_PATH =====
+afritech/afripay/protocol.py:288:    snarkjs_path = os.getenv("AFRIPAY_SNARKJS_PATH", "snarkjs")
+afritech/tests/afripay/test_afripay_end_to_end_verifiability.py:232:    snarkjs_path = os.environ.get("AFRIPAY_SNARKJS_PATH", "snarkjs")
+afritech/tests/afripay/test_afripay_proof_execution_evidence.py:201:    snarkjs_path = os.environ.get("AFRIPAY_SNARKJS_PATH", "snarkjs")
+
+===== AFRITECH_DATABASE_URL =====
+afritech/architecture/anchor_indexer.py:548:        dsn = os.getenv("AFRITECH_CHAIN_INDEX_DATABASE_URL") or os.getenv("AFRITECH_DATABASE_URL")
+afritech/architecture/anchor_indexer.py:550:            raise AnchorIndexBackendError("AFRITECH_CHAIN_INDEX_DATABASE_URL or AFRITECH_DATABASE_URL is required for postgres backend")
+
+===== AFRITECH_ENV =====
+afritech/security/architecture_signing.py:52:            os.environ.get("AFRITECH_ENV", ""),
+afritech/novacodepro/platform.py:95:    for env_var in ("NOVACODEPRO_ENVIRONMENT", "AFRITECH_ENV", "ENVIRONMENT"):
+afritech/platform_runtime/config.py:93:            environment=str(values.get("NOVATECH_RUNTIME_ENVIRONMENT") or values.get("AFRITECH_ENV") or "development"),
+afritech/tests/core_platform/test_production_boundaries.py:214:    monkeypatch.setenv("AFRITECH_ENV", "production")
+afritech/tests/core_platform/test_production_boundaries.py:223:    monkeypatch.setenv("AFRITECH_ENV", "production")
+afritech/tests/api/test_afriride_next_gen_mobile_api.py:257:    monkeypatch.setenv("AFRITECH_ENV", "production")
+afritech/tests/api/test_afriride_next_gen_mobile_api.py:354:    monkeypatch.setenv("AFRITECH_ENV", "production")
+afritech/tests/api/test_afriride_next_gen_mobile_api.py:378:    monkeypatch.setenv("AFRITECH_ENV", "staging")
+afritech/tests/novapay/test_runtime_backend.py:16:    monkeypatch.setenv("AFRITECH_ENV", "development")
+afritech/tests/novapay/test_runtime_backend.py:38:    monkeypatch.setenv("AFRITECH_ENV", "production")
+afritech/tests/novapay/test_runtime_backend.py:49:    monkeypatch.setenv("AFRITECH_ENV", "development")
+afritech/tests/novapay/test_runtime_backend.py:69:    monkeypatch.setenv("AFRITECH_ENV", "production")
+afritech/observability/opentelemetry.py:54:                os.environ.get("AFRITECH_ENV", "production"),
+afritech/architecture/novaride_architecture.py:627:            os.environ.get("AFRITECH_ENV", ""),
+afritech/core_platform/signing.py:145:    environment = os.environ.get("AFRITECH_ENV", "development").lower()
+afritech/core_platform/signing.py:233:    environment = os.environ.get("AFRITECH_ENV", "development").lower()
+afritech/api/auth/jwt_device_auth.py:184:    environment = os.environ.get("AFRITECH_ENV", "development").lower()
+afritech/api/auth/jwt_device_auth.py:216:        environment = os.environ.get("AFRITECH_ENV", "development").lower()
+afritech/api/novacodepro_platform_api.py:176:        or os.environ.get("AFRITECH_ENV")
+afritech/api/novacodepro_platform_api.py:855:            or os.environ.get("AFRITECH_ENV")
+afritech/api/core_platform_api.py:1499:                os.environ.get("AFRITECH_ENV", "development").lower()
+afritech/api/app.py:608:        or os.environ.get("AFRITECH_ENV")
+afritech/api/app.py:675:        {"name": "AFRITECH_ENV", "valid": configuration_valid},
+afritech/api/app.py:689:        or os.environ.get("AFRITECH_ENV")
+afritech/novaid/config.py:20:        stage = (environment or os.getenv("AFRITECH_ENV", "development")).lower()
+afritech/novaid/runtime.py:63:    stage = os.getenv("AFRITECH_ENV", "development").lower()
+afritech/novapay/repository.py:229:    for env_var in ("NOVAPAY_ENVIRONMENT", "AFRITECH_ENV", "ENVIRONMENT"):
+afritech/novaride_runtime/replay/dependencies.py:20:        environment = os.environ.get("AFRITECH_ENV", "development").lower()
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:3:AFRITECH_ENV=production
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:3:AFRITECH_ENV=production
+deploy/production/.env.production.trust-node.example:3:AFRITECH_ENV=production
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:3:AFRITECH_ENV=production
+deploy/production/.env.production.trust-node:3:AFRITECH_ENV=production
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:3:AFRITECH_ENV=production
+
+===== AFRITECH_JWT_SECRET =====
+afritech/api/auth/jwt_device_auth.py:179:JWT = JWTService(os.environ.get("AFRITECH_JWT_SECRET", _EPHEMERAL_JWT_SECRET))
+afritech/api/auth/novacodepro_session_store.py:260:        self.secret = (secret or os.environ.get("AFRITECH_JWT_SECRET") or secrets.token_urlsafe(48)).encode(
+deploy/staging/.env.staging.example:1:AFRITECH_JWT_SECRET=replace-with-staging-jwt-secret
+deploy/staging/.env.staging:1:AFRITECH_JWT_SECRET=replace-with-staging-jwt-secret
+deploy/production/.env.production:13:AFRITECH_JWT_SECRET=9f8c3d7a1b4e6f902c5a8d1e7f3a9b6c2d4e8f1a3c7b5d9e6f0a1c2d3e4f5a6b
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:5:AFRITECH_JWT_SECRET=replace-with-production-jwt-secret
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:5:AFRITECH_JWT_SECRET=cert_fcdf54b3b14992a4a3c660626e8821080b0a4d810768f83a4906f9218ffb1ebb3aa9f64d1ea53acf203a82c15e551617
+deploy/production/.env.production.save:2:AFRITECH_JWT_SECRET=change-this-to-a-long-random-secret
+deploy/production/.env.production.example:2:AFRITECH_JWT_SECRET=replace-with-production-jwt-secret
+deploy/production/.env.production.trust-node.example:13:AFRITECH_JWT_SECRET=replace-with-production-jwt-secret
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:5:AFRITECH_JWT_SECRET=replace-with-production-jwt-secret
+deploy/production/.env.production.trust-node:5:AFRITECH_JWT_SECRET=cert_fcdf54b3b14992a4a3c660626e8821080b0a4d810768f83a4906f9218ffb1ebb3aa9f64d1ea53acf203a82c15e551617
+deploy/production/.env.production.tls.example:2:AFRITECH_JWT_SECRET=replace-with-production-jwt-secret
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:5:AFRITECH_JWT_SECRET=cert_fcdf54b3b14992a4a3c660626e8821080b0a4d810768f83a4906f9218ffb1ebb3aa9f64d1ea53acf203a82c15e551617
+deploy/phase0/docker-compose.phase0.yml:9:      AFRITECH_JWT_SECRET: phase0-dev-secret
+scripts/preflight_production_deployment.py:27:    "AFRITECH_JWT_SECRET",
+scripts/novaid/phase6f_operational_verify.py:156:        secret = os.getenv("AFRITECH_JWT_SECRET")
+scripts/novaid/phase6f_operational_verify.py:158:            raise RuntimeError("AFRITECH_JWT_SECRET_required_for_operational_probe")
+
+===== AFRITECH_MODE =====
+afritech/guards/engine.py:215:    mode = os.getenv("AFRITECH_MODE", "runtime_safe")
+
+===== BUILD_ACTOR =====
+afritech/api_catalog/provenance.py:24:        "builder": os.getenv("BUILD_ACTOR", "local-developer"),
+
+===== BUILD_ID =====
+afritech/api_catalog/provenance.py:21:        "build_id": os.getenv("BUILD_ID", "local"),
+
+===== CI_PIPELINE_ID =====
+afritech/api_catalog/provenance.py:22:        "pipeline_id": os.getenv("CI_PIPELINE_ID", "local"),
+
+===== GIT_BRANCH =====
+afritech/api_catalog/provenance.py:20:        "git_branch": os.getenv("GIT_BRANCH", "unknown"),
+
+===== GIT_COMMIT =====
+afritech/delivery_platform/build_orchestrator.py:45:            git_commit=os.environ.get("GIT_COMMIT", "unknown"),
+afritech/api_catalog/provenance.py:19:        "git_commit": os.getenv("GIT_COMMIT_SHA", "unknown"),
+
+===== GIT_COMMIT_SHA =====
+afritech/api_catalog/provenance.py:19:        "git_commit": os.getenv("GIT_COMMIT_SHA", "unknown"),
+
+===== NOVAPAY_CBDC_API_TOKEN =====
+afritech/core_platform/cbdc.py:71:        api_token = os.environ.get("NOVAPAY_CBDC_API_TOKEN", "")
+afritech/core_platform/cbdc.py:119:    api_token = os.environ.get("NOVAPAY_CBDC_API_TOKEN", "")
+
+===== NOVAPAY_CBDC_API_URL =====
+afritech/core_platform/cbdc.py:70:        api_url = os.environ.get("NOVAPAY_CBDC_API_URL", "").rstrip("/")
+afritech/core_platform/cbdc.py:118:    api_url = os.environ.get("NOVAPAY_CBDC_API_URL", "")
+
+===== NOVAPAY_CBDC_CALLBACK_URL =====
+afritech/core_platform/cbdc.py:73:        callback_url = os.environ.get("NOVAPAY_CBDC_CALLBACK_URL", "")
+afritech/core_platform/cbdc.py:121:    callback_url = os.environ.get("NOVAPAY_CBDC_CALLBACK_URL", "")
+
+===== NOVAPAY_CBDC_MERCHANT_ID =====
+afritech/core_platform/cbdc.py:72:        merchant_id = os.environ.get("NOVAPAY_CBDC_MERCHANT_ID", "")
+afritech/core_platform/cbdc.py:120:    merchant_id = os.environ.get("NOVAPAY_CBDC_MERCHANT_ID", "")
+
+===== NOVAPAY_CBDC_NETWORK =====
+afritech/core_platform/cbdc.py:65:                    "network": os.environ.get("NOVAPAY_CBDC_NETWORK", "pilot-ledger"),
+afritech/core_platform/cbdc.py:110:                "network": str(raw.get("network", os.environ.get("NOVAPAY_CBDC_NETWORK", "unknown"))),
+afritech/core_platform/cbdc.py:129:        "network": os.environ.get("NOVAPAY_CBDC_NETWORK", "pilot-ledger"),
+
+===== NOVAPAY_COMPLIANCE_LIVE_ENABLED =====
+afritech/tests/core_platform/test_core_platform_layers.py:646:    monkeypatch.setenv("NOVAPAY_COMPLIANCE_LIVE_ENABLED", "false")
+afritech/tests/core_platform/test_core_platform_layers.py:665:    monkeypatch.setenv("NOVAPAY_COMPLIANCE_LIVE_ENABLED", "true")
+afritech/core_platform/settlement.py:319:    compliance_live_enabled = os.environ.get("NOVAPAY_COMPLIANCE_LIVE_ENABLED", "").lower() in {"1", "true", "yes"}
+afritech/core_platform/live_transaction.py:56:            "NOVAPAY_COMPLIANCE_LIVE_ENABLED=true",
+
+===== NOVAPAY_COMPLIANCE_PROVIDER =====
+afritech/tests/core_platform/test_core_platform_layers.py:645:    monkeypatch.setenv("NOVAPAY_COMPLIANCE_PROVIDER", "sumsub")
+afritech/tests/core_platform/test_core_platform_layers.py:664:    monkeypatch.setenv("NOVAPAY_COMPLIANCE_PROVIDER", "sumsub")
+afritech/core_platform/settlement.py:318:    compliance_provider = os.environ.get("NOVAPAY_COMPLIANCE_PROVIDER", "sumsub").strip().lower() or "sumsub"
+
+===== NOVAPAY_DATABASE_URL =====
+afritech/tests/governance/test_production_deployment_preflight.py:33:        "NOVAPAY_DATABASE_URL: "
+afritech/tests/novapay/test_runtime_backend.py:50:    monkeypatch.setenv("NOVAPAY_DATABASE_URL", "postgresql://example/db")
+afritech/tests/novapay/test_runtime_backend.py:71:    monkeypatch.delenv("NOVAPAY_DATABASE_URL", raising=False)
+afritech/novapay/repository.py:616:    database_url = os.environ.get("NOVAPAY_DATABASE_URL") or os.environ.get(
+deploy/production/docker-compose.trust-node.yml:21:      NOVAPAY_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaPay PostgreSQL URL required}
+
+===== NOVAPAY_DB_PATH =====
+afritech/tests/novapay/test_runtime_backend.py:18:    monkeypatch.setenv("NOVAPAY_DB_PATH", str(tmp_path / "novapay.sqlite3"))
+afritech/tests/novapay/test_runtime_backend.py:40:    monkeypatch.setenv("NOVAPAY_DB_PATH", str(tmp_path / "novapay.sqlite3"))
+afritech/novapay/repository.py:631:    db_path = Path(os.environ.get("NOVAPAY_DB_PATH", ":memory:"))
+
+===== NOVAPAY_EVENT_BUS_BACKEND =====
+afritech/core_platform/event_bus.py:115:    backend = os.environ.get("NOVAPAY_EVENT_BUS_BACKEND", "in_memory").strip().lower()
+afritech/core_platform/trust_node.py:184:        "event_bus_backend": os.environ.get("NOVAPAY_EVENT_BUS_BACKEND", "in_memory"),
+
+===== NOVAPAY_EVENT_BUS_KAFKA_BROKERS =====
+afritech/core_platform/event_bus.py:112:        for broker in os.environ.get("NOVAPAY_EVENT_BUS_KAFKA_BROKERS", "").split(",")
+afritech/core_platform/trust_node.py:185:        "event_bus_brokers_configured": bool(os.environ.get("NOVAPAY_EVENT_BUS_KAFKA_BROKERS", "")),
+
+===== NOVAPAY_MOBILE_MONEY_LIVE_ENABLED =====
+afritech/afriprogramming/phase2.py:94:        return os.environ.get("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED", "").lower() in {"1", "true", "yes"}
+afritech/ci/novapay_mobile_money_validator.py:86:            "NOVAPAY_MOBILE_MONEY_LIVE_ENABLED",
+afritech/ci/novapay_mobile_money_validator.py:110:            "NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=false",
+afritech/tests/core_platform/test_mobile_money.py:145:    monkeypatch.setenv("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED", "true")
+afritech/tests/core_platform/test_core_platform_layers.py:644:    monkeypatch.setenv("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED", "true")
+afritech/tests/core_platform/test_core_platform_layers.py:663:    monkeypatch.setenv("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED", "true")
+afritech/core_platform/payments/mobile_money.py:222:            and _env_bool("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED")
+afritech/core_platform/settlement.py:317:    mobile_money_live_enabled = os.environ.get("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED", "").lower() in {"1", "true", "yes"}
+afritech/core_platform/live_transaction.py:55:            "NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=true",
+deploy/afripay/kubernetes/secret.example.yaml:28:  NOVAPAY_MOBILE_MONEY_LIVE_ENABLED: "false"
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:46:NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:46:NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.example:63:NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:46:NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node:46:NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:46:NOVAPAY_MOBILE_MONEY_LIVE_ENABLED=false
+
+===== NOVAPAY_PAYID_API_TOKEN =====
+afritech/tests/core_platform/test_core_platform_layers.py:302:    monkeypatch.setenv("NOVAPAY_PAYID_API_TOKEN", "token-123")
+afritech/core_platform/payments/providers.py:59:        api_token = os.environ.get("NOVAPAY_PAYID_API_TOKEN", "")
+afritech/core_platform/payments/providers.py:325:    api_token = os.environ.get("NOVAPAY_PAYID_API_TOKEN", "")
+deploy/afripay/kubernetes/secret.example.yaml:16:  NOVAPAY_PAYID_API_TOKEN: "replace-after-payid-approval"
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:39:NOVAPAY_PAYID_API_TOKEN=
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:39:NOVAPAY_PAYID_API_TOKEN=
+deploy/production/.env.production.trust-node.example:56:NOVAPAY_PAYID_API_TOKEN=
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:39:NOVAPAY_PAYID_API_TOKEN=
+deploy/production/.env.production.trust-node:39:NOVAPAY_PAYID_API_TOKEN=
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:39:NOVAPAY_PAYID_API_TOKEN=
+
+===== NOVAPAY_PAYID_CALLBACK_URL =====
+afritech/tests/core_platform/test_core_platform_layers.py:304:    monkeypatch.setenv("NOVAPAY_PAYID_CALLBACK_URL", "https://api.example.com/webhooks/payments")
+afritech/core_platform/payments/providers.py:61:        callback_url = os.environ.get("NOVAPAY_PAYID_CALLBACK_URL", "")
+afritech/core_platform/payments/providers.py:327:    callback_url = os.environ.get("NOVAPAY_PAYID_CALLBACK_URL", "")
+deploy/afripay/kubernetes/secret.example.yaml:18:  NOVAPAY_PAYID_CALLBACK_URL: "https://example.com/webhooks/payments"
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:41:NOVAPAY_PAYID_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:41:NOVAPAY_PAYID_CALLBACK_URL=http://localhost:8000/webhooks/novapay/payid
+deploy/production/.env.production.trust-node.example:58:NOVAPAY_PAYID_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:41:NOVAPAY_PAYID_CALLBACK_URL=https://trust.afritech.example/webhooks/payments
+deploy/production/.env.production.trust-node:41:NOVAPAY_PAYID_CALLBACK_URL=http://localhost:8000/webhooks/novapay/payid
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:41:NOVAPAY_PAYID_CALLBACK_URL=http://localhost:8000/webhooks/novapay/payid
+
+===== NOVAPAY_PAYID_COLLECTION_URL =====
+afritech/tests/core_platform/test_core_platform_layers.py:301:    monkeypatch.setenv("NOVAPAY_PAYID_COLLECTION_URL", "https://payid.example.com/collections")
+afritech/core_platform/payments/providers.py:58:        collection_url = os.environ.get("NOVAPAY_PAYID_COLLECTION_URL", "").rstrip("/")
+afritech/core_platform/payments/providers.py:324:    collection_url = os.environ.get("NOVAPAY_PAYID_COLLECTION_URL", "")
+deploy/afripay/kubernetes/secret.example.yaml:15:  NOVAPAY_PAYID_COLLECTION_URL: "https://example.com/payid/collections"
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:38:NOVAPAY_PAYID_COLLECTION_URL=
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:38:NOVAPAY_PAYID_COLLECTION_URL=
+deploy/production/.env.production.trust-node.example:55:NOVAPAY_PAYID_COLLECTION_URL=
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:38:NOVAPAY_PAYID_COLLECTION_URL=
+deploy/production/.env.production.trust-node:38:NOVAPAY_PAYID_COLLECTION_URL=
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:38:NOVAPAY_PAYID_COLLECTION_URL=
+
+===== NOVAPAY_PAYID_LIVE_ENABLED =====
+afritech/afriprogramming/phase2.py:81:    # Live execution remains gated by NOVAPAY_PAYID_LIVE_ENABLED.
+afritech/afriprogramming/phase2.py:90:        return os.environ.get("NOVAPAY_PAYID_LIVE_ENABLED", "").lower() in {"1", "true", "yes"}
+afritech/tests/core_platform/test_core_platform_layers.py:300:    monkeypatch.setenv("NOVAPAY_PAYID_LIVE_ENABLED", "true")
+afritech/core_platform/payments/providers.py:34:        self.live = live and _env_bool("NOVAPAY_PAYID_LIVE_ENABLED")
+afritech/core_platform/payments/providers.py:323:    live_enabled = _env_bool("NOVAPAY_PAYID_LIVE_ENABLED")
+deploy/afripay/kubernetes/secret.example.yaml:14:  NOVAPAY_PAYID_LIVE_ENABLED: "false"
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:37:NOVAPAY_PAYID_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:37:NOVAPAY_PAYID_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.example:54:NOVAPAY_PAYID_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:37:NOVAPAY_PAYID_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node:37:NOVAPAY_PAYID_LIVE_ENABLED=false
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:37:NOVAPAY_PAYID_LIVE_ENABLED=false
+
+===== NOVAPAY_PAYID_MERCHANT_ID =====
+afritech/tests/core_platform/test_core_platform_layers.py:303:    monkeypatch.setenv("NOVAPAY_PAYID_MERCHANT_ID", "merchant-123")
+afritech/core_platform/payments/providers.py:60:        merchant_id = os.environ.get("NOVAPAY_PAYID_MERCHANT_ID", "")
+afritech/core_platform/payments/providers.py:326:    merchant_id = os.environ.get("NOVAPAY_PAYID_MERCHANT_ID", "")
+deploy/afripay/kubernetes/secret.example.yaml:17:  NOVAPAY_PAYID_MERCHANT_ID: "replace-after-payid-approval"
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:40:NOVAPAY_PAYID_MERCHANT_ID=
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:40:NOVAPAY_PAYID_MERCHANT_ID=
+deploy/production/.env.production.trust-node.example:57:NOVAPAY_PAYID_MERCHANT_ID=
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:40:NOVAPAY_PAYID_MERCHANT_ID=
+deploy/production/.env.production.trust-node:40:NOVAPAY_PAYID_MERCHANT_ID=
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:40:NOVAPAY_PAYID_MERCHANT_ID=
+
+===== NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON =====
+afritech/core_platform/payments/providers.py:77:        extra = os.environ.get("NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON")
+deploy/afripay/kubernetes/secret.example.yaml:19:  NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON: ""
+deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak:42:NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON=
+deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak:42:NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON=
+deploy/production/.env.production.trust-node.example:59:NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON=
+deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak:42:NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON=
+deploy/production/.env.production.trust-node:42:NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON=
+deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak:42:NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON=
+
+===== NOVAPAY_PERSISTENCE_BACKEND =====
+afritech/tests/governance/test_production_deployment_preflight.py:31:    assert "NOVAPAY_PERSISTENCE_BACKEND: postgres" in text
+afritech/tests/novapay/test_runtime_backend.py:17:    monkeypatch.setenv("NOVAPAY_PERSISTENCE_BACKEND", "sqlite")
+afritech/tests/novapay/test_runtime_backend.py:39:    monkeypatch.setenv("NOVAPAY_PERSISTENCE_BACKEND", "sqlite")
+afritech/tests/novapay/test_runtime_backend.py:51:    monkeypatch.delenv("NOVAPAY_PERSISTENCE_BACKEND", raising=False)
+afritech/tests/novapay/test_runtime_backend.py:70:    monkeypatch.delenv("NOVAPAY_PERSISTENCE_BACKEND", raising=False)
+afritech/novapay/repository.py:620:        backend=os.environ.get("NOVAPAY_PERSISTENCE_BACKEND"),
+deploy/production/docker-compose.trust-node.yml:20:      NOVAPAY_PERSISTENCE_BACKEND: postgres
+
+===== NOVAPAY_PRIMARY_CORRIDOR =====
+afritech/tests/core_platform/test_core_platform_layers.py:641:    monkeypatch.setenv("NOVAPAY_PRIMARY_CORRIDOR", "AU->KE")
+afritech/tests/core_platform/test_core_platform_layers.py:660:    monkeypatch.setenv("NOVAPAY_PRIMARY_CORRIDOR", "AU->BI")
+afritech/core_platform/settlement.py:307:    primary_corridor = os.environ.get("NOVAPAY_PRIMARY_CORRIDOR", "AU->KE").strip() or "AU->KE"
+
+===== NOVAPAY_ROLLOUT_MODE =====
+afritech/tests/core_platform/test_core_platform_layers.py:640:    monkeypatch.setenv("NOVAPAY_ROLLOUT_MODE", "canary")
+afritech/tests/core_platform/test_core_platform_layers.py:659:    monkeypatch.setenv("NOVAPAY_ROLLOUT_MODE", "pilot")
+afritech/core_platform/settlement.py:306:    mode = os.environ.get("NOVAPAY_ROLLOUT_MODE", "canary").strip().lower() or "canary"
+
+===== NOVAPAY_SETTLEMENT_MODE =====
+afritech/tests/core_platform/test_core_platform_layers.py:643:    monkeypatch.setenv("NOVAPAY_SETTLEMENT_MODE", "pre_funded")
+afritech/tests/core_platform/test_core_platform_layers.py:662:    monkeypatch.setenv("NOVAPAY_SETTLEMENT_MODE", "pre_funded")
+afritech/core_platform/settlement.py:316:    settlement_mode = os.environ.get("NOVAPAY_SETTLEMENT_MODE", "pre_funded").strip().lower() or "pre_funded"
+
+===== NOVATECH_ENVIRONMENT =====
+afritech/delivery_platform/build_orchestrator.py:51:            build_environment=os.environ.get("NOVATECH_ENVIRONMENT", "local"),
+afritech/api_catalog/signing.py:83:    environment = os.getenv("NOVATECH_ENVIRONMENT", "development").lower()
+afritech/api_catalog/publication.py:135:    production = os.getenv("NOVATECH_ENVIRONMENT", "development").lower() == "production"
+
+===== NOVATECH_RELEASE_ID =====
+afritech/api_catalog/provenance.py:23:        "release_id": os.getenv("NOVATECH_RELEASE_ID", f"api-{contract.domain}-{contract.version}"),
+
+===== REPOSITORY_URL =====
+afritech/api_catalog/provenance.py:25:        "repository": os.getenv("REPOSITORY_URL", "github.com/Strelly2023/afritelematics"),

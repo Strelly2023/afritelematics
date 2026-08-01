@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -725,8 +726,12 @@ EVENT_PAYLOAD_SCHEMAS: dict[str, dict[str, Any]] = {
 class SchemaRegistry:
     """Load, validate, and certify the NovaRide event registry."""
 
-    def __init__(self, registry_path: Path | str = EVENT_REGISTRY_PATH) -> None:
-        self.registry_path = Path(registry_path)
+    def __init__(self, registry_path: Path | str | None = None) -> None:
+        configured_path = registry_path or os.getenv(
+            "AFRITECH_EVENT_REGISTRY_PATH",
+            str(EVENT_REGISTRY_PATH),
+        )
+        self.registry_path = Path(configured_path)
         self._registry = self._load_registry()
         self._entries = {
             item.event_type: item for item in self._registry_entries()

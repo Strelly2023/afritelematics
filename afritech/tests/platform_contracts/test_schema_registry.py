@@ -2,15 +2,33 @@ from __future__ import annotations
 
 import copy
 from datetime import datetime, timezone
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
 
 from afritech.platform_contracts.schema_registry import (
+    EVENT_REGISTRY_PATH,
     SchemaRegistry,
     SchemaRegistryError,
     build_schema_registry,
 )
+
+
+def test_schema_registry_honors_runtime_resource_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime_registry = tmp_path / "NOVARIDE_EVENT_REGISTRY.yaml"
+    runtime_registry.write_text(
+        EVENT_REGISTRY_PATH.read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("AFRITECH_EVENT_REGISTRY_PATH", str(runtime_registry))
+
+    registry = SchemaRegistry()
+
+    assert registry.registry_path == runtime_registry
 
 
 def _now() -> str:

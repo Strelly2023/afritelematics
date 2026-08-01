@@ -243,7 +243,21 @@ def create_table_sql(table_name: str) -> str:
 
 
 def create_postgres_table_sql(table_name: str) -> str:
-    extras = POSTGRES_TABLE_EXTRAS.get(table_name, ())
+    base_columns = {
+        "record_id",
+        "organization_id",
+        "status",
+        "version",
+        "idempotency_key",
+        "payload_json",
+        "created_at",
+        "updated_at",
+    }
+    extras = tuple(
+        definition
+        for definition in POSTGRES_TABLE_EXTRAS.get(table_name, ())
+        if definition.split(maxsplit=1)[0].lower() not in base_columns
+    )
     extra_sql = ",\n            ".join(extras)
     if extra_sql:
         extra_sql = ",\n            " + extra_sql
