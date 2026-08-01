@@ -21,6 +21,26 @@ groups:
         for: 1m
         labels: { severity: critical, service: database, escalation_policy: sre }
         annotations: { runbook_url: "docs/operations/novaride/runbooks/database_primary_failure.md", dashboard: "PostgreSQL and Outbox" }
+      - alert: NovaRideDatabaseReplicationBeyondRPO
+        expr: novaride_database_replication_lag_seconds > 60
+        for: 2m
+        labels: { severity: critical, service: database, escalation_policy: sre }
+        annotations: { summary: "Database replication lag exceeds the 60-second RPO", runbook_url: "docs/operations/novaride/runbooks/database_primary_failure.md", dashboard: "PostgreSQL and Outbox" }
+      - alert: NovaRideBackupStale
+        expr: time() - novaride_database_last_successful_backup_timestamp_seconds > 86400
+        for: 15m
+        labels: { severity: critical, service: backup, escalation_policy: sre }
+        annotations: { summary: "No successful database backup has been recorded in 24 hours", runbook_url: "docs/operations/novaride/runbooks/recovery_verification.md", dashboard: "Incident and Recovery Evidence" }
+      - alert: NovaRideRestoreExerciseOverdue
+        expr: time() - novaride_database_last_successful_restore_timestamp_seconds > 2592000
+        for: 1h
+        labels: { severity: high, service: recovery, escalation_policy: sre }
+        annotations: { summary: "No successful isolated restore exercise has been recorded in 30 days", runbook_url: "docs/operations/novaride/runbooks/recovery_verification.md", dashboard: "Incident and Recovery Evidence" }
+      - alert: NovaRideApiAvailabilityBelowSLO
+        expr: avg_over_time(novaride_api_available[30m]) < 0.999
+        for: 5m
+        labels: { severity: critical, service: api, escalation_policy: sre }
+        annotations: { summary: "API availability is below the 99.9% SLO", runbook_url: "docs/operations/novaride/runbooks/rollback_after_failed_deployment.md", dashboard: "SLO and Error Budget" }
       - alert: NovaRideOutboxBacklogSafetyThreshold
         expr: novaride_outbox_backlog > 50000
         for: 5m
