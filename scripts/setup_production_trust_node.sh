@@ -77,6 +77,12 @@ if ! docker compose version >/dev/null 2>&1; then
   exit 1
 fi
 
+echo "==> Running production deployment preflight"
+python3 scripts/preflight_production_deployment.py \
+  --env-file "$ENV_FILE" \
+  --compose-file "$COMPOSE_FILE" \
+  --check-compose
+
 DOMAIN="$(awk -F= '$1 == "AFRITECH_DOMAIN" { print $2 }' "$ENV_FILE" | tail -n 1)"
 EMAIL="$(awk -F= '$1 == "AFRITECH_TLS_EMAIL" { print $2 }' "$ENV_FILE" | tail -n 1)"
 if [[ -z "$DOMAIN" || -z "$EMAIL" ]]; then
@@ -96,7 +102,12 @@ if [[ "$APPLY_FIREWALL" -eq 1 ]]; then
   sudo ufw --force enable
 fi
 
-COMPOSE=(docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE")
+COMPOSE=(
+  docker compose
+  --project-directory deploy/production
+  --env-file "$ENV_FILE"
+  -f "$COMPOSE_FILE"
+)
 PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(basename "$(dirname "$COMPOSE_FILE")")}"
 CERT_INSPECT_IMAGE="certbot/certbot:v2.11.0"
 BUILD_ARGS=()

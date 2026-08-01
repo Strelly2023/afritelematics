@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env.production.tls
-    volumes:
-      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
+    secrets:
+      - eth_private_key
     expose:
       - "8000"
     command:
@@ -77,3 +77,7 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+
+secrets:
+  eth_private_key:
+    file: ./secrets/eth_private_key

@@ -1,5 +1,6 @@
 services:
   afritech-api:
+    image: ${AFRITECH_API_IMAGE:-afritech/afritech-api:production}
     build:
       context: ../..
       dockerfile: deploy/staging/Dockerfile.api
@@ -11,16 +12,39 @@ services:
       AFRITECH_RUNTIME_ENVIRONMENT: production
       AFRITECH_AGENT_STATE_PATH: /var/lib/afritech/agents/production.sqlite3
       AFRITECH_AGENT_MINIMUM_CONFIDENCE: "0.85"
+      NOVARIDE_REPLAY_DB_PATH: /var/lib/afritech/novaride-runtime-replay.sqlite3
+      NOVACODEPRO_AUTH_DB_PATH: /var/lib/afritech/novacodepro-auth.sqlite3
+      NOVACODEPRO_DB_PATH: /var/lib/afritech/novacodepro-platform.sqlite3
+      NOVACODEPRO_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaCodePro PostgreSQL URL required}
+      NOVAPROGRAMMING_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaProgramming PostgreSQL URL required}
+      NOVAPAY_PERSISTENCE_BACKEND: postgres
+      NOVAPAY_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaPay PostgreSQL URL required}
+      NOVAID_PERSISTENCE_BACKEND: postgres
+      NOVAID_DATABASE_URL: ${NOVATECH_CORE_DATABASE_URL:?NovaID PostgreSQL URL required}
+      NOVAID_JWT_ISSUER: ${NOVAID_JWT_ISSUER:?NovaID JWT issuer required}
+      NOVAID_JWT_AUDIENCE: ${NOVAID_JWT_AUDIENCE:?NovaID JWT audience required}
+      NOVAID_SIGNING_KEYS_JSON: ${NOVAID_SIGNING_KEYS_JSON:?NovaID signing key registry required}
+      NOVAID_ACTIVE_SIGNING_KEY_ID: ${NOVAID_ACTIVE_SIGNING_KEY_ID:?NovaID active signing key required}
+      NOVAID_TOKEN_ALGORITHM: HS256
+      NOVAID_TOKEN_PEPPER: ${NOVAID_TOKEN_PEPPER:?NovaID token pepper required}
+      NOVAID_REDIS_REQUIRED: "true"
+      NOVAID_REDIS_URL: ${NOVAID_REDIS_URL:?NovaID Redis URL required}
       AFRITECH_OTEL_ENABLED: ${AFRITECH_OTEL_ENABLED:-true}
       OTEL_SERVICE_NAME: afritech-api
       OTEL_SERVICE_NAMESPACE: afritech
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_RESOURCE_ATTRIBUTES: deployment.environment=production,service.version=0.7.0
+    secrets:
+      - eth_private_key
+      - source: afritech_private_key
+        target: afritech_private_key.pem
+      - source: afritech_public_key
+        target: afritech_public_key.pem
     volumes:
-      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
-      - ./secrets/afritech_private_key.pem:/run/secrets/afritech_private_key.pem:ro
-      - ./secrets/afritech_public_key.pem:/run/secrets/afritech_public_key.pem:ro
       - afritech_anchor_index:/var/lib/afritech
+    networks:
+      - default
+      - infrastructure
     expose:
       - "8000"
     ports:
@@ -36,7 +60,7 @@ services:
       - "1"
       - --proxy-headers
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -218,3 +242,16 @@ volumes:
   afritech_anchor_index:
   certbot_www:
   certbot_certs:
+
+secrets:
+  eth_private_key:
+    file: ./secrets/eth_private_key
+  afritech_private_key:
+    file: ./secrets/afritech_private_key.pem
+  afritech_public_key:
+    file: ./secrets/afritech_public_key.pem
+
+networks:
+  infrastructure:
+    external: true
+    name: ${AFRITECH_INFRA_NETWORK:-production_infra}
