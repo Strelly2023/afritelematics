@@ -4,8 +4,12 @@ WORKDIR /app
 
 ENV PYTHONPATH=/app:/app/afritech
 
-COPY . /app/afritech
+RUN useradd --create-home --uid 10001 --shell /usr/sbin/nologin afritech
+
+COPY --chown=afritech:afritech . /app/afritech
 
 RUN pip install --no-cache-dir fastapi uvicorn redis
+
+USER 10001:10001
 
 CMD ["uvicorn", "api.server.run_server:app", "--host", "0.0.0.0", "--port", "8000"]

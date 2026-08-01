@@ -1,45 +1,86 @@
-FROM python:3.11-slim
+# syntax=docker/dockerfile:1.7
 
-# --- Environment configuration ---
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ARG PYTHON_IMAGE=python:3.11.13-slim-bookworm@sha256:86adf8dbadc3d6e82ee5dd2c74bec2e1c2467cdad47886280501df722372d2e1
 
-# --- System dependencies (recommended minimal set) ---
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+FROM ${PYTHON_IMAGE} AS wheelhouse
 
-# --- App directory ---
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_INPUT=1 \
+    PIP_PREFER_BINARY=1
+WORKDIR /build
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update \
+    && apt-get install --yes --no-install-recommends build-essential
+
+COPY pyproject.toml README.md /build/
+COPY deploy/production/requirements-api.lock /build/requirements-api.lock
+COPY afritech /build/afritech
+COPY architecture_validator /build/architecture_validator
+COPY afriride_system /build/afriride_system
+COPY ecosystems /build/ecosystems
+COPY services /build/services
+COPY contracts /build/contracts
+
+RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
+    --mount=type=cache,target=/wheelhouse-cache,sharing=locked \
+    python -m pip wheel \
+      --prefer-binary \
+      --constraint /build/requirements-api.lock \
+      --wheel-dir /wheelhouse-cache \
+      . uvicorn \
+    && mkdir -p /wheelhouse \
+    && cp /wheelhouse-cache/*.whl /wheelhouse/
+
+
+FROM ${PYTHON_IMAGE} AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_INPUT=1 \
+    AFRITECH_EVENT_REGISTRY_PATH=/app/resources/NOVARIDE_EVENT_REGISTRY.yaml
 WORKDIR /app
 
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update \
+    && apt-get install --yes --no-install-recommends \
+       ca-certificates \
+       gosu \
+       libgomp1 \
+       libstdc++6 \
+    && groupadd --gid 10001 --system afritech \
+    && useradd --uid 10001 --gid 10001 --system \
+       --no-create-home --shell /usr/sbin/nologin afritech
 
-# --- Copy project files ---
-COPY pyproject.toml README.md /app/
-COPY afritech /app/afritech
-COPY architecture_validator /app/architecture_validator
-COPY afriride_system /app/afriride_system
-COPY afriride /app/afriride
-COPY dashboard /app/dashboard
-COPY replay_dashboard /app/replay_dashboard
-COPY mutants /app/mutants
-COPY ecosystems /app/ecosystems
-COPY docs /app/docs
-COPY reports /app/reports
-COPY traces /app/traces
+COPY --chmod=0755 deploy/staging/api-entrypoint.sh /usr/local/bin/afritech-api-entrypoint
+COPY --from=wheelhouse /wheelhouse /wheelhouse
+COPY --chown=10001:10001 docs/registry/NOVARIDE_EVENT_REGISTRY.yaml /app/resources/NOVARIDE_EVENT_REGISTRY.yaml
+RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
+    python -m pip install \
+      --no-index \
+      --find-links=/wheelhouse \
+      afritech uvicorn \
+    && python -m afritech.tools.production_image_validation --output /tmp/runtime-validation.json \
+    && python -m pip uninstall --yes wheel setuptools \
+    && rm -rf /wheelhouse /tmp/runtime-validation.json
 
+ARG BUILD_COMMIT=unknown
+ARG BUILD_BRANCH=unknown
+ARG BUILD_TIMESTAMP=unknown
 
+LABEL org.opencontainers.image.title="AfriTech API" \
+      org.opencontainers.image.revision="${BUILD_COMMIT}" \
+      org.opencontainers.image.created="${BUILD_TIMESTAMP}" \
+      org.opencontainers.image.source.branch="${BUILD_BRANCH}"
 
-# --- Install Python dependencies ---
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir . uvicorn
+ENTRYPOINT ["afritech-api-entrypoint"]
 
-# --- Expose API port ---
 EXPOSE 8000
 
-# --- Healthcheck (matches your system behavior) ---
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+  CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health').read()"]
 
-# Compose may override this command for production worker tuning.
 CMD ["uvicorn", "afritech.api.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--proxy-headers"]
