@@ -13,6 +13,21 @@ from .service import NovaPayEcosystem
 from .surfaces import build_app_surfaces, build_trust_surfaces
 from .ecosystem_contract import novapay_ecosystem_contract
 
+from .domain.fx import (
+    CurrencyPair,
+    ExchangeRate,
+    ExchangeRateId,
+    ExchangeRateSource,
+    ExchangeRateStatus,
+    ExchangeRateValue,
+    FXMetadata,
+    FXQuote,
+    FXQuoteId,
+    FXQuoteStatus,
+    FXValidityWindow,
+    RateSpread,
+)
+
 __all__ = [
     "AuthorityKind",
     "CANONICAL_NOVAPAY_PACKAGE",
@@ -20,6 +35,7 @@ __all__ = [
     "CapabilityAuthority",
     "CapabilityStatus",
     "Currency",
+    "CurrencyPair",
     "Customer",
     "CustomerAddress",
     "CustomerContact",
@@ -31,6 +47,16 @@ __all__ = [
     "CustomerTier",
     "CustomerType",
     "DEFAULT_MINOR_UNITS",
+    "ExchangeRate",
+    "ExchangeRateId",
+    "ExchangeRateSource",
+    "ExchangeRateStatus",
+    "ExchangeRateValue",
+    "FXMetadata",
+    "FXQuote",
+    "FXQuoteId",
+    "FXQuoteStatus",
+    "FXValidityWindow",
     "FinancialAccount",
     "FinancialAccountId",
     "FinancialAccountMetadata",
@@ -64,6 +90,7 @@ __all__ = [
     "PostingLineId",
     "PostingLineMetadata",
     "PostingSide",
+    "RateSpread",
     "Transaction",
     "TransactionDirection",
     "TransactionId",
