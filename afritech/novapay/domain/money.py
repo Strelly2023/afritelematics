@@ -27,6 +27,7 @@ _CURRENCY_MINOR_UNITS = MappingProxyType(
         "EUR": 2,
         "GBP": 2,
         "KES": 2,
+        "RWF": 0,
         "TZS": 2,
         "UGX": 0,
         "USD": 2,

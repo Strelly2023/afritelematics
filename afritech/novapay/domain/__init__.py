@@ -35,9 +35,37 @@ from .fx import (
     RateSpread,
 )
 
+from .currency import (
+    STANDARD_CURRENCY_DEFINITIONS,
+    CurrencyCountryCodes,
+    CurrencyDefinition,
+    CurrencyDefinitionId,
+    CurrencyMetadata,
+    CurrencyName,
+    CurrencyRegistry,
+    CurrencyRegistryId,
+    CurrencyRoundingMode,
+    CurrencyStatus,
+    CurrencySymbol,
+    CurrencyType,
+    standard_currency_definitions,
+    standard_currency_registry,
+)
+
 __all__ = [
     "Currency",
+    "CurrencyCountryCodes",
+    "CurrencyDefinition",
+    "CurrencyDefinitionId",
+    "CurrencyMetadata",
+    "CurrencyName",
     "CurrencyPair",
+    "CurrencyRegistry",
+    "CurrencyRegistryId",
+    "CurrencyRoundingMode",
+    "CurrencyStatus",
+    "CurrencySymbol",
+    "CurrencyType",
     "Customer",
     "CustomerAddress",
     "CustomerContact",
@@ -85,6 +113,7 @@ __all__ = [
     "PostingLineMetadata",
     "PostingSide",
     "RateSpread",
+    "STANDARD_CURRENCY_DEFINITIONS",
     "Transaction",
     "TransactionDirection",
     "TransactionId",
@@ -97,6 +126,8 @@ __all__ = [
     "WalletStatus",
     "WalletType",
     "freeze_money_payload",
+    "standard_currency_definitions",
+    "standard_currency_registry",
 ]
 
 

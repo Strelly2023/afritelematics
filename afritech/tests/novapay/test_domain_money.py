@@ -306,3 +306,34 @@ def test_top_level_novapay_exports_are_available() -> None:
     assert novapay.Money is Money
     assert "Currency" in novapay.__all__
     assert "Money" in novapay.__all__
+
+@pytest.mark.parametrize(
+    ("currency_code", "raw_amount", "expected_amount"),
+    [
+        ("BIF", "1234.5", Decimal("1234")),
+        ("RWF", "1234.5", Decimal("1234")),
+        ("UGX", "1234.5", Decimal("1234")),
+    ],
+)
+def test_zero_minor_unit_african_currencies(
+    currency_code: str,
+    raw_amount: str,
+    expected_amount: Decimal,
+) -> None:
+    currency = Currency.of(currency_code)
+    money = Money.of(raw_amount, currency)
+
+    assert currency.minor_units == 0
+    assert currency.quantum == Decimal("1")
+    assert money.amount == expected_amount
+    assert money.canonical_amount() == str(expected_amount)
+
+
+def test_zero_minor_unit_currency_canonical_dicts() -> None:
+    for currency_code in ("BIF", "RWF", "UGX"):
+        currency = Currency.of(currency_code)
+
+        assert dict(currency.canonical_dict()) == {
+            "code": currency_code,
+            "minor_units": 0,
+        }
