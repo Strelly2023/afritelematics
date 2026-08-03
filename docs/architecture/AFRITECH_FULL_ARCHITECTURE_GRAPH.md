@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `850`
+- Startup-safe closure size: `852`
 - Django-bound modules declared in repo: `265`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `107`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (850 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (852 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -261,7 +261,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (685)
+### Other (687)
 
 - `afritech`
 - `afritech.afripay`
@@ -749,6 +749,7 @@ flowchart TD
 - `afritech.novapay.domain.Currency`
 - `afritech.novapay.domain.Money`
 - `afritech.novapay.domain.Transaction`
+- `afritech.novapay.domain.Transfer`
 - `afritech.novapay.domain.Wallet`
 - `afritech.novapay.domain.balance_snapshot`
 - `afritech.novapay.domain.currency`
@@ -759,6 +760,7 @@ flowchart TD
 - `afritech.novapay.domain.ledger_account`
 - `afritech.novapay.domain.money`
 - `afritech.novapay.domain.transaction`
+- `afritech.novapay.domain.transfer`
 - `afritech.novapay.domain.wallet`
 - `afritech.novapay.ecosystem_contract`
 - `afritech.novapay.migration`
