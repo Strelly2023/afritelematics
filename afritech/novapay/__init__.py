@@ -144,6 +144,26 @@ __all__ = [
     "PostingLineMetadata",
     "PostingSide",
     "RateSpread",
+    "Remittance",
+    "RemittanceAmountBreakdown",
+    "RemittanceCharge",
+    "RemittanceCorridor",
+    "RemittanceDirection",
+    "RemittanceFee",
+    "RemittanceFeeType",
+    "RemittanceFundingReference",
+    "RemittanceId",
+    "RemittanceInstruction",
+    "RemittanceInstructionId",
+    "RemittanceInstructionMetadata",
+    "RemittanceMetadata",
+    "RemittancePricingMetadata",
+    "RemittancePriority",
+    "RemittancePurpose",
+    "RemittanceRecipientReference",
+    "RemittanceReference",
+    "RemittanceStatus",
+    "RemittanceType",
     "STANDARD_CURRENCY_DEFINITIONS",
     "Transaction",
     "TransactionDirection",
@@ -189,8 +209,7 @@ __all__ = [
     "standard_currency_registry",
     "validate_authority_map",
     "validate_database_runtime",
-]
-# NovaPay WP-001B authority exports
+]# NovaPay WP-001B authority exports
 from .authority import (
     AuthorityKind,
     CapabilityAuthority,
@@ -208,55 +227,6 @@ from .authority import (
 # NovaPay WP-001C1 domain exports
 from .domain import (
     Currency,
-    DEFAULT_MINOR_UNITS,
-    Money,
-    freeze_money_payload,
-)
-
-# NovaPay WP-001C2 wallet exports
-from .domain import (
-    Wallet,
-    WalletId,
-    WalletMetadata,
-    WalletStatus,
-    WalletType,
-)
-
-# NovaPay WP-001C3 ledger account exports
-from .domain import (
-    LedgerAccount,
-    LedgerAccountId,
-    LedgerAccountMetadata,
-    LedgerAccountStatus,
-    LedgerAccountType,
-    NormalBalanceSide,
-)
-
-
-# NovaPay WP-001C5 transaction exports
-from .domain import (
-    Transaction,
-    TransactionDirection,
-    TransactionId,
-    TransactionMetadata,
-    TransactionStatus,
-    TransactionType,
-)
-
-
-# NovaPay WP-001C4 journal-entry exports
-from .domain import (
-    JournalEntry,
-    JournalEntryId,
-    JournalEntryMetadata,
-    JournalEntryStatus,
-    JournalEntryType,
-    PostingLine,
-    PostingLineId,
-    PostingLineMetadata,
-    PostingSide,
-)
-from .domain.customer import (
     Customer,
     CustomerAddress,
     CustomerContact,
@@ -267,8 +237,7 @@ from .domain.customer import (
     CustomerStatus,
     CustomerTier,
     CustomerType,
-)
-from .domain.financial_account import (
+    DEFAULT_MINOR_UNITS,
     FinancialAccount,
     FinancialAccountId,
     FinancialAccountMetadata,
@@ -278,9 +247,48 @@ from .domain.financial_account import (
     FinancialAccountStatus,
     FinancialAccountTerms,
     FinancialAccountType,
-)
-
-from .domain import (
+    JournalEntry,
+    JournalEntryId,
+    JournalEntryMetadata,
+    JournalEntryStatus,
+    JournalEntryType,
+    LedgerAccount,
+    LedgerAccountId,
+    LedgerAccountMetadata,
+    LedgerAccountStatus,
+    LedgerAccountType,
+    Money,
+    NormalBalanceSide,
+    PostingLine,
+    PostingLineId,
+    PostingLineMetadata,
+    PostingSide,
+    Remittance,
+    RemittanceAmountBreakdown,
+    RemittanceCharge,
+    RemittanceCorridor,
+    RemittanceDirection,
+    RemittanceFee,
+    RemittanceFeeType,
+    RemittanceFundingReference,
+    RemittanceId,
+    RemittanceInstruction,
+    RemittanceInstructionId,
+    RemittanceInstructionMetadata,
+    RemittanceMetadata,
+    RemittancePricingMetadata,
+    RemittancePriority,
+    RemittancePurpose,
+    RemittanceRecipientReference,
+    RemittanceReference,
+    RemittanceStatus,
+    RemittanceType,
+    Transaction,
+    TransactionDirection,
+    TransactionId,
+    TransactionMetadata,
+    TransactionStatus,
+    TransactionType,
     Transfer,
     TransferAccountReference,
     TransferAmountBreakdown,
@@ -302,4 +310,10 @@ from .domain import (
     TransferReference,
     TransferStatus,
     TransferType,
+    Wallet,
+    WalletId,
+    WalletMetadata,
+    WalletStatus,
+    WalletType,
+    freeze_money_payload,
 )

@@ -66,6 +66,29 @@ from .balance_snapshot import (
     LedgerPosition,
 )
 
+from .remittance import (
+    Remittance,
+    RemittanceAmountBreakdown,
+    RemittanceCharge,
+    RemittanceCorridor,
+    RemittanceDirection,
+    RemittanceFee,
+    RemittanceFeeType,
+    RemittanceFundingReference,
+    RemittanceId,
+    RemittanceInstruction,
+    RemittanceInstructionId,
+    RemittanceInstructionMetadata,
+    RemittanceMetadata,
+    RemittancePricingMetadata,
+    RemittancePriority,
+    RemittancePurpose,
+    RemittanceRecipientReference,
+    RemittanceReference,
+    RemittanceStatus,
+    RemittanceType,
+)
+
 __all__ = [
     "BalanceComponent",
     "BalanceComponentType",
@@ -138,6 +161,26 @@ __all__ = [
     "PostingLineMetadata",
     "PostingSide",
     "RateSpread",
+    "Remittance",
+    "RemittanceAmountBreakdown",
+    "RemittanceCharge",
+    "RemittanceCorridor",
+    "RemittanceDirection",
+    "RemittanceFee",
+    "RemittanceFeeType",
+    "RemittanceFundingReference",
+    "RemittanceId",
+    "RemittanceInstruction",
+    "RemittanceInstructionId",
+    "RemittanceInstructionMetadata",
+    "RemittanceMetadata",
+    "RemittancePricingMetadata",
+    "RemittancePriority",
+    "RemittancePurpose",
+    "RemittanceRecipientReference",
+    "RemittanceReference",
+    "RemittanceStatus",
+    "RemittanceType",
     "STANDARD_CURRENCY_DEFINITIONS",
     "Transaction",
     "TransactionDirection",
@@ -175,7 +218,6 @@ __all__ = [
     "standard_currency_definitions",
     "standard_currency_registry",
 ]
-
 
 # NovaPay WP-001C2 wallet exports
 from .wallet import (
