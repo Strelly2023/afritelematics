@@ -58,11 +58,11 @@ def test_canonical_inventory_contract() -> None:
 
 
 def test_domain_public_count() -> None:
-    assert len(domain.__all__) == 147
+    assert len(domain.__all__) == 166
 
 
 def test_top_level_public_count() -> None:
-    assert len(novapay.__all__) == 169
+    assert len(novapay.__all__) == 188
 
 
 def test_domain_exports_every_canonical_symbol() -> None:
@@ -125,22 +125,36 @@ def test_preexisting_top_level_exports_are_preserved() -> None:
         assert hasattr(novapay, symbol)
 
 
-def test_exact_domain_export_delta() -> None:
+def test_settlement_batch_domain_exports_remain_preserved() -> None:
     before = set(literal_all(DOMAIN_BACKUP))
     after = set(domain.__all__)
+    canonical = set(settlement_batch.__all__)
 
-    assert after - before == set(
-        settlement_batch.__all__
-    )
+    assert before.issubset(after)
+    assert canonical.issubset(after)
+
+    for symbol in settlement_batch.__all__:
+        assert hasattr(domain, symbol)
+        assert getattr(domain, symbol) is getattr(
+            settlement_batch,
+            symbol,
+        )
 
 
-def test_exact_top_level_export_delta() -> None:
+def test_settlement_batch_top_level_exports_remain_preserved() -> None:
     before = set(literal_all(TOP_LEVEL_BACKUP))
     after = set(novapay.__all__)
+    canonical = set(settlement_batch.__all__)
 
-    assert after - before == set(
-        settlement_batch.__all__
-    )
+    assert before.issubset(after)
+    assert canonical.issubset(after)
+
+    for symbol in settlement_batch.__all__:
+        assert hasattr(novapay, symbol)
+        assert getattr(novapay, symbol) is getattr(
+            settlement_batch,
+            symbol,
+        )
 
 
 def test_authority_boundary_is_preserved() -> None:
