@@ -1,0 +1,9 @@
+3df9e8d423dabe3a75b0aa9e7b739dbfbb5714f392d55e0a0d40bf1842eb5c0c  artifacts/novapay/wp-001m/governance/runtime-boundary-governance.txt
+bf6e462f705c126c761c35f622aaa74425a71b9f188876104098aa8d129ecdf2  artifacts/novapay/wp-001m/manifests/section-7b-manifest.txt
+8acf13864e4db99271e52a749fc533a53ee33ebd3831ce9dee843648cd9d57e3  artifacts/novapay/wp-001m/manifests/section-8a1-manifest.txt
+b6e84263aed03402b5d95a333a1233d051cab8104abb25e6ad10467fb165b118  artifacts/novapay/wp-001m/manifests/section-8a2-manifest.txt
+85349cf9bc226737093b200ca73fd4920c94cc7052ce1735a50b748d05d456a8  artifacts/novapay/wp-001m/tests/broader-novapay-domain.txt
+45ab8f57d3026418957ada79ea7873363e9110b42f9d7f9752be807ccc585e60  artifacts/novapay/wp-001m/tests/focused-settlement-exports.txt
+47f578a1f42ed7b00609f36b02f37403252a1807f9e0683f445c2c013d4c28a2  artifacts/novapay/wp-001m/tests/remittance-compatibility.txt
+dbc78c8690b95cc9bbd84b105619a50a6803f8943d4d123ba621911f09dc9965  artifacts/novapay/wp-001m/tests/settlement-batch-domain.txt
+cd633295b7fc824f8ce67ace199ab7f10b91adb2d7cb53c591db6c7d62ca630e  artifacts/novapay/wp-001m/tests/transfer-compatibility.txt

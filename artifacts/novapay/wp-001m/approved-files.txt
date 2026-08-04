@@ -1,0 +1,11 @@
+afritech/novapay/__init__.py
+afritech/novapay/domain/__init__.py
+afritech/novapay/domain/settlement_batch.py
+afritech/tests/novapay/test_domain_settlement_batch_aggregate.py
+afritech/tests/novapay/test_domain_settlement_batch_entry_instruction.py
+afritech/tests/novapay/test_domain_settlement_batch_exports.py
+afritech/tests/novapay/test_domain_settlement_batch_lifecycle.py
+afritech/tests/novapay/test_domain_settlement_batch_primitives.py
+afritech/tests/novapay/test_domain_settlement_batch_result_summary.py
+docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md
+docs/reviews/AFRITECH_RUNTIME_BOUNDARY_SCAN.md

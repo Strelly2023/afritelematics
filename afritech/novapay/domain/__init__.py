@@ -89,6 +89,29 @@ from .remittance import (
     RemittanceType,
 )
 
+from .settlement_batch import (
+    SettlementBatch,
+    SettlementBatchId,
+    SettlementBatchStatus,
+    SettlementBatchType,
+    SettlementEntry,
+    SettlementEntryId,
+    SettlementEntryStatus,
+    SettlementFailure,
+    SettlementInstruction,
+    SettlementInstructionId,
+    SettlementInstructionMetadata,
+    SettlementMetadata,
+    SettlementParticipant,
+    SettlementParticipantId,
+    SettlementParticipantType,
+    SettlementReference,
+    SettlementReferenceType,
+    SettlementResult,
+    SettlementSummary,
+    SettlementWindow,
+)
+
 __all__ = [
     "BalanceComponent",
     "BalanceComponentType",
@@ -182,6 +205,26 @@ __all__ = [
     "RemittanceStatus",
     "RemittanceType",
     "STANDARD_CURRENCY_DEFINITIONS",
+    "SettlementBatch",
+    "SettlementBatchId",
+    "SettlementBatchStatus",
+    "SettlementBatchType",
+    "SettlementEntry",
+    "SettlementEntryId",
+    "SettlementEntryStatus",
+    "SettlementFailure",
+    "SettlementInstruction",
+    "SettlementInstructionId",
+    "SettlementInstructionMetadata",
+    "SettlementMetadata",
+    "SettlementParticipant",
+    "SettlementParticipantId",
+    "SettlementParticipantType",
+    "SettlementReference",
+    "SettlementReferenceType",
+    "SettlementResult",
+    "SettlementSummary",
+    "SettlementWindow",
     "Transaction",
     "TransactionDirection",
     "TransactionId",
@@ -218,7 +261,6 @@ __all__ = [
     "standard_currency_definitions",
     "standard_currency_registry",
 ]
-
 # NovaPay WP-001C2 wallet exports
 from .wallet import (
     Wallet,
