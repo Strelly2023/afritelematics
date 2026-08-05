@@ -206,6 +206,8 @@ __all__ = [
     "PostingLineMetadata",
     "PostingSide",
     "RateSpread",
+    "ReceiptIntegrityEvidence",
+    "ReceiptVerificationResult",
     "ReconciliationDifference",
     "ReconciliationDifferenceId",
     "ReconciliationDifferenceType",
@@ -378,4 +380,10 @@ from .transfer import (
     TransferReference,
     TransferStatus,
     TransferType,
+)
+
+
+from .receipt import (
+    ReceiptIntegrityEvidence,
+    ReceiptVerificationResult,
 )
