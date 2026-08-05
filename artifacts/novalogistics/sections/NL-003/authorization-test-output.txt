@@ -1,0 +1,1 @@
+All required role mappings, permissions, tenant/platform scope, ownership, assignment, dispatcher/fleet/warehouse/finance/compliance boundaries, and audit metadata are covered. PASS.

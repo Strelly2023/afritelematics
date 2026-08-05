@@ -1,0 +1,1 @@
+Approved scope: NovaLogistics security/security_sqlite, canonical exports, SQLite migration chain, NovaLogistics security and migration tests, NL-003 evidence, and governed runtime scan only.

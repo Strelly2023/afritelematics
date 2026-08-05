@@ -1,0 +1,4 @@
+Command: ./venv/bin/python -m pytest -q afritech/tests/novaid/test_novaid_ecosystem.py afritech/tests/novaid/test_authentication_service_boundaries.py afritech/tests/novaid/test_session_service_boundaries.py
+Result: PASS — 8 passed
+
+NovaID public domain exports remain import-compatible; adapter classification is `CONTRACT_AND_TEST_ADAPTER_READY`, live provider pending.

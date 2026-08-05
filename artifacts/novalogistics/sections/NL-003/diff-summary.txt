@@ -1,0 +1,4 @@
+Added security domain and authorization policy foundation.
+Added durable authorization repositories and migration 0002.
+Added 22 focused security tests and reconciled the ordered migration-chain assertion.
+No unrelated product source modified.

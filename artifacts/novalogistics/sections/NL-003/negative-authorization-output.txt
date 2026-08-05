@@ -1,0 +1,1 @@
+Negative authorization covers anonymous, inactive/missing membership, cross-tenant access, missing permissions, customer non-ownership, driver unassigned work, tenant-admin platform denial, restricted operational roles, and missing service scopes. PASS.

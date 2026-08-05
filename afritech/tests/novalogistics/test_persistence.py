@@ -215,9 +215,9 @@ def test_migrations_fresh_repeat_history_tables_indexes_and_foreign_keys():
     connection = sqlite3.connect(":memory:", isolation_level=None)
     try:
         runner = MigrationRunner(connection, clock=lambda: NOW)
-        assert runner.migrate() == (MIGRATIONS[0].migration_id,)
+        assert runner.migrate() == tuple(migration.migration_id for migration in MIGRATIONS)
         assert runner.migrate() == ()
-        assert runner.applied() == (MIGRATIONS[0].migration_id,)
+        assert runner.applied() == tuple(migration.migration_id for migration in MIGRATIONS)
         tables = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         indexes = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='index'")}
         assert {"novalogistics_aggregates", "novalogistics_outbox", "novalogistics_schema_migrations"} <= tables

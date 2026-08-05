@@ -1,0 +1,1 @@
+Identity references and principal construction are covered by the focused suite: normalization, invalid references, immutability, human/service/anonymous principals, and absence of raw-token fields. PASS.

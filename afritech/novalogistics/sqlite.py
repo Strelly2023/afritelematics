@@ -84,6 +84,33 @@ MIGRATIONS = (
             "CREATE INDEX IF NOT EXISTS idx_nl_outbox_pending ON novalogistics_outbox(tenant_id, published_at, occurred_at, aggregate_version, event_order, event_id)",
         ),
     ),
+    Migration(
+        "0002_novalogistics_authorization",
+        (
+            """CREATE TABLE IF NOT EXISTS novalogistics_memberships (
+                membership_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, identity_reference TEXT NOT NULL,
+                status TEXT NOT NULL, roles_json TEXT NOT NULL, permissions_json TEXT NOT NULL,
+                membership_version INTEGER NOT NULL CHECK(membership_version >= 0), payload_json TEXT NOT NULL,
+                created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+                UNIQUE(tenant_id, identity_reference)
+            )""",
+            "CREATE INDEX IF NOT EXISTS idx_nl_membership_tenant_status ON novalogistics_memberships(tenant_id,status,identity_reference)",
+            """CREATE TABLE IF NOT EXISTS novalogistics_service_identities (
+                service_identity TEXT PRIMARY KEY, tenant_id TEXT, service_name TEXT NOT NULL,
+                status TEXT NOT NULL, scopes_json TEXT NOT NULL, credential_reference TEXT,
+                platform_scope INTEGER NOT NULL DEFAULT 0 CHECK(platform_scope IN (0,1)),
+                created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+            )""",
+            "CREATE INDEX IF NOT EXISTS idx_nl_service_tenant_status ON novalogistics_service_identities(tenant_id,status,service_name)",
+            """CREATE TABLE IF NOT EXISTS novalogistics_authorization_audit (
+                decision_id TEXT PRIMARY KEY, tenant_id TEXT, principal_id TEXT NOT NULL,
+                permission TEXT NOT NULL, decision_code TEXT NOT NULL, resource_type TEXT NOT NULL,
+                resource_id TEXT, request_id TEXT NOT NULL, correlation_id TEXT NOT NULL,
+                decided_at TEXT NOT NULL, payload_json TEXT NOT NULL
+            )""",
+            "CREATE INDEX IF NOT EXISTS idx_nl_auth_audit_tenant_time ON novalogistics_authorization_audit(tenant_id,decided_at,decision_id)",
+        ),
+    ),
 )
 
 

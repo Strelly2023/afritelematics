@@ -1,0 +1,1 @@
+Migration `0002_novalogistics_authorization`, repeat safety, ordered history, tables, and indexes: PASS.

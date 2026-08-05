@@ -1,0 +1,1 @@
+Membership lifecycle, role assignment, persistence round trip, uniqueness, tenant isolation, and stale-version behavior are covered. PASS.
