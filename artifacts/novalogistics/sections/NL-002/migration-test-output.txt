@@ -1,0 +1,4 @@
+Command: ./venv/bin/python -m pytest -q afritech/tests/novalogistics/test_persistence.py -k 'migration'
+Result: PASS — 2 passed, 14 deselected
+
+Covered fresh initialization, repeat safety, history, tables, indexes, foreign keys, and transactional failure rollback.

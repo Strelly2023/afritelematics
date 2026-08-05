@@ -1,0 +1,4 @@
+Command: ./venv/bin/python -m pytest -q afritech/tests/novalogistics/test_persistence.py -k 'outbox or rollback'
+Result: PASS — 4 passed, 12 deselected
+
+Covered atomic rollback, ordered events, deterministic duplicate idempotency, tenant pending queries, publish idempotency, retry count, metadata, correlation ID, and request ID.

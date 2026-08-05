@@ -1,0 +1,8 @@
+Expected approved scope:
+afritech/novalogistics/__init__.py
+afritech/novalogistics/codec.py
+afritech/novalogistics/persistence.py
+afritech/novalogistics/sqlite.py
+afritech/tests/novalogistics/test_persistence.py
+artifacts/novalogistics/sections/NL-002/*
+docs/reviews/AFRITECH_RUNTIME_BOUNDARY_SCAN.md (only if governed regeneration requires it)

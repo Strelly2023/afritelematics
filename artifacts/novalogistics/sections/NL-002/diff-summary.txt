@@ -1,0 +1,6 @@
+Added persistence-neutral contracts and errors.
+Added deterministic allow-listed aggregate/event codecs.
+Added SQLite schema migrations, explicit repositories, concurrency enforcement, tenant isolation, and transactional outbox.
+Added 16 focused persistence tests and required NL-002 evidence.
+Extended canonical NovaLogistics exports.
+No shared product source file modified.

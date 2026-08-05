@@ -1,0 +1,4 @@
+Command: ./venv/bin/python -m pytest -q afritech/tests/novalogistics/test_persistence.py -k 'tenant or cross_tenant'
+Result: PASS — 4 passed, 12 deselected
+
+Covered tenant reads, lists, counts, business keys, cross-tenant update rejection, and outbox scope.

@@ -1,0 +1,4 @@
+Command: ./venv/bin/python -m pytest -q afritech/tests/novalogistics/test_persistence.py -k 'stale or two_connection or expected_version'
+Result: PASS — 3 passed, 13 deselected
+
+Covered expected-version success, stale rejection, two-connection conflict, and no partial outbox effect.

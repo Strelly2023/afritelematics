@@ -1,0 +1,11 @@
+Broader logistics command: ./venv/bin/python -m pytest -q afritech/tests/novalogistics afritech/tests/mobility/test_logistics_custody_chain.py afritech/tests/mobility/test_settlement_boundary.py afritech/tests/distributed/test_africonnecttl_surface.py
+Result: PASS — 66 passed
+
+Shared persistence command: ./venv/bin/python -m pytest -q afritech/tests/platform_runtime_operational/test_runtime_persistence.py afritech/tests/platform_runtime_operational/test_evidence_persistence.py afritech/tests/afripay/test_persistence.py
+Result: PASS — 15 passed
+
+Public web command: node --test tests/novadashdoor-novalogistics.test.js (cwd apps/public-web)
+Result: PASS — 5 passed
+
+Import topology command: ./venv/bin/python -m afritech.ci.import_topology_validator
+Result: PASS

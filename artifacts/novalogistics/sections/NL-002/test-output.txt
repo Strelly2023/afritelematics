@@ -1,0 +1,8 @@
+Command: ./venv/bin/python -m pytest -q afritech/tests/novalogistics/test_persistence.py
+Result: PASS — 16 passed
+
+Command: ./venv/bin/python -m pytest -q afritech/tests/novalogistics
+Result: PASS — 27 passed
+
+Command: ./venv/bin/python -m compileall -q afritech/novalogistics afritech/tests/novalogistics
+Result: PASS
