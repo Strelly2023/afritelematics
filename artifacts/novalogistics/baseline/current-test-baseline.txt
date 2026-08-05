@@ -1,0 +1,21 @@
+Captured UTC: 2026-08-06
+
+Environment:
+- Python 3.11.8
+- Node v20.19.5
+- npm 10.8.2
+
+Python logistics/shared-platform baseline:
+Command: ./venv/bin/python -m pytest -q afritech/tests/mobility/test_logistics_custody_chain.py afritech/tests/mobility/test_settlement_boundary.py afritech/tests/distributed/test_africonnecttl_surface.py
+Result: PASS (39 passed in 0.28s)
+
+Public NovaLogistics surface baseline:
+Command: node --test tests/novadashdoor-novalogistics.test.js (cwd apps/public-web)
+Result: PASS (5 passed, 0 failed)
+
+Discovery notes:
+- Python tests use pytest.ini and pyproject.toml.
+- UI packages use package-local package.json scripts.
+- Python compile check: ./venv/bin/python -m compileall <paths>.
+- Python type configuration: pyright basic mode in pyproject.toml; no repository-wide pyright command was discovered.
+- Python lint configuration: ruff in pyproject.toml; no guaranteed installed lint executable was assumed.

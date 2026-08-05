@@ -1,0 +1,26 @@
+Captured UTC: 2026-08-06
+Branch: feature/product-factory-enterprise-sdlc
+HEAD: 371c9f7d76ce1ccc4fe6036db6ac63d5b4be6718
+
+The working tree was dirty before NovaLogistics work began. Pre-existing changes:
+
+ M afritech/architecture/anchor_indexer.py
+ M services/administration/app_registry.py
+?? afritech/novapay/domain/receipt.py
+?? afritech/tests/novapay/test_domain_receipt_aggregate.py
+?? afritech/tests/novapay/test_domain_receipt_integrity_evidence.py
+?? afritech/tests/novapay/test_domain_receipt_lifecycle.py
+?? afritech/tests/novapay/test_domain_receipt_primitives.py
+?? afritech/tests/novapay/test_domain_receipt_records.py
+?? artifacts/environment-audit/
+?? artifacts/novacodepro/studio-upgrade/
+?? artifacts/novaride/ (multiple pre-existing untracked evidence directories)
+?? artifacts/product-factory-enterprise/
+?? contracts/__init__.py
+?? deploy/production/*.bak
+?? deploy/production/requirements-api.lock
+?? deploy/staging/api-entrypoint.sh
+?? novapay_agent_app/node_modules
+?? scripts/novaride/completion_generator_matrix_report.py
+
+No pre-existing file listed above is authorized for staging in NL-001.

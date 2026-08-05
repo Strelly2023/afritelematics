@@ -1,0 +1,1 @@
+Commit: the commit containing this evidence; resulting SHA is recorded in the NL-001 recovery report and final execution summary.

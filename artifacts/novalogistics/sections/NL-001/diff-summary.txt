@@ -1,0 +1,6 @@
+Added canonical afritech.novalogistics domain package.
+Added immutable values, reference records, lifecycle aggregates, domain events, serialization, and exports.
+Added focused domain-foundation tests.
+Added required baseline and section evidence.
+Modified existing production files: none.
+Pre-existing dirty files staged: none.

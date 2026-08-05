@@ -1,0 +1,8 @@
+NL-001 focused tests: PASS — 11 passed in 0.29s
+Python compile: PASS
+NovaLogistics/shared compatibility: PASS — 50 passed in 0.32s
+Public surface compatibility: PASS — 5 passed, 0 failed
+Whitespace/error check: PASS
+Repository constitutional commit hook: pending final recovery rerun after the governed scan is refreshed.
+
+No test was skipped or weakened.
