@@ -1,0 +1,25 @@
+Status/lifecycle types: 6
+transfer.TransferStatus
+remittance.RemittanceStatus
+settlement_batch.SettlementBatchStatus
+settlement_batch.SettlementEntryStatus
+settlement_reconciliation.ReconciliationItemStatus
+settlement_reconciliation.ReconciliationStatus
+
+Lifecycle-related methods: 12
+transfer.Transfer.cancel
+transfer.Transfer.complete
+transfer.Transfer.fail
+remittance.Remittance.cancel
+remittance.Remittance.complete
+remittance.Remittance.fail
+settlement_batch.SettlementBatch.cancel
+settlement_batch.SettlementBatch.complete
+settlement_batch.SettlementBatch.fail
+settlement_batch.SettlementBatch.partially_complete
+settlement_batch.SettlementBatch.reconcile
+settlement_reconciliation.SettlementReconciliation.cancel
+
+Lifecycle inventory: PASS
+Completion/settlement vocabulary: PRESENT
+Cancellation/failure behavior: INSPECTED

@@ -1,0 +1,16 @@
+{
+  "aligned": true,
+  "required_modules": [
+    "balance_snapshot",
+    "fx",
+    "money"
+  ],
+  "serialization_modules": [
+    "balance_snapshot",
+    "currency",
+    "exchange_rate_provider",
+    "fx",
+    "money"
+  ],
+  "test_evidence_count": 29
+}

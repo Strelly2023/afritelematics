@@ -1,0 +1,12 @@
+Canonical domain modules: 16
+Canonical public Phase 1 symbols: 15
+Receipt module exports: 25
+Domain package exports: 168
+Top-level NovaPay exports: 190
+Receipt aggregate visibility: MODULE_LOCAL
+ReceiptIntegrityEvidence public identity: PASS
+ReceiptVerificationResult public identity: PASS
+ReceiptPresentationSummary state: DEFERRED
+Immutable dataclasses: 138
+Non-frozen dataclasses: 0
+Canonical domain and export contracts: PASS

@@ -1,0 +1,2 @@
+afritech/tests/novapay/test_domain_settlement_batch_exports.py:60:def test_domain_public_count() -> None:
+afritech/tests/novapay/test_domain_settlement_batch_exports.py:61:    assert len(domain.__all__) == 166

@@ -1,0 +1,7 @@
+Money canonical type: PRESENT
+Amount vocabulary: PRESENT
+Currency vocabulary: PRESENT
+FX vocabulary: PRESENT
+Debit/credit and balance vocabulary: PRESENT
+Receipt monetary-summary vocabulary: PRESENT
+End-to-end monetary consistency: AUDITED

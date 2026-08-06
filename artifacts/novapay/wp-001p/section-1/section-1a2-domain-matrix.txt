@@ -1,0 +1,23 @@
+DOMAIN_PUBLIC: Money
+DOMAIN_PUBLIC: Wallet
+DOMAIN_PUBLIC: LedgerAccount
+DOMAIN_PUBLIC: JournalEntry
+DOMAIN_PUBLIC: Transaction
+DOMAIN_PUBLIC: Customer
+DOMAIN_PUBLIC: FinancialAccount
+DOMAIN_PUBLIC: ExchangeRate
+DOMAIN_PUBLIC: FXQuote
+DOMAIN_PUBLIC: Currency
+DOMAIN_PUBLIC: BalanceSnapshot
+DOMAIN_PUBLIC: Transfer
+DOMAIN_PUBLIC: Remittance
+DOMAIN_PUBLIC: SettlementBatch
+DOMAIN_PUBLIC: SettlementReconciliation
+DOMAIN_PUBLIC: ReceiptIntegrityEvidence
+DOMAIN_PUBLIC: ReceiptVerificationResult
+
+Canonical reconciliation aggregate: SettlementReconciliation
+ReconciliationRecord guessed name: ABSENT
+Receipt aggregate integration anchor: MODULE_LOCAL
+Receipt public-record integration anchors: DOMAIN_PUBLIC
+Corrected Phase 1 vocabulary matrix: PASS

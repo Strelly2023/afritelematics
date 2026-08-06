@@ -1,0 +1,8 @@
+Receipt module exports: 25
+Domain package exports: 168
+Top-level NovaPay exports: 190
+ReceiptIntegrityEvidence: CANONICAL_PUBLIC_EXPORT
+ReceiptVerificationResult: CANONICAL_PUBLIC_EXPORT
+ReceiptPresentationSummary: DEFERRED
+Cross-surface canonical identities: PASS
+Phase 1 public-export baseline: PASS

@@ -1,0 +1,16 @@
+Relative-import edges: 12
+balance_snapshot -> customer: 1
+balance_snapshot -> financial_account: 1
+balance_snapshot -> journal_entry: 1
+balance_snapshot -> ledger_account: 1
+balance_snapshot -> money: 1
+balance_snapshot -> wallet: 1
+financial_account -> customer: 1
+financial_account -> ledger_account: 1
+financial_account -> money: 1
+financial_account -> wallet: 1
+ledger_account -> money: 1
+wallet -> money: 1
+
+Self-import edges: NONE
+Customer/account/wallet coupling: PASS

@@ -1,0 +1,6057 @@
+{
+  "authority_boundary": {
+    "money": [
+      "persist"
+    ],
+    "receipt": [
+      "persist"
+    ],
+    "settlement_reconciliation": [
+      "persist"
+    ],
+    "transaction": [
+      "persist"
+    ],
+    "transfer": [
+      "persist"
+    ]
+  },
+  "fx_consistency": {
+    "fx": [
+      "fx_quote",
+      "fx_quote_id",
+      "exchange_rate"
+    ],
+    "remittance": [
+      "source_currency"
+    ],
+    "transfer": [
+      "source_currency"
+    ]
+  },
+  "idempotency_duplicates": {
+    "customer": [
+      "duplicate"
+    ],
+    "financial_account": [
+      "duplicate"
+    ],
+    "receipt": [
+      "duplicate"
+    ],
+    "remittance": [
+      "duplicate"
+    ],
+    "settlement_reconciliation": [
+      "duplicate"
+    ],
+    "transaction": [
+      "idempotency"
+    ],
+    "transfer": [
+      "duplicate"
+    ]
+  },
+  "immutable_interaction": {
+    "customer.Customer": {
+      "dataclass": true,
+      "fields": [
+        "customer_id",
+        "customer_type",
+        "status",
+        "tier",
+        "name",
+        "novaid_identity_id",
+        "tenant_id",
+        "contacts",
+        "addresses",
+        "preferences",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "canonical_dict",
+        "change_tier",
+        "close",
+        "create",
+        "reinstate",
+        "rename",
+        "replace_addresses",
+        "replace_contacts",
+        "restrict",
+        "suspend",
+        "update_metadata",
+        "update_preferences"
+      ]
+    },
+    "customer.CustomerAddress": {
+      "dataclass": true,
+      "fields": [
+        "country_code",
+        "address_line_1",
+        "locality",
+        "address_line_2",
+        "administrative_area",
+        "postal_code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "customer.CustomerContact": {
+      "dataclass": true,
+      "fields": [
+        "email",
+        "phone"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "customer.CustomerId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "customer.CustomerMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "customer.CustomerName": {
+      "dataclass": true,
+      "fields": [
+        "legal_name",
+        "display_name"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "customer.CustomerPreferences": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "financial_account.FinancialAccount": {
+      "dataclass": true,
+      "fields": [
+        "account_id",
+        "customer_id",
+        "tenant_id",
+        "account_type",
+        "purpose",
+        "status",
+        "currency",
+        "name",
+        "wallet_id",
+        "ledger_account_id",
+        "terms",
+        "restrictions",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "canonical_dict",
+        "change_restrictions",
+        "change_terms",
+        "close",
+        "create",
+        "link_ledger_account",
+        "link_wallet",
+        "mark_dormant",
+        "reactivate",
+        "rename",
+        "restrict",
+        "suspend",
+        "update_metadata"
+      ]
+    },
+    "financial_account.FinancialAccountId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "financial_account.FinancialAccountMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "financial_account.FinancialAccountName": {
+      "dataclass": true,
+      "fields": [
+        "product_name",
+        "display_name"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "financial_account.FinancialAccountRestrictions": {
+      "dataclass": true,
+      "fields": [
+        "debit_blocked",
+        "credit_blocked",
+        "cash_withdrawal_blocked",
+        "international_transfer_blocked",
+        "allowed_channels",
+        "allowed_countries"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "financial_account.FinancialAccountTerms": {
+      "dataclass": true,
+      "fields": [
+        "minimum_balance",
+        "overdraft_limit",
+        "interest_rate_percent",
+        "maintenance_fee",
+        "notice_period_days"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "fx.CurrencyPair": {
+      "dataclass": true,
+      "fields": [
+        "base_currency",
+        "quote_currency"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "inverse",
+        "of",
+        "parse"
+      ]
+    },
+    "fx.ExchangeRate": {
+      "dataclass": true,
+      "fields": [
+        "exchange_rate_id",
+        "pair",
+        "rate",
+        "spread",
+        "source",
+        "status",
+        "provider",
+        "provider_reference",
+        "validity",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "convert_base_amount",
+        "convert_quote_amount",
+        "create",
+        "expire",
+        "is_active_at",
+        "is_expired_at",
+        "publish",
+        "resume",
+        "revoke",
+        "supersede",
+        "suspend",
+        "update_metadata",
+        "update_provider_reference",
+        "update_rate",
+        "update_spread",
+        "update_validity"
+      ]
+    },
+    "fx.ExchangeRateId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "fx.ExchangeRateValue": {
+      "dataclass": true,
+      "fields": [
+        "rate"
+      ],
+      "frozen": true,
+      "methods": [
+        "apply",
+        "canonical",
+        "canonical_dict",
+        "inverse",
+        "of"
+      ]
+    },
+    "fx.FXMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "fx.FXQuote": {
+      "dataclass": true,
+      "fields": [
+        "fx_quote_id",
+        "exchange_rate_id",
+        "pair",
+        "source_amount",
+        "destination_amount",
+        "rate",
+        "spread",
+        "status",
+        "provider",
+        "provider_reference",
+        "validity",
+        "customer_id",
+        "transaction_id",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "accept",
+        "cancel",
+        "canonical_dict",
+        "consume",
+        "create",
+        "expire",
+        "is_active_at",
+        "is_expired_at",
+        "offer",
+        "quote_base_amount",
+        "quote_destination_amount",
+        "reject",
+        "update_customer_reference",
+        "update_metadata",
+        "update_transaction_reference"
+      ]
+    },
+    "fx.FXQuoteId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "fx.FXValidityWindow": {
+      "dataclass": true,
+      "fields": [
+        "valid_from",
+        "expires_at"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "is_active_at",
+        "is_expired_at"
+      ]
+    },
+    "fx.RateSpread": {
+      "dataclass": true,
+      "fields": [
+        "basis_points"
+      ],
+      "frozen": true,
+      "methods": [
+        "add_to",
+        "canonical_dict",
+        "of",
+        "subtract_from"
+      ]
+    },
+    "money.Currency": {
+      "dataclass": true,
+      "fields": [
+        "code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "money.Money": {
+      "dataclass": true,
+      "fields": [
+        "amount",
+        "currency"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_amount",
+        "canonical_dict",
+        "compare",
+        "multiply",
+        "of",
+        "require_non_negative",
+        "require_positive",
+        "zero"
+      ]
+    },
+    "receipt.Receipt": {
+      "dataclass": true,
+      "fields": [
+        "receipt_id",
+        "receipt_type",
+        "status",
+        "format",
+        "issuer",
+        "recipient",
+        "currency_code",
+        "line_items",
+        "adjustments",
+        "taxes",
+        "monetary_summary",
+        "references",
+        "integrity_evidence",
+        "issued_at",
+        "delivered_at",
+        "expires_at",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "create",
+        "expire",
+        "issue",
+        "mark_delivered",
+        "prepare",
+        "supersede",
+        "update_metadata",
+        "void"
+      ]
+    },
+    "receipt.ReceiptAdjustment": {
+      "dataclass": true,
+      "fields": [
+        "adjustment_id",
+        "adjustment_type",
+        "description",
+        "amount",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptAdjustmentId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptIntegrityEvidence": {
+      "dataclass": true,
+      "fields": [
+        "evidence_type",
+        "value",
+        "created_at",
+        "issuer",
+        "expires_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "is_expired_at"
+      ]
+    },
+    "receipt.ReceiptLineItem": {
+      "dataclass": true,
+      "fields": [
+        "line_item_id",
+        "line_item_type",
+        "description",
+        "quantity",
+        "unit_amount",
+        "total_amount",
+        "product_reference",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptLineItemId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptMetadata": {
+      "dataclass": true,
+      "fields": [
+        "_values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "empty",
+        "get",
+        "of"
+      ]
+    },
+    "receipt.ReceiptMonetarySummary": {
+      "dataclass": true,
+      "fields": [
+        "currency_code",
+        "subtotal",
+        "adjustment_total",
+        "tax_total",
+        "gross_total",
+        "net_total",
+        "paid_amount",
+        "outstanding_amount"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptParty": {
+      "dataclass": true,
+      "fields": [
+        "party_id",
+        "party_type",
+        "display_name",
+        "external_reference",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptPartyId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptReference": {
+      "dataclass": true,
+      "fields": [
+        "reference_type",
+        "reference_value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "receipt.ReceiptTax": {
+      "dataclass": true,
+      "fields": [
+        "tax_id",
+        "tax_type",
+        "description",
+        "jurisdiction",
+        "rate",
+        "amount",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptTaxId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptVerificationResult": {
+      "dataclass": true,
+      "fields": [
+        "status",
+        "verified_at",
+        "verifier",
+        "reason",
+        "integrity_evidence",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "remittance.Remittance": {
+      "dataclass": true,
+      "fields": [
+        "remittance_id",
+        "reference",
+        "status",
+        "remittance_type",
+        "direction",
+        "purpose",
+        "priority",
+        "sender",
+        "beneficiary",
+        "source_account",
+        "destination_account",
+        "source_amount",
+        "destination_amount",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "reverse",
+        "submit",
+        "update_metadata",
+        "update_priority",
+        "update_reference",
+        "validate"
+      ]
+    },
+    "remittance.RemittanceAmountBreakdown": {
+      "dataclass": true,
+      "fields": [
+        "principal_amount",
+        "fees",
+        "charges",
+        "fx_cost",
+        "total_debit_amount",
+        "destination_amount",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceCharge": {
+      "dataclass": true,
+      "fields": [
+        "charge_id",
+        "charge_type",
+        "amount",
+        "description"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceCorridor": {
+      "dataclass": true,
+      "fields": [
+        "source_country_code",
+        "destination_country_code",
+        "source_currency_code",
+        "destination_currency_code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceFee": {
+      "dataclass": true,
+      "fields": [
+        "fee_type",
+        "amount",
+        "description",
+        "refundable"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceFundingReference": {
+      "dataclass": true,
+      "fields": [
+        "funding_source_id",
+        "funding_source_type",
+        "account_reference",
+        "authorization_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "remittance.RemittanceInstruction": {
+      "dataclass": true,
+      "fields": [
+        "instruction_id",
+        "remittance_id",
+        "funding_reference",
+        "recipient_reference",
+        "corridor",
+        "requested_source_amount",
+        "expected_destination_amount",
+        "requested_at",
+        "expires_at",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create",
+        "is_expired"
+      ]
+    },
+    "remittance.RemittanceInstructionId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "remittance.RemittanceInstructionMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "remittance.RemittanceMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "remittance.RemittancePricingMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "remittance.RemittanceRecipientReference": {
+      "dataclass": true,
+      "fields": [
+        "recipient_id",
+        "recipient_type",
+        "party_reference",
+        "account_reference",
+        "delivery_method",
+        "routing_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceReference": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementBatch": {
+      "dataclass": true,
+      "fields": [
+        "batch_id",
+        "batch_type",
+        "status",
+        "window",
+        "settlement_currency_code",
+        "gross_amount",
+        "net_amount",
+        "participants",
+        "references",
+        "entry_count",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "mark_ready",
+        "open",
+        "partially_complete",
+        "reconcile",
+        "update_metadata",
+        "update_window",
+        "validate"
+      ]
+    },
+    "settlement_batch.SettlementBatchId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementEntry": {
+      "dataclass": true,
+      "fields": [
+        "entry_id",
+        "batch_id",
+        "status",
+        "amount",
+        "settlement_currency_code",
+        "source_participant_id",
+        "destination_participant_id",
+        "reference",
+        "created_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_batch.SettlementEntryId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementFailure": {
+      "dataclass": true,
+      "fields": [
+        "failure_code",
+        "message",
+        "occurred_at",
+        "entry_id",
+        "retryable",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_batch.SettlementInstruction": {
+      "dataclass": true,
+      "fields": [
+        "instruction_id",
+        "batch_id",
+        "source_participant_id",
+        "destination_participant_id",
+        "amount",
+        "settlement_currency_code",
+        "reference",
+        "requested_at",
+        "effective_at",
+        "expires_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create",
+        "is_expired"
+      ]
+    },
+    "settlement_batch.SettlementInstructionId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementInstructionMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementParticipant": {
+      "dataclass": true,
+      "fields": [
+        "participant_id",
+        "participant_type",
+        "account_reference",
+        "currency_code",
+        "jurisdiction_code",
+        "provider_code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_batch.SettlementParticipantId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementReference": {
+      "dataclass": true,
+      "fields": [
+        "reference_type",
+        "reference_id",
+        "external_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_batch.SettlementResult": {
+      "dataclass": true,
+      "fields": [
+        "batch_id",
+        "status",
+        "gross_amount",
+        "net_amount",
+        "settlement_currency_code",
+        "successful_entry_count",
+        "failed_entry_count",
+        "excluded_entry_count",
+        "failures",
+        "completed_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "settlement_batch.SettlementSummary": {
+      "dataclass": true,
+      "fields": [
+        "batch_id",
+        "status",
+        "settlement_currency_code",
+        "gross_amount",
+        "net_amount",
+        "total_entry_count",
+        "successful_entry_count",
+        "failed_entry_count",
+        "excluded_entry_count",
+        "participant_count",
+        "opened_at",
+        "closed_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "settlement_batch.SettlementWindow": {
+      "dataclass": true,
+      "fields": [
+        "opens_at",
+        "closes_at",
+        "cutoff_at",
+        "timezone_name"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "contains"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationDifference": {
+      "dataclass": true,
+      "fields": [
+        "difference_id",
+        "difference_type",
+        "field_name",
+        "expected_value",
+        "observed_value",
+        "detected_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationDifferenceId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationEvidence": {
+      "dataclass": true,
+      "fields": [
+        "evidence_id",
+        "evidence_type",
+        "reference",
+        "recorded_at",
+        "digest",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationEvidenceId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationItem": {
+      "dataclass": true,
+      "fields": [
+        "item_id",
+        "status",
+        "expected_reference",
+        "observed_reference",
+        "observation_ids",
+        "difference_ids",
+        "evidence_ids",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationItemId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "empty",
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationObservation": {
+      "dataclass": true,
+      "fields": [
+        "observation_id",
+        "source",
+        "reference",
+        "observed_at",
+        "observed_value",
+        "currency_code",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationObservationId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationResult": {
+      "dataclass": true,
+      "fields": [
+        "reconciliation_id",
+        "status",
+        "summary",
+        "completed_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationSummary": {
+      "dataclass": true,
+      "fields": [
+        "total_items",
+        "pending_items",
+        "matched_items",
+        "partially_matched_items",
+        "unmatched_items",
+        "missing_expected_items",
+        "missing_observed_items",
+        "duplicate_items",
+        "conflict_items",
+        "excluded_items",
+        "review_required_items"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create",
+        "empty",
+        "from_items"
+      ]
+    },
+    "settlement_reconciliation.SettlementReconciliation": {
+      "dataclass": true,
+      "fields": [
+        "reconciliation_id",
+        "reconciliation_type",
+        "status",
+        "settlement_batch_id",
+        "expected_entry_count",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "close",
+        "create",
+        "expire",
+        "mark_exception",
+        "mark_matched",
+        "mark_partially_matched",
+        "mark_unmatched",
+        "open",
+        "require_review",
+        "start_collecting",
+        "start_comparing",
+        "update_metadata"
+      ]
+    },
+    "settlement_reconciliation.SettlementReconciliationId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "transaction.Transaction": {
+      "dataclass": true,
+      "fields": [
+        "transaction_id",
+        "transaction_type",
+        "status",
+        "direction",
+        "amount",
+        "created_at",
+        "updated_at",
+        "source_wallet_id",
+        "destination_wallet_id",
+        "journal_entry_id",
+        "description",
+        "external_reference",
+        "idempotency_key",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "can_transition_to",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "fail",
+        "reverse",
+        "start_processing",
+        "with_metadata"
+      ]
+    },
+    "transaction.TransactionId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "transaction.TransactionMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "transfer.Transfer": {
+      "dataclass": true,
+      "fields": [
+        "transfer_id",
+        "reference",
+        "status",
+        "transfer_type",
+        "direction",
+        "purpose",
+        "priority",
+        "sender",
+        "beneficiary",
+        "source_account",
+        "destination_account",
+        "source_amount",
+        "destination_amount",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "reverse",
+        "submit",
+        "update_metadata",
+        "update_priority",
+        "update_reference",
+        "validate"
+      ]
+    },
+    "transfer.TransferAccountReference": {
+      "dataclass": true,
+      "fields": [
+        "account_id",
+        "account_type",
+        "currency_code",
+        "institution_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferAmountBreakdown": {
+      "dataclass": true,
+      "fields": [
+        "source_amount",
+        "destination_amount",
+        "fees",
+        "charges",
+        "fee_total",
+        "charge_total",
+        "total_debit_amount",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "transfer.TransferBeneficiaryReference": {
+      "dataclass": true,
+      "fields": [
+        "beneficiary_id",
+        "beneficiary_type",
+        "party_reference",
+        "account_reference",
+        "delivery_method",
+        "routing_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferCharge": {
+      "dataclass": true,
+      "fields": [
+        "charge_code",
+        "amount",
+        "description",
+        "third_party",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "transfer.TransferFee": {
+      "dataclass": true,
+      "fields": [
+        "fee_type",
+        "amount",
+        "description",
+        "refundable",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "transfer.TransferFundingReference": {
+      "dataclass": true,
+      "fields": [
+        "funding_source_id",
+        "funding_source_type",
+        "account_reference",
+        "authorization_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "transfer.TransferInstruction": {
+      "dataclass": true,
+      "fields": [
+        "instruction_id",
+        "transfer_id",
+        "funding_reference",
+        "beneficiary_reference",
+        "requested_source_amount",
+        "expected_destination_amount",
+        "requested_at",
+        "expires_at",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create",
+        "is_expired"
+      ]
+    },
+    "transfer.TransferInstructionId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "transfer.TransferInstructionMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferPartyReference": {
+      "dataclass": true,
+      "fields": [
+        "party_id",
+        "party_type",
+        "display_name"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferPricingMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferReference": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    }
+  },
+  "lifecycle_status": {
+    "customer": [
+      "status",
+      "state",
+      "lifecycle"
+    ],
+    "financial_account": [
+      "status",
+      "state",
+      "lifecycle"
+    ],
+    "fx": [
+      "status",
+      "state",
+      "lifecycle"
+    ],
+    "receipt": [
+      "status",
+      "lifecycle",
+      "transition"
+    ],
+    "remittance": [
+      "status",
+      "state",
+      "transition"
+    ],
+    "settlement_batch": [
+      "status",
+      "transition"
+    ],
+    "settlement_reconciliation": [
+      "status",
+      "state",
+      "lifecycle",
+      "transition"
+    ],
+    "transaction": [
+      "status",
+      "lifecycle",
+      "transition"
+    ],
+    "transfer": [
+      "status",
+      "state",
+      "transition"
+    ]
+  },
+  "monetary_reconciliation": {
+    "financial_account": [
+      "fee"
+    ],
+    "fx": [
+      "total",
+      "amount"
+    ],
+    "money": [
+      "amount"
+    ],
+    "receipt": [
+      "fee",
+      "principal",
+      "total",
+      "amount"
+    ],
+    "remittance": [
+      "fee",
+      "principal",
+      "total",
+      "amount"
+    ],
+    "settlement_batch": [
+      "total",
+      "amount"
+    ],
+    "settlement_reconciliation": [
+      "total",
+      "amount"
+    ],
+    "transaction": [
+      "fee",
+      "amount"
+    ],
+    "transfer": [
+      "fee",
+      "total",
+      "amount"
+    ]
+  },
+  "ownership_references": {
+    "customer": [
+      "customer_id"
+    ],
+    "financial_account": [
+      "owner",
+      "customer_id"
+    ],
+    "fx": [
+      "customer_id"
+    ],
+    "receipt": [
+      "sender"
+    ],
+    "remittance": [
+      "remittance_id",
+      "sender",
+      "beneficiary"
+    ],
+    "transfer": [
+      "transfer_id",
+      "sender",
+      "beneficiary"
+    ]
+  },
+  "party_account_references": {
+    "customer": [
+      "customer_id"
+    ],
+    "financial_account": [
+      "customer_id",
+      "account_id"
+    ],
+    "fx": [
+      "customer_id"
+    ],
+    "receipt": [
+      "sender"
+    ],
+    "remittance": [
+      "sender",
+      "beneficiary",
+      "source_account",
+      "destination_account"
+    ],
+    "transfer": [
+      "sender",
+      "beneficiary",
+      "account_id",
+      "source_account",
+      "destination_account"
+    ]
+  },
+  "receipt_references": {
+    "financial_account": [
+      "transfer",
+      "settlement",
+      "reconciliation"
+    ],
+    "fx": [
+      "transfer",
+      "settlement"
+    ],
+    "money": [
+      "settlement"
+    ],
+    "receipt": [
+      "receipt_id",
+      "ReceiptReference",
+      "transfer",
+      "remittance",
+      "settlement",
+      "reconciliation"
+    ],
+    "remittance": [
+      "transfer",
+      "remittance"
+    ],
+    "settlement_batch": [
+      "transfer",
+      "remittance",
+      "settlement",
+      "reconciliation"
+    ],
+    "settlement_reconciliation": [
+      "settlement",
+      "reconciliation"
+    ],
+    "transaction": [
+      "transfer",
+      "settlement"
+    ],
+    "transfer": [
+      "transfer",
+      "remittance",
+      "settlement"
+    ]
+  },
+  "reconciliation_linkage": {
+    "fx": [
+      "transaction_id"
+    ],
+    "remittance": [
+      "remittance_id"
+    ],
+    "settlement_reconciliation": [
+      "reconciliation_id",
+      "settlement_batch_id"
+    ],
+    "transaction": [
+      "transaction_id"
+    ],
+    "transfer": [
+      "transfer_id"
+    ]
+  },
+  "relative_import_edges": [
+    {
+      "line": 11,
+      "source": "remittance",
+      "target": "money"
+    },
+    {
+      "line": 12,
+      "source": "remittance",
+      "target": "transfer"
+    },
+    {
+      "line": 11,
+      "source": "settlement_batch",
+      "target": "money"
+    },
+    {
+      "line": 22,
+      "source": "settlement_reconciliation",
+      "target": "settlement_batch"
+    },
+    {
+      "line": 26,
+      "source": "transaction",
+      "target": "journal_entry"
+    },
+    {
+      "line": 27,
+      "source": "transaction",
+      "target": "money"
+    },
+    {
+      "line": 28,
+      "source": "transaction",
+      "target": "wallet"
+    },
+    {
+      "line": 29,
+      "source": "fx",
+      "target": "money"
+    },
+    {
+      "line": 27,
+      "source": "financial_account",
+      "target": "customer"
+    },
+    {
+      "line": 28,
+      "source": "financial_account",
+      "target": "ledger_account"
+    },
+    {
+      "line": 29,
+      "source": "financial_account",
+      "target": "money"
+    },
+    {
+      "line": 30,
+      "source": "financial_account",
+      "target": "wallet"
+    },
+    {
+      "line": 33,
+      "source": "receipt",
+      "target": "money"
+    }
+  ],
+  "runtime_types": {
+    "customer.Customer": {
+      "dataclass": true,
+      "fields": [
+        "customer_id",
+        "customer_type",
+        "status",
+        "tier",
+        "name",
+        "novaid_identity_id",
+        "tenant_id",
+        "contacts",
+        "addresses",
+        "preferences",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "canonical_dict",
+        "change_tier",
+        "close",
+        "create",
+        "reinstate",
+        "rename",
+        "replace_addresses",
+        "replace_contacts",
+        "restrict",
+        "suspend",
+        "update_metadata",
+        "update_preferences"
+      ]
+    },
+    "customer.CustomerAddress": {
+      "dataclass": true,
+      "fields": [
+        "country_code",
+        "address_line_1",
+        "locality",
+        "address_line_2",
+        "administrative_area",
+        "postal_code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "customer.CustomerContact": {
+      "dataclass": true,
+      "fields": [
+        "email",
+        "phone"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "customer.CustomerId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "customer.CustomerMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "customer.CustomerName": {
+      "dataclass": true,
+      "fields": [
+        "legal_name",
+        "display_name"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "customer.CustomerPreferences": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "customer.CustomerStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "customer.CustomerTier": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "customer.CustomerType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "financial_account.FinancialAccount": {
+      "dataclass": true,
+      "fields": [
+        "account_id",
+        "customer_id",
+        "tenant_id",
+        "account_type",
+        "purpose",
+        "status",
+        "currency",
+        "name",
+        "wallet_id",
+        "ledger_account_id",
+        "terms",
+        "restrictions",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "canonical_dict",
+        "change_restrictions",
+        "change_terms",
+        "close",
+        "create",
+        "link_ledger_account",
+        "link_wallet",
+        "mark_dormant",
+        "reactivate",
+        "rename",
+        "restrict",
+        "suspend",
+        "update_metadata"
+      ]
+    },
+    "financial_account.FinancialAccountId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "financial_account.FinancialAccountMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "financial_account.FinancialAccountName": {
+      "dataclass": true,
+      "fields": [
+        "product_name",
+        "display_name"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "financial_account.FinancialAccountPurpose": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "financial_account.FinancialAccountRestrictions": {
+      "dataclass": true,
+      "fields": [
+        "debit_blocked",
+        "credit_blocked",
+        "cash_withdrawal_blocked",
+        "international_transfer_blocked",
+        "allowed_channels",
+        "allowed_countries"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "financial_account.FinancialAccountStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "financial_account.FinancialAccountTerms": {
+      "dataclass": true,
+      "fields": [
+        "minimum_balance",
+        "overdraft_limit",
+        "interest_rate_percent",
+        "maintenance_fee",
+        "notice_period_days"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "financial_account.FinancialAccountType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "fx.CurrencyPair": {
+      "dataclass": true,
+      "fields": [
+        "base_currency",
+        "quote_currency"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "inverse",
+        "of",
+        "parse"
+      ]
+    },
+    "fx.ExchangeRate": {
+      "dataclass": true,
+      "fields": [
+        "exchange_rate_id",
+        "pair",
+        "rate",
+        "spread",
+        "source",
+        "status",
+        "provider",
+        "provider_reference",
+        "validity",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "convert_base_amount",
+        "convert_quote_amount",
+        "create",
+        "expire",
+        "is_active_at",
+        "is_expired_at",
+        "publish",
+        "resume",
+        "revoke",
+        "supersede",
+        "suspend",
+        "update_metadata",
+        "update_provider_reference",
+        "update_rate",
+        "update_spread",
+        "update_validity"
+      ]
+    },
+    "fx.ExchangeRateId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "fx.ExchangeRateSource": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "fx.ExchangeRateStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "fx.ExchangeRateValue": {
+      "dataclass": true,
+      "fields": [
+        "rate"
+      ],
+      "frozen": true,
+      "methods": [
+        "apply",
+        "canonical",
+        "canonical_dict",
+        "inverse",
+        "of"
+      ]
+    },
+    "fx.FXMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "fx.FXQuote": {
+      "dataclass": true,
+      "fields": [
+        "fx_quote_id",
+        "exchange_rate_id",
+        "pair",
+        "source_amount",
+        "destination_amount",
+        "rate",
+        "spread",
+        "status",
+        "provider",
+        "provider_reference",
+        "validity",
+        "customer_id",
+        "transaction_id",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "accept",
+        "cancel",
+        "canonical_dict",
+        "consume",
+        "create",
+        "expire",
+        "is_active_at",
+        "is_expired_at",
+        "offer",
+        "quote_base_amount",
+        "quote_destination_amount",
+        "reject",
+        "update_customer_reference",
+        "update_metadata",
+        "update_transaction_reference"
+      ]
+    },
+    "fx.FXQuoteId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "fx.FXQuoteStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "fx.FXValidityWindow": {
+      "dataclass": true,
+      "fields": [
+        "valid_from",
+        "expires_at"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "is_active_at",
+        "is_expired_at"
+      ]
+    },
+    "fx.RateSpread": {
+      "dataclass": true,
+      "fields": [
+        "basis_points"
+      ],
+      "frozen": true,
+      "methods": [
+        "add_to",
+        "canonical_dict",
+        "of",
+        "subtract_from"
+      ]
+    },
+    "money.Currency": {
+      "dataclass": true,
+      "fields": [
+        "code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "money.Money": {
+      "dataclass": true,
+      "fields": [
+        "amount",
+        "currency"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_amount",
+        "canonical_dict",
+        "compare",
+        "multiply",
+        "of",
+        "require_non_negative",
+        "require_positive",
+        "zero"
+      ]
+    },
+    "receipt.Receipt": {
+      "dataclass": true,
+      "fields": [
+        "receipt_id",
+        "receipt_type",
+        "status",
+        "format",
+        "issuer",
+        "recipient",
+        "currency_code",
+        "line_items",
+        "adjustments",
+        "taxes",
+        "monetary_summary",
+        "references",
+        "integrity_evidence",
+        "issued_at",
+        "delivered_at",
+        "expires_at",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "create",
+        "expire",
+        "issue",
+        "mark_delivered",
+        "prepare",
+        "supersede",
+        "update_metadata",
+        "void"
+      ]
+    },
+    "receipt.ReceiptAdjustment": {
+      "dataclass": true,
+      "fields": [
+        "adjustment_id",
+        "adjustment_type",
+        "description",
+        "amount",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptAdjustmentId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptAdjustmentType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptFormat": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptIntegrityEvidence": {
+      "dataclass": true,
+      "fields": [
+        "evidence_type",
+        "value",
+        "created_at",
+        "issuer",
+        "expires_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "is_expired_at"
+      ]
+    },
+    "receipt.ReceiptIntegrityEvidenceType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptLineItem": {
+      "dataclass": true,
+      "fields": [
+        "line_item_id",
+        "line_item_type",
+        "description",
+        "quantity",
+        "unit_amount",
+        "total_amount",
+        "product_reference",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptLineItemId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptLineItemType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptMetadata": {
+      "dataclass": true,
+      "fields": [
+        "_values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "empty",
+        "get",
+        "of"
+      ]
+    },
+    "receipt.ReceiptMonetarySummary": {
+      "dataclass": true,
+      "fields": [
+        "currency_code",
+        "subtotal",
+        "adjustment_total",
+        "tax_total",
+        "gross_total",
+        "net_total",
+        "paid_amount",
+        "outstanding_amount"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptParty": {
+      "dataclass": true,
+      "fields": [
+        "party_id",
+        "party_type",
+        "display_name",
+        "external_reference",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptPartyId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptPartyType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptReference": {
+      "dataclass": true,
+      "fields": [
+        "reference_type",
+        "reference_value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "receipt.ReceiptReferenceType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptTax": {
+      "dataclass": true,
+      "fields": [
+        "tax_id",
+        "tax_type",
+        "description",
+        "jurisdiction",
+        "rate",
+        "amount",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptTaxId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "receipt.ReceiptTaxType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "receipt.ReceiptVerificationResult": {
+      "dataclass": true,
+      "fields": [
+        "status",
+        "verified_at",
+        "verifier",
+        "reason",
+        "integrity_evidence",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "receipt.ReceiptVerificationStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "remittance.Remittance": {
+      "dataclass": true,
+      "fields": [
+        "remittance_id",
+        "reference",
+        "status",
+        "remittance_type",
+        "direction",
+        "purpose",
+        "priority",
+        "sender",
+        "beneficiary",
+        "source_account",
+        "destination_account",
+        "source_amount",
+        "destination_amount",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "reverse",
+        "submit",
+        "update_metadata",
+        "update_priority",
+        "update_reference",
+        "validate"
+      ]
+    },
+    "remittance.RemittanceAmountBreakdown": {
+      "dataclass": true,
+      "fields": [
+        "principal_amount",
+        "fees",
+        "charges",
+        "fx_cost",
+        "total_debit_amount",
+        "destination_amount",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceCharge": {
+      "dataclass": true,
+      "fields": [
+        "charge_id",
+        "charge_type",
+        "amount",
+        "description"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceCorridor": {
+      "dataclass": true,
+      "fields": [
+        "source_country_code",
+        "destination_country_code",
+        "source_currency_code",
+        "destination_currency_code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceDirection": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "remittance.RemittanceFee": {
+      "dataclass": true,
+      "fields": [
+        "fee_type",
+        "amount",
+        "description",
+        "refundable"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceFeeType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "remittance.RemittanceFundingReference": {
+      "dataclass": true,
+      "fields": [
+        "funding_source_id",
+        "funding_source_type",
+        "account_reference",
+        "authorization_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "remittance.RemittanceInstruction": {
+      "dataclass": true,
+      "fields": [
+        "instruction_id",
+        "remittance_id",
+        "funding_reference",
+        "recipient_reference",
+        "corridor",
+        "requested_source_amount",
+        "expected_destination_amount",
+        "requested_at",
+        "expires_at",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create",
+        "is_expired"
+      ]
+    },
+    "remittance.RemittanceInstructionId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "remittance.RemittanceInstructionMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "remittance.RemittanceMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "remittance.RemittancePricingMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "remittance.RemittancePriority": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "remittance.RemittancePurpose": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "remittance.RemittanceRecipientReference": {
+      "dataclass": true,
+      "fields": [
+        "recipient_id",
+        "recipient_type",
+        "party_reference",
+        "account_reference",
+        "delivery_method",
+        "routing_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "remittance.RemittanceReference": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "remittance.RemittanceStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "remittance.RemittanceType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_batch.SettlementBatch": {
+      "dataclass": true,
+      "fields": [
+        "batch_id",
+        "batch_type",
+        "status",
+        "window",
+        "settlement_currency_code",
+        "gross_amount",
+        "net_amount",
+        "participants",
+        "references",
+        "entry_count",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "mark_ready",
+        "open",
+        "partially_complete",
+        "reconcile",
+        "update_metadata",
+        "update_window",
+        "validate"
+      ]
+    },
+    "settlement_batch.SettlementBatchId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementBatchStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_batch.SettlementBatchType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_batch.SettlementEntry": {
+      "dataclass": true,
+      "fields": [
+        "entry_id",
+        "batch_id",
+        "status",
+        "amount",
+        "settlement_currency_code",
+        "source_participant_id",
+        "destination_participant_id",
+        "reference",
+        "created_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_batch.SettlementEntryId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementEntryStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_batch.SettlementFailure": {
+      "dataclass": true,
+      "fields": [
+        "failure_code",
+        "message",
+        "occurred_at",
+        "entry_id",
+        "retryable",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_batch.SettlementInstruction": {
+      "dataclass": true,
+      "fields": [
+        "instruction_id",
+        "batch_id",
+        "source_participant_id",
+        "destination_participant_id",
+        "amount",
+        "settlement_currency_code",
+        "reference",
+        "requested_at",
+        "effective_at",
+        "expires_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create",
+        "is_expired"
+      ]
+    },
+    "settlement_batch.SettlementInstructionId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementInstructionMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementParticipant": {
+      "dataclass": true,
+      "fields": [
+        "participant_id",
+        "participant_type",
+        "account_reference",
+        "currency_code",
+        "jurisdiction_code",
+        "provider_code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_batch.SettlementParticipantId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_batch.SettlementParticipantType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_batch.SettlementReference": {
+      "dataclass": true,
+      "fields": [
+        "reference_type",
+        "reference_id",
+        "external_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_batch.SettlementReferenceType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_batch.SettlementResult": {
+      "dataclass": true,
+      "fields": [
+        "batch_id",
+        "status",
+        "gross_amount",
+        "net_amount",
+        "settlement_currency_code",
+        "successful_entry_count",
+        "failed_entry_count",
+        "excluded_entry_count",
+        "failures",
+        "completed_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "settlement_batch.SettlementSummary": {
+      "dataclass": true,
+      "fields": [
+        "batch_id",
+        "status",
+        "settlement_currency_code",
+        "gross_amount",
+        "net_amount",
+        "total_entry_count",
+        "successful_entry_count",
+        "failed_entry_count",
+        "excluded_entry_count",
+        "participant_count",
+        "opened_at",
+        "closed_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "settlement_batch.SettlementWindow": {
+      "dataclass": true,
+      "fields": [
+        "opens_at",
+        "closes_at",
+        "cutoff_at",
+        "timezone_name"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "contains"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationDifference": {
+      "dataclass": true,
+      "fields": [
+        "difference_id",
+        "difference_type",
+        "field_name",
+        "expected_value",
+        "observed_value",
+        "detected_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationDifferenceId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationDifferenceType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationEvidence": {
+      "dataclass": true,
+      "fields": [
+        "evidence_id",
+        "evidence_type",
+        "reference",
+        "recorded_at",
+        "digest",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationEvidenceId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationEvidenceType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationItem": {
+      "dataclass": true,
+      "fields": [
+        "item_id",
+        "status",
+        "expected_reference",
+        "observed_reference",
+        "observation_ids",
+        "difference_ids",
+        "evidence_ids",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationItemId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationItemStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "empty",
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationObservation": {
+      "dataclass": true,
+      "fields": [
+        "observation_id",
+        "source",
+        "reference",
+        "observed_at",
+        "observed_value",
+        "currency_code",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationObservationId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationObservationSource": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationResult": {
+      "dataclass": true,
+      "fields": [
+        "reconciliation_id",
+        "status",
+        "summary",
+        "completed_at",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationSummary": {
+      "dataclass": true,
+      "fields": [
+        "total_items",
+        "pending_items",
+        "matched_items",
+        "partially_matched_items",
+        "unmatched_items",
+        "missing_expected_items",
+        "missing_observed_items",
+        "duplicate_items",
+        "conflict_items",
+        "excluded_items",
+        "review_required_items"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create",
+        "empty",
+        "from_items"
+      ]
+    },
+    "settlement_reconciliation.ReconciliationType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "settlement_reconciliation.SettlementReconciliation": {
+      "dataclass": true,
+      "fields": [
+        "reconciliation_id",
+        "reconciliation_type",
+        "status",
+        "settlement_batch_id",
+        "expected_entry_count",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "close",
+        "create",
+        "expire",
+        "mark_exception",
+        "mark_matched",
+        "mark_partially_matched",
+        "mark_unmatched",
+        "open",
+        "require_review",
+        "start_collecting",
+        "start_comparing",
+        "update_metadata"
+      ]
+    },
+    "settlement_reconciliation.SettlementReconciliationId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "transaction.Transaction": {
+      "dataclass": true,
+      "fields": [
+        "transaction_id",
+        "transaction_type",
+        "status",
+        "direction",
+        "amount",
+        "created_at",
+        "updated_at",
+        "source_wallet_id",
+        "destination_wallet_id",
+        "journal_entry_id",
+        "description",
+        "external_reference",
+        "idempotency_key",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "can_transition_to",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "fail",
+        "reverse",
+        "start_processing",
+        "with_metadata"
+      ]
+    },
+    "transaction.TransactionDirection": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "transaction.TransactionId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "transaction.TransactionMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "transaction.TransactionStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "transaction.TransactionType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "transfer.Transfer": {
+      "dataclass": true,
+      "fields": [
+        "transfer_id",
+        "reference",
+        "status",
+        "transfer_type",
+        "direction",
+        "purpose",
+        "priority",
+        "sender",
+        "beneficiary",
+        "source_account",
+        "destination_account",
+        "source_amount",
+        "destination_amount",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "reverse",
+        "submit",
+        "update_metadata",
+        "update_priority",
+        "update_reference",
+        "validate"
+      ]
+    },
+    "transfer.TransferAccountReference": {
+      "dataclass": true,
+      "fields": [
+        "account_id",
+        "account_type",
+        "currency_code",
+        "institution_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferAmountBreakdown": {
+      "dataclass": true,
+      "fields": [
+        "source_amount",
+        "destination_amount",
+        "fees",
+        "charges",
+        "fee_total",
+        "charge_total",
+        "total_debit_amount",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "transfer.TransferBeneficiaryReference": {
+      "dataclass": true,
+      "fields": [
+        "beneficiary_id",
+        "beneficiary_type",
+        "party_reference",
+        "account_reference",
+        "delivery_method",
+        "routing_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferCharge": {
+      "dataclass": true,
+      "fields": [
+        "charge_code",
+        "amount",
+        "description",
+        "third_party",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "transfer.TransferDirection": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "transfer.TransferFee": {
+      "dataclass": true,
+      "fields": [
+        "fee_type",
+        "amount",
+        "description",
+        "refundable",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "transfer.TransferFeeType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "transfer.TransferFundingReference": {
+      "dataclass": true,
+      "fields": [
+        "funding_source_id",
+        "funding_source_type",
+        "account_reference",
+        "authorization_reference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "transfer.TransferInstruction": {
+      "dataclass": true,
+      "fields": [
+        "instruction_id",
+        "transfer_id",
+        "funding_reference",
+        "beneficiary_reference",
+        "requested_source_amount",
+        "expected_destination_amount",
+        "requested_at",
+        "expires_at",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create",
+        "is_expired"
+      ]
+    },
+    "transfer.TransferInstructionId": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "transfer.TransferInstructionMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferPartyReference": {
+      "dataclass": true,
+      "fields": [
+        "party_id",
+        "party_type",
+        "display_name"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferPricingMetadata": {
+      "dataclass": true,
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "transfer.TransferPriority": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "transfer.TransferPurpose": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "transfer.TransferReference": {
+      "dataclass": true,
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "transfer.TransferStatus": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "transfer.TransferType": {
+      "dataclass": false,
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    }
+  },
+  "serialization_replay": {
+    "customer": [
+      "canonical_dict",
+      "serialize",
+      "canonical"
+    ],
+    "financial_account": [
+      "canonical_dict",
+      "canonical"
+    ],
+    "fx": [
+      "canonical_dict",
+      "canonical"
+    ],
+    "money": [
+      "canonical_dict",
+      "canonical"
+    ],
+    "receipt": [
+      "canonical_dict",
+      "to_dict",
+      "canonical"
+    ],
+    "remittance": [
+      "canonical_dict",
+      "canonical"
+    ],
+    "settlement_batch": [
+      "canonical_dict",
+      "to_dict",
+      "canonical"
+    ],
+    "settlement_reconciliation": [
+      "canonical_dict",
+      "serialize",
+      "canonical"
+    ],
+    "transaction": [
+      "canonical_dict",
+      "canonical"
+    ],
+    "transfer": [
+      "canonical_dict",
+      "canonical"
+    ]
+  },
+  "settlement_membership": {
+    "customer": [
+      "member"
+    ],
+    "financial_account": [
+      "member"
+    ],
+    "fx": [
+      "member"
+    ],
+    "receipt": [
+      "member"
+    ],
+    "settlement_batch": [
+      "batch_id"
+    ],
+    "settlement_reconciliation": [
+      "settlement_batch_id",
+      "batch_id",
+      "member"
+    ]
+  },
+  "terminal_invariants": {
+    "customer": [
+      "complete"
+    ],
+    "fx": [
+      "cancel",
+      "cancelled"
+    ],
+    "receipt": [
+      "cancel",
+      "canceled",
+      "fail",
+      "failed"
+    ],
+    "remittance": [
+      "cancel",
+      "cancelled",
+      "canceled",
+      "fail",
+      "failed",
+      "complete",
+      "completed"
+    ],
+    "settlement_batch": [
+      "cancel",
+      "cancelled",
+      "canceled",
+      "fail",
+      "failed",
+      "complete",
+      "completed"
+    ],
+    "settlement_reconciliation": [
+      "cancel",
+      "canceled",
+      "fail",
+      "failed",
+      "complete",
+      "completed"
+    ],
+    "transaction": [
+      "cancel",
+      "cancelled",
+      "fail",
+      "failed",
+      "complete",
+      "completed"
+    ],
+    "transfer": [
+      "cancel",
+      "cancelled",
+      "fail",
+      "failed",
+      "complete",
+      "completed"
+    ]
+  },
+  "transfer_remittance_linkage": {
+    "remittance": [
+      "remittance_id"
+    ],
+    "transfer": [
+      "transfer_id"
+    ]
+  }
+}

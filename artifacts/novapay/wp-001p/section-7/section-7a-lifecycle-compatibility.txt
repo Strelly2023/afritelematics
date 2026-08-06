@@ -1,0 +1,62 @@
+Status/lifecycle types: 12
+Lifecycle methods: 44
+customer.CustomerStatus
+wallet.WalletStatus
+financial_account.FinancialAccountStatus
+transaction.TransactionStatus
+transfer.TransferStatus
+remittance.RemittanceStatus
+settlement_batch.SettlementBatchStatus
+settlement_batch.SettlementEntryStatus
+settlement_reconciliation.ReconciliationItemStatus
+settlement_reconciliation.ReconciliationStatus
+receipt.ReceiptStatus
+receipt.ReceiptVerificationStatus
+
+customer.Customer.activate
+customer.Customer.close
+customer.Customer.suspend
+wallet.Wallet.activate
+wallet.Wallet.can_transition_to
+wallet.Wallet.close
+wallet.Wallet.suspend
+wallet.Wallet.transition_to
+financial_account.FinancialAccount.activate
+financial_account.FinancialAccount.close
+financial_account.FinancialAccount.reactivate
+financial_account.FinancialAccount.suspend
+transaction.Transaction.authorize
+transaction.Transaction.can_transition_to
+transaction.Transaction.cancel
+transaction.Transaction.complete
+transaction.Transaction.fail
+transfer.Transfer.authorize
+transfer.Transfer.cancel
+transfer.Transfer.complete
+transfer.Transfer.expire
+transfer.Transfer.fail
+transfer.TransferInstruction.is_expired
+remittance.Remittance.authorize
+remittance.Remittance.cancel
+remittance.Remittance.complete
+remittance.Remittance.expire
+remittance.Remittance.fail
+remittance.RemittanceInstruction.is_expired
+settlement_batch.SettlementBatch.cancel
+settlement_batch.SettlementBatch.complete
+settlement_batch.SettlementBatch.expire
+settlement_batch.SettlementBatch.fail
+settlement_batch.SettlementBatch.partially_complete
+settlement_batch.SettlementBatch.reconcile
+settlement_batch.SettlementInstruction.is_expired
+settlement_reconciliation.SettlementReconciliation.cancel
+settlement_reconciliation.SettlementReconciliation.close
+settlement_reconciliation.SettlementReconciliation.expire
+receipt.Receipt.cancel
+receipt.Receipt.expire
+receipt.Receipt.issue
+receipt.Receipt.void
+receipt.ReceiptIntegrityEvidence.is_expired_at
+Cross-domain status vocabulary: PRESENT
+Cross-domain lifecycle vocabulary: PRESENT
+Phase 1 lifecycle compatibility: AUDITED

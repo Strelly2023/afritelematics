@@ -1,0 +1,14 @@
+Receipt types with serialization contracts: 10
+Receipt: canonical_dict
+ReceiptAdjustment: canonical_dict
+ReceiptIntegrityEvidence: canonical_dict
+ReceiptLineItem: canonical_dict
+ReceiptMetadata: canonical_dict
+ReceiptMonetarySummary: canonical_dict
+ReceiptParty: canonical_dict
+ReceiptReference: canonical_dict
+ReceiptTax: canonical_dict
+ReceiptVerificationResult: canonical_dict
+Receipt dataclass immutability: PASS
+Deterministic serialization vocabulary: PRESENT
+Replay-compatible Receipt contracts: PASS

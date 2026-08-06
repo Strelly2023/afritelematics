@@ -1,0 +1,8 @@
+Transfer monetary fields: ['beneficiary', 'created_at', 'destination_account', 'destination_amount', 'direction', 'metadata', 'priority', 'purpose', 'reference', 'sender', 'source_account', 'source_amount', 'status', 'transfer_id', 'transfer_type', 'updated_at', 'version']
+Remittance monetary fields: ['beneficiary', 'created_at', 'destination_account', 'destination_amount', 'direction', 'metadata', 'priority', 'purpose', 'reference', 'remittance_id', 'remittance_type', 'sender', 'source_account', 'source_amount', 'status', 'updated_at', 'version']
+
+Money canonical type: PRESENT
+FXQuote canonical type: PRESENT
+CurrencyPair direction contract: PRESENT
+Fee/payout vocabulary: PRESENT
+Transfer/remittance monetary consistency: AUDITED

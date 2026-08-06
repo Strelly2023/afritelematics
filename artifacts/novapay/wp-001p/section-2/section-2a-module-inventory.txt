@@ -1,0 +1,79 @@
+
+[money]
+module exports: 4
+Currency|module=PRESENT|domain=PRESENT|top_level=PRESENT
+DEFAULT_MINOR_UNITS|module=PRESENT|domain=PRESENT|top_level=PRESENT
+Money|module=PRESENT|domain=PRESENT|top_level=PRESENT
+freeze_money_payload|module=PRESENT|domain=PRESENT|top_level=PRESENT
+
+[currency]
+module exports: 14
+CurrencyCountryCodes|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyDefinition|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyDefinitionId|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyMetadata|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyName|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyRegistry|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyRegistryId|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyRoundingMode|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyStatus|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencySymbol|module=PRESENT|domain=PRESENT|top_level=PRESENT
+CurrencyType|module=PRESENT|domain=PRESENT|top_level=PRESENT
+STANDARD_CURRENCY_DEFINITIONS|module=PRESENT|domain=PRESENT|top_level=PRESENT
+standard_currency_definitions|module=PRESENT|domain=PRESENT|top_level=PRESENT
+standard_currency_registry|module=PRESENT|domain=PRESENT|top_level=PRESENT
+
+[fx]
+module exports: 12
+CurrencyPair|module=PRESENT|domain=PRESENT|top_level=PRESENT
+ExchangeRate|module=PRESENT|domain=PRESENT|top_level=PRESENT
+ExchangeRateId|module=PRESENT|domain=PRESENT|top_level=PRESENT
+ExchangeRateSource|module=PRESENT|domain=PRESENT|top_level=PRESENT
+ExchangeRateStatus|module=PRESENT|domain=PRESENT|top_level=PRESENT
+ExchangeRateValue|module=PRESENT|domain=PRESENT|top_level=PRESENT
+FXMetadata|module=PRESENT|domain=PRESENT|top_level=PRESENT
+FXQuote|module=PRESENT|domain=PRESENT|top_level=PRESENT
+FXQuoteId|module=PRESENT|domain=PRESENT|top_level=PRESENT
+FXQuoteStatus|module=PRESENT|domain=PRESENT|top_level=PRESENT
+FXValidityWindow|module=PRESENT|domain=PRESENT|top_level=PRESENT
+RateSpread|module=PRESENT|domain=PRESENT|top_level=PRESENT
+
+[exchange_rate_provider]
+module exports: 16
+ExchangeRateProvider|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ExchangeRateProviderId|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ExchangeRateProviderRegistry|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ExchangeRateProviderRegistryId|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ExchangeRateProviderStatus|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ExchangeRateProviderType|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ProviderCapabilities|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ProviderEndpoint|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ProviderMetadata|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ProviderName|module=PRESENT|domain=ABSENT|top_level=ABSENT
+ProviderTrustLevel|module=PRESENT|domain=ABSENT|top_level=ABSENT
+RateSource|module=PRESENT|domain=ABSENT|top_level=ABSENT
+RateSourceId|module=PRESENT|domain=ABSENT|top_level=ABSENT
+RateSourceMetadata|module=PRESENT|domain=ABSENT|top_level=ABSENT
+RateSourceStatus|module=PRESENT|domain=ABSENT|top_level=ABSENT
+RateSourceType|module=PRESENT|domain=ABSENT|top_level=ABSENT
+
+[balance_snapshot]
+module exports: 11
+BalanceComponent|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceComponentType|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceReconciliation|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceSnapshot|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceSnapshotHistory|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceSnapshotHistoryId|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceSnapshotId|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceSnapshotMetadata|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceSnapshotStatus|module=PRESENT|domain=PRESENT|top_level=PRESENT
+BalanceSnapshotType|module=PRESENT|domain=PRESENT|top_level=PRESENT
+LedgerPosition|module=PRESENT|domain=PRESENT|top_level=PRESENT
+
+Money: PRESENT
+Currency: PRESENT
+ExchangeRate: PRESENT
+FXQuote: PRESENT
+BalanceSnapshot: PRESENT
+Canonical monetary export inventory: PASS

@@ -1,0 +1,9 @@
+Authority violations: 0
+Payment execution authority: NONE
+Wallet mutation authority: NONE
+Ledger posting authority: NONE
+External settlement authority: NONE
+Persistence authority: NONE
+Provider/network authority: NONE
+Receipt delivery authority: NONE
+Authority-boundary audit: PASS

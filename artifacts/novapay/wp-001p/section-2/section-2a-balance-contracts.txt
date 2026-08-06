@@ -1,0 +1,6 @@
+BalanceSnapshot fields: ['snapshot_id', 'snapshot_type', 'status', 'currency', 'components', 'ledger_position', 'as_of', 'captured_at', 'customer_id', 'financial_account_id', 'wallet_id', 'ledger_account_id', 'source_journal_entry_id', 'source_reference_id', 'metadata', 'version']
+Balance-related monetary fields: ['currency']
+BalanceSnapshot methods: ['canonical_dict', 'component_amount', 'create', 'get_component', 'invalidate', 'mark_reconciliation_required', 'mark_stale', 'mark_superseded', 'reconcile', 'require_component', 'require_reconciled', 'update_metadata']
+BalanceSnapshot immutable: PASS
+BalanceSnapshot monetary structure: PASS
+BalanceSnapshot authority boundary: PASS

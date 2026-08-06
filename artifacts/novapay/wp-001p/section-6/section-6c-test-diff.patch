@@ -1,0 +1,466 @@
+diff --git a/afritech/tests/novapay/test_phase1_receipt_runtime_authority_boundary_certification.py b/afritech/tests/novapay/test_phase1_receipt_runtime_authority_boundary_certification.py
+new file mode 100644
+index 000000000..5f8166bb5
+--- /dev/null
++++ b/afritech/tests/novapay/test_phase1_receipt_runtime_authority_boundary_certification.py
+@@ -0,0 +1,460 @@
++from __future__ import annotations
++
++import ast
++import inspect
++from dataclasses import fields, is_dataclass
++from pathlib import Path
++
++import afritech.novapay as novapay
++import afritech.novapay.domain as domain
++import afritech.novapay.domain.receipt as receipt
++
++
++RECEIPT_MODULE_PATH = Path(
++    "afritech/novapay/domain/receipt.py"
++)
++
++FORBIDDEN_PAYMENT_AUTHORITY = {
++    "execute_payment",
++    "authorize_payment",
++    "capture_payment",
++    "refund_payment",
++    "charge_payment",
++    "reserve_funds",
++    "release_funds",
++}
++
++FORBIDDEN_WALLET_AUTHORITY = {
++    "debit_wallet",
++    "credit_wallet",
++    "freeze_wallet",
++    "unfreeze_wallet",
++    "suspend_wallet",
++    "activate_wallet",
++}
++
++FORBIDDEN_LEDGER_AUTHORITY = {
++    "post_ledger",
++    "post_entry",
++    "create_journal_entry",
++    "reverse_entry",
++    "debit_account",
++    "credit_account",
++}
++
++FORBIDDEN_TRANSFER_REMITTANCE_AUTHORITY = {
++    "execute_transfer",
++    "authorize_transfer",
++    "cancel_transfer",
++    "execute_remittance",
++    "authorize_remittance",
++    "cancel_remittance",
++}
++
++FORBIDDEN_SETTLEMENT_RECONCILIATION_AUTHORITY = {
++    "execute_settlement",
++    "settle_external",
++    "close_settlement_batch",
++    "reconcile_external",
++    "execute_reconciliation",
++    "resolve_reconciliation",
++}
++
++FORBIDDEN_PERSISTENCE_AUTHORITY = {
++    "persist",
++    "save",
++    "store",
++    "delete",
++    "repository",
++    "database",
++    "session",
++    "transaction_manager",
++    "unit_of_work",
++}
++
++FORBIDDEN_PROVIDER_NETWORK_AUTHORITY = {
++    "provider_client",
++    "payment_provider",
++    "network_client",
++    "http_client",
++    "api_client",
++    "gateway_client",
++    "send_request",
++    "request_external",
++}
++
++FORBIDDEN_DELIVERY_AUTHORITY = {
++    "deliver",
++    "deliver_external",
++    "send_email",
++    "send_sms",
++    "publish",
++    "dispatch",
++    "notification_client",
++    "delivery_client",
++}
++
++FORBIDDEN_EXTERNAL_CRYPTO_AUTHORITY = {
++    "sign_external",
++    "verify_external",
++    "signing_service",
++    "verification_client",
++    "kms_client",
++    "hsm_client",
++    "private_key",
++}
++
++FORBIDDEN_RUNTIME_IMPORT_ROOTS = {
++    "django",
++    "flask",
++    "fastapi",
++    "starlette",
++    "requests",
++    "httpx",
++    "aiohttp",
++    "sqlalchemy",
++    "psycopg",
++    "psycopg2",
++    "sqlite3",
++    "redis",
++    "celery",
++    "boto3",
++    "kafka",
++    "pika",
++}
++
++FORBIDDEN_RUNTIME_FIELDS = (
++    FORBIDDEN_PAYMENT_AUTHORITY
++    | FORBIDDEN_WALLET_AUTHORITY
++    | FORBIDDEN_LEDGER_AUTHORITY
++    | FORBIDDEN_TRANSFER_REMITTANCE_AUTHORITY
++    | FORBIDDEN_SETTLEMENT_RECONCILIATION_AUTHORITY
++    | FORBIDDEN_PERSISTENCE_AUTHORITY
++    | FORBIDDEN_PROVIDER_NETWORK_AUTHORITY
++    | FORBIDDEN_DELIVERY_AUTHORITY
++    | FORBIDDEN_EXTERNAL_CRYPTO_AUTHORITY
++)
++
++
++def _receipt_classes() -> tuple[type[object], ...]:
++    values: list[type[object]] = []
++
++    for symbol in receipt.__all__:
++        value = getattr(receipt, symbol)
++
++        if not inspect.isclass(value):
++            continue
++
++        if value.__module__ != receipt.__name__:
++            continue
++
++        values.append(value)
++
++    return tuple(values)
++
++
++def _member_names(value: type[object]) -> set[str]:
++    return {
++        name
++        for name in dir(value)
++        if not name.startswith("__")
++    }
++
++
++def _dataclass_field_names(value: type[object]) -> set[str]:
++    if not is_dataclass(value):
++        return set()
++
++    return {
++        item.name
++        for item in fields(value)
++    }
++
++
++def _assert_no_authority(
++    forbidden: set[str],
++) -> None:
++    violations: list[
++        tuple[str, str, list[str]]
++    ] = []
++
++    for value in _receipt_classes():
++        member_overlap = sorted(
++            forbidden.intersection(
++                _member_names(value)
++            )
++        )
++
++        if member_overlap:
++            violations.append(
++                (
++                    value.__name__,
++                    "member",
++                    member_overlap,
++                )
++            )
++
++        field_overlap = sorted(
++            forbidden.intersection(
++                _dataclass_field_names(value)
++            )
++        )
++
++        if field_overlap:
++            violations.append(
++                (
++                    value.__name__,
++                    "field",
++                    field_overlap,
++                )
++            )
++
++    assert violations == []
++
++
++def test_receipt_public_boundary_remains_canonical() -> None:
++    assert hasattr(receipt, "Receipt")
++    assert "Receipt" in receipt.__all__
++
++    assert not hasattr(domain, "Receipt")
++    assert "Receipt" not in domain.__all__
++
++    assert not hasattr(novapay, "Receipt")
++    assert "Receipt" not in novapay.__all__
++
++    for symbol in (
++        "ReceiptIntegrityEvidence",
++        "ReceiptVerificationResult",
++    ):
++        assert getattr(domain, symbol) is getattr(
++            receipt,
++            symbol,
++        )
++
++        assert getattr(novapay, symbol) is getattr(
++            receipt,
++            symbol,
++        )
++
++        assert symbol in receipt.__all__
++        assert symbol in domain.__all__
++        assert symbol in novapay.__all__
++
++    assert not hasattr(
++        receipt,
++        "ReceiptPresentationSummary",
++    )
++
++    assert not hasattr(
++        domain,
++        "ReceiptPresentationSummary",
++    )
++
++    assert not hasattr(
++        novapay,
++        "ReceiptPresentationSummary",
++    )
++
++
++def test_receipt_types_have_no_payment_execution_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_PAYMENT_AUTHORITY
++    )
++
++
++def test_receipt_types_have_no_wallet_mutation_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_WALLET_AUTHORITY
++    )
++
++
++def test_receipt_types_have_no_ledger_posting_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_LEDGER_AUTHORITY
++    )
++
++
++def test_receipt_types_have_no_transfer_or_remittance_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_TRANSFER_REMITTANCE_AUTHORITY
++    )
++
++
++def test_receipt_types_have_no_settlement_or_reconciliation_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_SETTLEMENT_RECONCILIATION_AUTHORITY
++    )
++
++
++def test_receipt_types_have_no_persistence_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_PERSISTENCE_AUTHORITY
++    )
++
++
++def test_receipt_types_have_no_provider_or_network_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_PROVIDER_NETWORK_AUTHORITY
++    )
++
++
++def test_receipt_types_have_no_delivery_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_DELIVERY_AUTHORITY
++    )
++
++
++def test_receipt_types_have_no_external_signing_or_verification_authority() -> None:
++    _assert_no_authority(
++        FORBIDDEN_EXTERNAL_CRYPTO_AUTHORITY
++    )
++
++
++def test_receipt_dataclasses_hide_no_runtime_authority_fields() -> None:
++    violations: list[
++        tuple[str, list[str]]
++    ] = []
++
++    for value in _receipt_classes():
++        if not is_dataclass(value):
++            continue
++
++        assert value.__dataclass_params__.frozen is True
++
++        overlap = sorted(
++            FORBIDDEN_RUNTIME_FIELDS.intersection(
++                _dataclass_field_names(value)
++            )
++        )
++
++        if overlap:
++            violations.append(
++                (
++                    value.__name__,
++                    overlap,
++                )
++            )
++
++    assert violations == []
++
++
++def test_receipt_classes_hide_no_runtime_authority_callables() -> None:
++    violations: list[
++        tuple[str, list[str]]
++    ] = []
++
++    for value in _receipt_classes():
++        overlap = sorted(
++            FORBIDDEN_RUNTIME_FIELDS.intersection(
++                _member_names(value)
++            )
++        )
++
++        if overlap:
++            violations.append(
++                (
++                    value.__name__,
++                    overlap,
++                )
++            )
++
++    assert violations == []
++
++
++def test_receipt_module_has_no_runtime_framework_imports() -> None:
++    source = RECEIPT_MODULE_PATH.read_text(
++        encoding="utf-8"
++    )
++
++    tree = ast.parse(
++        source,
++        filename=str(RECEIPT_MODULE_PATH),
++    )
++
++    violations: list[
++        tuple[str, int]
++    ] = []
++
++    for node in ast.walk(tree):
++        if isinstance(node, ast.Import):
++            for alias in node.names:
++                root = alias.name.split(".")[0]
++
++                if root in FORBIDDEN_RUNTIME_IMPORT_ROOTS:
++                    violations.append(
++                        (
++                            alias.name,
++                            node.lineno,
++                        )
++                    )
++
++        if isinstance(node, ast.ImportFrom):
++            if not node.module:
++                continue
++
++            root = node.module.split(".")[0]
++
++            if root in FORBIDDEN_RUNTIME_IMPORT_ROOTS:
++                violations.append(
++                    (
++                        node.module,
++                        node.lineno,
++                    )
++                )
++
++    assert violations == []
++
++
++def test_receipt_module_remains_replay_safe_and_side_effect_free() -> None:
++    source = RECEIPT_MODULE_PATH.read_text(
++        encoding="utf-8"
++    )
++
++    tree = ast.parse(
++        source,
++        filename=str(RECEIPT_MODULE_PATH),
++    )
++
++    forbidden_top_level_calls: list[
++        tuple[str, int]
++    ] = []
++
++    allowed_top_level_call_names = {
++        "TypeVar",
++        "compile",
++    }
++
++    for node in tree.body:
++        candidate: ast.AST | None = None
++
++        if isinstance(node, ast.Expr):
++            candidate = node.value
++
++        elif isinstance(node, ast.Assign):
++            candidate = node.value
++
++        elif isinstance(node, ast.AnnAssign):
++            candidate = node.value
++
++        if not isinstance(candidate, ast.Call):
++            continue
++
++        call_name = ""
++
++        if isinstance(candidate.func, ast.Name):
++            call_name = candidate.func.id
++
++        elif isinstance(candidate.func, ast.Attribute):
++            call_name = candidate.func.attr
++
++        if call_name in allowed_top_level_call_names:
++            continue
++
++        forbidden_top_level_calls.append(
++            (
++                call_name or "<dynamic>",
++                node.lineno,
++            )
++        )
++
++    assert forbidden_top_level_calls == []

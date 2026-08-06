@@ -1,0 +1,1 @@
+RUNTIME_BOUNDARY_GOVERNANCE_GUARD: PASS (adr=ADR-0022, rule=RULE-042, bind=BIND-021, scan_current=True, graph_current=True)

@@ -1,0 +1,2028 @@
+{
+  "cross_domain_lifecycle_compatibility": {
+    "matches": {
+      "balance_snapshot": [
+        "status",
+        "fail",
+        "settle",
+        "reconcile"
+      ],
+      "customer": [
+        "status",
+        "activate",
+        "suspend",
+        "complete"
+      ],
+      "financial_account": [
+        "status",
+        "activate",
+        "suspend",
+        "settle"
+      ],
+      "journal_entry": [
+        "status",
+        "settle",
+        "void"
+      ],
+      "ledger_account": [
+        "status",
+        "activate",
+        "suspend",
+        "settle"
+      ],
+      "receipt": [
+        "status",
+        "cancel",
+        "fail",
+        "settle",
+        "issue",
+        "void",
+        "expire"
+      ],
+      "remittance": [
+        "status",
+        "authorize",
+        "complete",
+        "cancel",
+        "fail",
+        "expire"
+      ],
+      "settlement_batch": [
+        "status",
+        "complete",
+        "cancel",
+        "fail",
+        "settle",
+        "reconcile",
+        "expire"
+      ],
+      "settlement_reconciliation": [
+        "status",
+        "complete",
+        "cancel",
+        "fail",
+        "settle",
+        "reconcile",
+        "expire"
+      ],
+      "transaction": [
+        "status",
+        "authorize",
+        "complete",
+        "cancel",
+        "fail",
+        "settle"
+      ],
+      "transfer": [
+        "status",
+        "authorize",
+        "complete",
+        "cancel",
+        "fail",
+        "settle",
+        "expire"
+      ],
+      "wallet": [
+        "status",
+        "activate",
+        "suspend",
+        "settle"
+      ]
+    }
+  },
+  "customer_financial_account_linkage": {
+    "matches": {
+      "customer": [
+        "customer_id"
+      ],
+      "financial_account": [
+        "customer_id",
+        "account_id"
+      ],
+      "remittance": [
+        "account_reference"
+      ],
+      "transfer": [
+        "account_id",
+        "account_reference"
+      ]
+    }
+  },
+  "customer_identity_tenant_propagation": {
+    "matches": {
+      "balance_snapshot": [
+        "customer_id"
+      ],
+      "customer": [
+        "customer_id",
+        "identity_id",
+        "tenant_id"
+      ],
+      "financial_account": [
+        "customer_id",
+        "tenant_id"
+      ],
+      "ledger_account": [
+        "tenant_id"
+      ],
+      "receipt": [
+        "party_id"
+      ],
+      "transfer": [
+        "party_id"
+      ],
+      "wallet": [
+        "tenant_id"
+      ]
+    },
+    "section_7a_reference": {
+      "module_count": 5,
+      "module_matches": {
+        "balance_snapshot": [
+          "customer_id"
+        ],
+        "customer": [
+          "customer_id",
+          "identity_id"
+        ],
+        "financial_account": [
+          "customer_id"
+        ],
+        "receipt": [
+          "party_id"
+        ],
+        "transfer": [
+          "party_id"
+        ]
+      },
+      "tokens": [
+        "customer_id",
+        "identity_id",
+        "customer_reference",
+        "party_id"
+      ]
+    },
+    "tenant_reference": {
+      "module_count": 4,
+      "module_matches": {
+        "customer": [
+          "tenant_id",
+          "tenant"
+        ],
+        "financial_account": [
+          "tenant_id",
+          "tenant"
+        ],
+        "ledger_account": [
+          "tenant_id",
+          "tenant"
+        ],
+        "wallet": [
+          "tenant_id",
+          "tenant"
+        ]
+      },
+      "tokens": [
+        "tenant_id",
+        "legal_entity_id",
+        "tenant"
+      ]
+    }
+  },
+  "customer_wallet_ownership": {
+    "matches": {
+      "customer": [
+        "customer_id"
+      ],
+      "transaction": [
+        "wallet_id",
+        "wallet_reference"
+      ],
+      "wallet": [
+        "wallet_id",
+        "owner_id"
+      ]
+    }
+  },
+  "deterministic_serialization_replay": {
+    "types": {
+      "balance_snapshot.BalanceComponent": {
+        "dataclass": true,
+        "fields": [
+          "component_type",
+          "amount",
+          "ledger_account_id",
+          "wallet_id",
+          "reference_id",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "balance_snapshot.BalanceReconciliation": {
+        "dataclass": true,
+        "fields": [
+          "currency",
+          "posted",
+          "available",
+          "pending_debit",
+          "pending_credit",
+          "reserved",
+          "hold",
+          "overdraft",
+          "uncleared",
+          "expected_available",
+          "difference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "balance_snapshot.BalanceSnapshot": {
+        "dataclass": true,
+        "fields": [
+          "snapshot_id",
+          "snapshot_type",
+          "status",
+          "currency",
+          "components",
+          "ledger_position",
+          "as_of",
+          "captured_at",
+          "customer_id",
+          "financial_account_id",
+          "wallet_id",
+          "ledger_account_id",
+          "source_journal_entry_id",
+          "source_reference_id",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "component_amount",
+          "create",
+          "get_component",
+          "invalidate",
+          "mark_reconciliation_required",
+          "mark_stale",
+          "mark_superseded",
+          "reconcile",
+          "require_component",
+          "require_reconciled",
+          "update_metadata"
+        ]
+      },
+      "balance_snapshot.BalanceSnapshotHistory": {
+        "dataclass": true,
+        "fields": [
+          "history_id",
+          "snapshots",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "advance",
+          "at_or_before",
+          "at_position",
+          "between_positions",
+          "between_times",
+          "canonical_dict",
+          "create",
+          "get_by_id",
+          "require_by_id",
+          "update_metadata"
+        ]
+      },
+      "balance_snapshot.BalanceSnapshotMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of",
+          "with_updates"
+        ]
+      },
+      "balance_snapshot.LedgerPosition": {
+        "dataclass": true,
+        "fields": [
+          "sequence",
+          "source"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "is_after",
+          "of"
+        ]
+      },
+      "customer.Customer": {
+        "dataclass": true,
+        "fields": [
+          "customer_id",
+          "customer_type",
+          "status",
+          "tier",
+          "name",
+          "novaid_identity_id",
+          "tenant_id",
+          "contacts",
+          "addresses",
+          "preferences",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "canonical_dict",
+          "change_tier",
+          "close",
+          "create",
+          "reinstate",
+          "rename",
+          "replace_addresses",
+          "replace_contacts",
+          "restrict",
+          "suspend",
+          "update_metadata",
+          "update_preferences"
+        ]
+      },
+      "customer.CustomerAddress": {
+        "dataclass": true,
+        "fields": [
+          "country_code",
+          "address_line_1",
+          "locality",
+          "address_line_2",
+          "administrative_area",
+          "postal_code"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "customer.CustomerContact": {
+        "dataclass": true,
+        "fields": [
+          "email",
+          "phone"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "customer.CustomerId": {
+        "dataclass": true,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "customer.CustomerMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ]
+      },
+      "customer.CustomerName": {
+        "dataclass": true,
+        "fields": [
+          "legal_name",
+          "display_name"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "customer.CustomerPreferences": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ]
+      },
+      "financial_account.FinancialAccount": {
+        "dataclass": true,
+        "fields": [
+          "account_id",
+          "customer_id",
+          "tenant_id",
+          "account_type",
+          "purpose",
+          "status",
+          "currency",
+          "name",
+          "wallet_id",
+          "ledger_account_id",
+          "terms",
+          "restrictions",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "canonical_dict",
+          "change_restrictions",
+          "change_terms",
+          "close",
+          "create",
+          "link_ledger_account",
+          "link_wallet",
+          "mark_dormant",
+          "reactivate",
+          "rename",
+          "restrict",
+          "suspend",
+          "update_metadata"
+        ]
+      },
+      "financial_account.FinancialAccountId": {
+        "dataclass": true,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "financial_account.FinancialAccountMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ]
+      },
+      "financial_account.FinancialAccountName": {
+        "dataclass": true,
+        "fields": [
+          "product_name",
+          "display_name"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "financial_account.FinancialAccountRestrictions": {
+        "dataclass": true,
+        "fields": [
+          "debit_blocked",
+          "credit_blocked",
+          "cash_withdrawal_blocked",
+          "international_transfer_blocked",
+          "allowed_channels",
+          "allowed_countries"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "financial_account.FinancialAccountTerms": {
+        "dataclass": true,
+        "fields": [
+          "minimum_balance",
+          "overdraft_limit",
+          "interest_rate_percent",
+          "maintenance_fee",
+          "notice_period_days"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "journal_entry.JournalEntry": {
+        "dataclass": true,
+        "fields": [
+          "entry_id",
+          "entry_type",
+          "status",
+          "lines",
+          "created_at",
+          "updated_at",
+          "description",
+          "reference_id",
+          "idempotency_key",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "can_transition_to",
+          "canonical_dict",
+          "create",
+          "post",
+          "reverse",
+          "void",
+          "with_metadata"
+        ]
+      },
+      "journal_entry.JournalEntryMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ]
+      },
+      "journal_entry.PostingLine": {
+        "dataclass": true,
+        "fields": [
+          "line_id",
+          "account_id",
+          "side",
+          "amount",
+          "currency",
+          "description",
+          "reference_id",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "credit",
+          "debit"
+        ]
+      },
+      "journal_entry.PostingLineMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ]
+      },
+      "ledger_account.LedgerAccount": {
+        "dataclass": true,
+        "fields": [
+          "account_id",
+          "account_code",
+          "name",
+          "account_type",
+          "normal_balance",
+          "status",
+          "currency",
+          "created_at",
+          "updated_at",
+          "owner_id",
+          "wallet_id",
+          "tenant_id",
+          "parent_account_id",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "can_transition_to",
+          "canonical_dict",
+          "close",
+          "create",
+          "restrict",
+          "suspend",
+          "transition_to",
+          "with_metadata"
+        ]
+      },
+      "ledger_account.LedgerAccountMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ]
+      },
+      "receipt.Receipt": {
+        "dataclass": true,
+        "fields": [
+          "receipt_id",
+          "receipt_type",
+          "status",
+          "format",
+          "issuer",
+          "recipient",
+          "currency_code",
+          "line_items",
+          "adjustments",
+          "taxes",
+          "monetary_summary",
+          "references",
+          "integrity_evidence",
+          "issued_at",
+          "delivered_at",
+          "expires_at",
+          "created_at",
+          "updated_at",
+          "version",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "cancel",
+          "canonical_dict",
+          "create",
+          "expire",
+          "issue",
+          "mark_delivered",
+          "prepare",
+          "supersede",
+          "update_metadata",
+          "void"
+        ]
+      },
+      "receipt.ReceiptAdjustment": {
+        "dataclass": true,
+        "fields": [
+          "adjustment_id",
+          "adjustment_type",
+          "description",
+          "amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "receipt.ReceiptIntegrityEvidence": {
+        "dataclass": true,
+        "fields": [
+          "evidence_type",
+          "value",
+          "created_at",
+          "issuer",
+          "expires_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "is_expired_at"
+        ]
+      },
+      "receipt.ReceiptLineItem": {
+        "dataclass": true,
+        "fields": [
+          "line_item_id",
+          "line_item_type",
+          "description",
+          "quantity",
+          "unit_amount",
+          "total_amount",
+          "product_reference",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "receipt.ReceiptMetadata": {
+        "dataclass": true,
+        "fields": [
+          "_values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "empty",
+          "get",
+          "of"
+        ]
+      },
+      "receipt.ReceiptMonetarySummary": {
+        "dataclass": true,
+        "fields": [
+          "currency_code",
+          "subtotal",
+          "adjustment_total",
+          "tax_total",
+          "gross_total",
+          "net_total",
+          "paid_amount",
+          "outstanding_amount"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "receipt.ReceiptParty": {
+        "dataclass": true,
+        "fields": [
+          "party_id",
+          "party_type",
+          "display_name",
+          "external_reference",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "receipt.ReceiptReference": {
+        "dataclass": true,
+        "fields": [
+          "reference_type",
+          "reference_value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "receipt.ReceiptTax": {
+        "dataclass": true,
+        "fields": [
+          "tax_id",
+          "tax_type",
+          "description",
+          "jurisdiction",
+          "rate",
+          "amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "receipt.ReceiptVerificationResult": {
+        "dataclass": true,
+        "fields": [
+          "status",
+          "verified_at",
+          "verifier",
+          "reason",
+          "integrity_evidence",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "remittance.Remittance": {
+        "dataclass": true,
+        "fields": [
+          "remittance_id",
+          "reference",
+          "status",
+          "remittance_type",
+          "direction",
+          "purpose",
+          "priority",
+          "sender",
+          "beneficiary",
+          "source_account",
+          "destination_account",
+          "source_amount",
+          "destination_amount",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "authorize",
+          "cancel",
+          "canonical_dict",
+          "complete",
+          "create",
+          "expire",
+          "fail",
+          "mark_processing",
+          "reverse",
+          "submit",
+          "update_metadata",
+          "update_priority",
+          "update_reference",
+          "validate"
+        ]
+      },
+      "remittance.RemittanceAmountBreakdown": {
+        "dataclass": true,
+        "fields": [
+          "principal_amount",
+          "fees",
+          "charges",
+          "fx_cost",
+          "total_debit_amount",
+          "destination_amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "remittance.RemittanceCharge": {
+        "dataclass": true,
+        "fields": [
+          "charge_id",
+          "charge_type",
+          "amount",
+          "description"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "remittance.RemittanceCorridor": {
+        "dataclass": true,
+        "fields": [
+          "source_country_code",
+          "destination_country_code",
+          "source_currency_code",
+          "destination_currency_code"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "remittance.RemittanceFee": {
+        "dataclass": true,
+        "fields": [
+          "fee_type",
+          "amount",
+          "description",
+          "refundable"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "remittance.RemittanceFundingReference": {
+        "dataclass": true,
+        "fields": [
+          "funding_source_id",
+          "funding_source_type",
+          "account_reference",
+          "authorization_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "remittance.RemittanceInstruction": {
+        "dataclass": true,
+        "fields": [
+          "instruction_id",
+          "remittance_id",
+          "funding_reference",
+          "recipient_reference",
+          "corridor",
+          "requested_source_amount",
+          "expected_destination_amount",
+          "requested_at",
+          "expires_at",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "is_expired"
+        ]
+      },
+      "remittance.RemittanceInstructionMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "remittance.RemittanceMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "remittance.RemittancePricingMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "remittance.RemittanceRecipientReference": {
+        "dataclass": true,
+        "fields": [
+          "recipient_id",
+          "recipient_type",
+          "party_reference",
+          "account_reference",
+          "delivery_method",
+          "routing_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_batch.SettlementBatch": {
+        "dataclass": true,
+        "fields": [
+          "batch_id",
+          "batch_type",
+          "status",
+          "window",
+          "settlement_currency_code",
+          "gross_amount",
+          "net_amount",
+          "participants",
+          "references",
+          "entry_count",
+          "created_at",
+          "updated_at",
+          "version",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "cancel",
+          "canonical_dict",
+          "complete",
+          "create",
+          "expire",
+          "fail",
+          "mark_processing",
+          "mark_ready",
+          "open",
+          "partially_complete",
+          "reconcile",
+          "update_metadata",
+          "update_window",
+          "validate"
+        ]
+      },
+      "settlement_batch.SettlementEntry": {
+        "dataclass": true,
+        "fields": [
+          "entry_id",
+          "batch_id",
+          "status",
+          "amount",
+          "settlement_currency_code",
+          "source_participant_id",
+          "destination_participant_id",
+          "reference",
+          "created_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_batch.SettlementFailure": {
+        "dataclass": true,
+        "fields": [
+          "failure_code",
+          "message",
+          "occurred_at",
+          "entry_id",
+          "retryable",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_batch.SettlementInstruction": {
+        "dataclass": true,
+        "fields": [
+          "instruction_id",
+          "batch_id",
+          "source_participant_id",
+          "destination_participant_id",
+          "amount",
+          "settlement_currency_code",
+          "reference",
+          "requested_at",
+          "effective_at",
+          "expires_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "is_expired"
+        ]
+      },
+      "settlement_batch.SettlementInstructionMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "settlement_batch.SettlementMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "settlement_batch.SettlementParticipant": {
+        "dataclass": true,
+        "fields": [
+          "participant_id",
+          "participant_type",
+          "account_reference",
+          "currency_code",
+          "jurisdiction_code",
+          "provider_code"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_batch.SettlementReference": {
+        "dataclass": true,
+        "fields": [
+          "reference_type",
+          "reference_id",
+          "external_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_batch.SettlementResult": {
+        "dataclass": true,
+        "fields": [
+          "batch_id",
+          "status",
+          "gross_amount",
+          "net_amount",
+          "settlement_currency_code",
+          "successful_entry_count",
+          "failed_entry_count",
+          "excluded_entry_count",
+          "failures",
+          "completed_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "settlement_batch.SettlementSummary": {
+        "dataclass": true,
+        "fields": [
+          "batch_id",
+          "status",
+          "settlement_currency_code",
+          "gross_amount",
+          "net_amount",
+          "total_entry_count",
+          "successful_entry_count",
+          "failed_entry_count",
+          "excluded_entry_count",
+          "participant_count",
+          "opened_at",
+          "closed_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "settlement_batch.SettlementWindow": {
+        "dataclass": true,
+        "fields": [
+          "opens_at",
+          "closes_at",
+          "cutoff_at",
+          "timezone_name"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "contains"
+        ]
+      },
+      "settlement_reconciliation.ReconciliationDifference": {
+        "dataclass": true,
+        "fields": [
+          "difference_id",
+          "difference_type",
+          "field_name",
+          "expected_value",
+          "observed_value",
+          "detected_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_reconciliation.ReconciliationEvidence": {
+        "dataclass": true,
+        "fields": [
+          "evidence_id",
+          "evidence_type",
+          "reference",
+          "recorded_at",
+          "digest",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_reconciliation.ReconciliationItem": {
+        "dataclass": true,
+        "fields": [
+          "item_id",
+          "status",
+          "expected_reference",
+          "observed_reference",
+          "observation_ids",
+          "difference_ids",
+          "evidence_ids",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_reconciliation.ReconciliationMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "empty",
+          "of"
+        ]
+      },
+      "settlement_reconciliation.ReconciliationObservation": {
+        "dataclass": true,
+        "fields": [
+          "observation_id",
+          "source",
+          "reference",
+          "observed_at",
+          "observed_value",
+          "currency_code",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_reconciliation.ReconciliationResult": {
+        "dataclass": true,
+        "fields": [
+          "reconciliation_id",
+          "status",
+          "summary",
+          "completed_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "settlement_reconciliation.ReconciliationSummary": {
+        "dataclass": true,
+        "fields": [
+          "total_items",
+          "pending_items",
+          "matched_items",
+          "partially_matched_items",
+          "unmatched_items",
+          "missing_expected_items",
+          "missing_observed_items",
+          "duplicate_items",
+          "conflict_items",
+          "excluded_items",
+          "review_required_items"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "empty",
+          "from_items"
+        ]
+      },
+      "settlement_reconciliation.SettlementReconciliation": {
+        "dataclass": true,
+        "fields": [
+          "reconciliation_id",
+          "reconciliation_type",
+          "status",
+          "settlement_batch_id",
+          "expected_entry_count",
+          "created_at",
+          "updated_at",
+          "version",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "cancel",
+          "canonical_dict",
+          "close",
+          "create",
+          "expire",
+          "mark_exception",
+          "mark_matched",
+          "mark_partially_matched",
+          "mark_unmatched",
+          "open",
+          "require_review",
+          "start_collecting",
+          "start_comparing",
+          "update_metadata"
+        ]
+      },
+      "transaction.Transaction": {
+        "dataclass": true,
+        "fields": [
+          "transaction_id",
+          "transaction_type",
+          "status",
+          "direction",
+          "amount",
+          "created_at",
+          "updated_at",
+          "source_wallet_id",
+          "destination_wallet_id",
+          "journal_entry_id",
+          "description",
+          "external_reference",
+          "idempotency_key",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "authorize",
+          "can_transition_to",
+          "cancel",
+          "canonical_dict",
+          "complete",
+          "create",
+          "fail",
+          "reverse",
+          "start_processing",
+          "with_metadata"
+        ]
+      },
+      "transaction.TransactionMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ]
+      },
+      "transfer.Transfer": {
+        "dataclass": true,
+        "fields": [
+          "transfer_id",
+          "reference",
+          "status",
+          "transfer_type",
+          "direction",
+          "purpose",
+          "priority",
+          "sender",
+          "beneficiary",
+          "source_account",
+          "destination_account",
+          "source_amount",
+          "destination_amount",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "authorize",
+          "cancel",
+          "canonical_dict",
+          "complete",
+          "create",
+          "expire",
+          "fail",
+          "mark_processing",
+          "reverse",
+          "submit",
+          "update_metadata",
+          "update_priority",
+          "update_reference",
+          "validate"
+        ]
+      },
+      "transfer.TransferAccountReference": {
+        "dataclass": true,
+        "fields": [
+          "account_id",
+          "account_type",
+          "currency_code",
+          "institution_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "transfer.TransferAmountBreakdown": {
+        "dataclass": true,
+        "fields": [
+          "source_amount",
+          "destination_amount",
+          "fees",
+          "charges",
+          "fee_total",
+          "charge_total",
+          "total_debit_amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "transfer.TransferBeneficiaryReference": {
+        "dataclass": true,
+        "fields": [
+          "beneficiary_id",
+          "beneficiary_type",
+          "party_reference",
+          "account_reference",
+          "delivery_method",
+          "routing_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "transfer.TransferCharge": {
+        "dataclass": true,
+        "fields": [
+          "charge_code",
+          "amount",
+          "description",
+          "third_party",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "transfer.TransferFee": {
+        "dataclass": true,
+        "fields": [
+          "fee_type",
+          "amount",
+          "description",
+          "refundable",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "transfer.TransferFundingReference": {
+        "dataclass": true,
+        "fields": [
+          "funding_source_id",
+          "funding_source_type",
+          "account_reference",
+          "authorization_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "transfer.TransferInstruction": {
+        "dataclass": true,
+        "fields": [
+          "instruction_id",
+          "transfer_id",
+          "funding_reference",
+          "beneficiary_reference",
+          "requested_source_amount",
+          "expected_destination_amount",
+          "requested_at",
+          "expires_at",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "is_expired"
+        ]
+      },
+      "transfer.TransferInstructionMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "transfer.TransferMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "transfer.TransferPartyReference": {
+        "dataclass": true,
+        "fields": [
+          "party_id",
+          "party_type",
+          "display_name"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "transfer.TransferPricingMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ]
+      },
+      "wallet.Wallet": {
+        "dataclass": true,
+        "fields": [
+          "wallet_id",
+          "owner_id",
+          "wallet_type",
+          "status",
+          "home_currency",
+          "created_at",
+          "updated_at",
+          "tenant_id",
+          "external_reference",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "can_transition_to",
+          "canonical_dict",
+          "close",
+          "create",
+          "restrict",
+          "suspend",
+          "transition_to",
+          "with_metadata"
+        ]
+      },
+      "wallet.WalletMetadata": {
+        "dataclass": true,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ]
+      }
+    }
+  },
+  "end_to_end_monetary_consistency": {
+    "matches": {
+      "balance_snapshot": [
+        "amount",
+        "currency",
+        "balance",
+        "debit",
+        "credit"
+      ],
+      "financial_account": [
+        "currency",
+        "balance",
+        "debit",
+        "credit"
+      ],
+      "journal_entry": [
+        "amount",
+        "currency",
+        "balance",
+        "debit",
+        "credit"
+      ],
+      "ledger_account": [
+        "currency",
+        "balance",
+        "debit",
+        "credit"
+      ],
+      "receipt": [
+        "amount",
+        "currency",
+        "debit",
+        "credit",
+        "subtotal",
+        "gross_total",
+        "net_total"
+      ],
+      "remittance": [
+        "amount",
+        "currency",
+        "debit"
+      ],
+      "settlement_batch": [
+        "amount",
+        "currency"
+      ],
+      "settlement_reconciliation": [
+        "amount",
+        "currency"
+      ],
+      "transaction": [
+        "amount",
+        "currency",
+        "balance",
+        "debit",
+        "credit"
+      ],
+      "transfer": [
+        "amount",
+        "currency",
+        "debit"
+      ],
+      "wallet": [
+        "currency",
+        "balance"
+      ]
+    }
+  },
+  "immutable_aggregate_interaction": {
+    "dataclass_count": 108,
+    "non_frozen": []
+  },
+  "ledger_journal_linkage": {
+    "matches": {
+      "journal_entry": [
+        "entry_id",
+        "debit",
+        "credit"
+      ],
+      "ledger_account": [
+        "debit",
+        "credit"
+      ],
+      "settlement_batch": [
+        "entry_id"
+      ],
+      "transaction": [
+        "journal_entry_id",
+        "entry_id",
+        "debit",
+        "credit"
+      ],
+      "transfer": [
+        "debit"
+      ]
+    },
+    "section_7a_reference": {
+      "module_count": 5,
+      "module_matches": {
+        "balance_snapshot": [
+          "ledger_account_id",
+          "journal_entry_id",
+          "entry_id"
+        ],
+        "financial_account": [
+          "ledger_account_id"
+        ],
+        "journal_entry": [
+          "entry_id"
+        ],
+        "settlement_batch": [
+          "entry_id"
+        ],
+        "transaction": [
+          "journal_entry_id",
+          "entry_id"
+        ]
+      },
+      "tokens": [
+        "ledger_account_id",
+        "journal_entry_id",
+        "entry_id"
+      ]
+    }
+  },
+  "receipt_public_boundary": {
+    "chain_receipt_stage": true,
+    "integrity_public": true,
+    "presentation_summary": "DEFERRED",
+    "receipt_visibility": "MODULE_LOCAL",
+    "verification_public": true
+  },
+  "receipt_reference_propagation": {
+    "matches": {
+      "receipt": [
+        "receipt_id",
+        "reference_type",
+        "reference_value"
+      ],
+      "settlement_batch": [
+        "reference_type"
+      ]
+    },
+    "section_7a_reference": {
+      "module_count": 2,
+      "module_matches": {
+        "receipt": [
+          "receipt_id",
+          "reference_type",
+          "reference_value"
+        ],
+        "settlement_batch": [
+          "reference_type"
+        ]
+      },
+      "tokens": [
+        "receipt_id",
+        "receipt_reference",
+        "reference_type",
+        "reference_value"
+      ]
+    }
+  },
+  "remittance_integration": {
+    "matches": {
+      "remittance": [
+        "remittance_id"
+      ],
+      "transaction": [
+        "transaction_id"
+      ],
+      "transfer": [
+        "transfer_id"
+      ]
+    },
+    "section_7a_reference": {
+      "module_count": 1,
+      "module_matches": {
+        "remittance": [
+          "remittance_id"
+        ]
+      },
+      "tokens": [
+        "remittance_id",
+        "remittance_reference"
+      ]
+    }
+  },
+  "replay_safe_import_runtime_topology": {
+    "expected_import_gate": "PASS",
+    "expected_runtime_governance": "PASS",
+    "production_modules": [
+      "customer",
+      "wallet",
+      "financial_account",
+      "balance_snapshot",
+      "transaction",
+      "ledger_account",
+      "journal_entry",
+      "transfer",
+      "remittance",
+      "settlement_batch",
+      "settlement_reconciliation",
+      "receipt"
+    ]
+  },
+  "runtime_authority_boundaries": {
+    "violations": []
+  },
+  "settlement_batch_integration": {
+    "matches": {
+      "receipt": [
+        "settlement"
+      ],
+      "settlement_batch": [
+        "batch_id",
+        "settlement"
+      ],
+      "settlement_reconciliation": [
+        "settlement_batch_id",
+        "batch_id",
+        "settlement"
+      ],
+      "transfer": [
+        "settlement"
+      ]
+    },
+    "section_7a_reference": {
+      "module_count": 2,
+      "module_matches": {
+        "settlement_batch": [
+          "batch_id"
+        ],
+        "settlement_reconciliation": [
+          "settlement_batch_id",
+          "batch_id"
+        ]
+      },
+      "tokens": [
+        "settlement_batch_id",
+        "settlement_id",
+        "batch_id"
+      ]
+    }
+  },
+  "settlement_reconciliation_integration": {
+    "matches": {
+      "receipt": [
+        "settlement_reconciliation",
+        "reconciliation"
+      ],
+      "settlement_batch": [
+        "reconciliation"
+      ],
+      "settlement_reconciliation": [
+        "reconciliation_id",
+        "reconciliation"
+      ]
+    },
+    "section_7a_reference": {
+      "module_count": 5,
+      "module_matches": {
+        "balance_snapshot": [
+          "reconciliation"
+        ],
+        "financial_account": [
+          "reconciliation"
+        ],
+        "receipt": [
+          "settlement_reconciliation",
+          "reconciliation"
+        ],
+        "settlement_batch": [
+          "reconciliation"
+        ],
+        "settlement_reconciliation": [
+          "reconciliation_id",
+          "reconciliation"
+        ]
+      },
+      "tokens": [
+        "reconciliation_id",
+        "settlement_reconciliation",
+        "reconciliation"
+      ]
+    }
+  },
+  "transaction_identifier_propagation": {
+    "matches": {
+      "receipt": [
+        "reference_type",
+        "reference_value"
+      ],
+      "settlement_batch": [
+        "reference_type"
+      ],
+      "transaction": [
+        "transaction_id"
+      ]
+    },
+    "section_7a_reference": {
+      "module_count": 1,
+      "module_matches": {
+        "transaction": [
+          "transaction_id"
+        ]
+      },
+      "tokens": [
+        "transaction_id",
+        "transaction_reference"
+      ]
+    }
+  },
+  "transfer_integration": {
+    "matches": {
+      "receipt": [
+        "settlement"
+      ],
+      "settlement_batch": [
+        "settlement"
+      ],
+      "transaction": [
+        "transaction_id",
+        "settlement"
+      ],
+      "transfer": [
+        "transfer_id",
+        "settlement"
+      ]
+    },
+    "section_7a_reference": {
+      "module_count": 1,
+      "module_matches": {
+        "transfer": [
+          "transfer_id"
+        ]
+      },
+      "tokens": [
+        "transfer_id",
+        "transfer_reference"
+      ]
+    }
+  },
+  "wallet_account_monetary_compatibility": {
+    "matches": {
+      "balance_snapshot": [
+        "currency",
+        "amount",
+        "balance",
+        "money"
+      ],
+      "financial_account": [
+        "currency",
+        "balance",
+        "money"
+      ],
+      "transaction": [
+        "currency",
+        "amount",
+        "balance",
+        "money"
+      ],
+      "wallet": [
+        "currency",
+        "balance",
+        "money"
+      ]
+    }
+  }
+}

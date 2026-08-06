@@ -1,0 +1,7 @@
+Monetary authority violations: 0
+Payment execution authority: NONE
+Wallet mutation authority: NONE
+Ledger posting authority: NONE
+External settlement authority: NONE
+Persistence authority: NONE
+Monetary authority-boundary matrix: PASS

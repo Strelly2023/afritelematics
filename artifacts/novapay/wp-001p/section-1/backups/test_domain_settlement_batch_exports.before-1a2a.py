@@ -58,11 +58,11 @@ def test_canonical_inventory_contract() -> None:
 
 
 def test_domain_public_count() -> None:
-    assert len(domain.__all__) == 168
+    assert len(domain.__all__) == 166
 
 
 def test_top_level_public_count() -> None:
-    assert len(novapay.__all__) == 190
+    assert len(novapay.__all__) == 188
 
 
 def test_domain_exports_every_canonical_symbol() -> None:

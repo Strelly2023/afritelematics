@@ -1,0 +1,130 @@
+{
+  "domains": [
+    {
+      "domain": "transaction",
+      "source_matches": [
+        "transaction"
+      ],
+      "status": "EXPLICIT",
+      "test_matches": [
+        "transaction",
+        "transaction_id"
+      ]
+    },
+    {
+      "domain": "transfer",
+      "source_matches": [
+        "transfer"
+      ],
+      "status": "EXPLICIT",
+      "test_matches": [
+        "transfer",
+        "transfer_id"
+      ]
+    },
+    {
+      "domain": "remittance",
+      "source_matches": [
+        "remittance"
+      ],
+      "status": "EXPLICIT",
+      "test_matches": [
+        "remittance",
+        "remittance_id"
+      ]
+    },
+    {
+      "domain": "settlement_batch",
+      "source_matches": [
+        "settlement",
+        "settlement_batch"
+      ],
+      "status": "EXPLICIT",
+      "test_matches": [
+        "settlement",
+        "settlement_batch",
+        "settlement_batch_id"
+      ]
+    },
+    {
+      "domain": "settlement_reconciliation",
+      "source_matches": [
+        "reconciliation"
+      ],
+      "status": "EXPLICIT",
+      "test_matches": [
+        "reconciliation",
+        "reconciliation_id"
+      ]
+    },
+    {
+      "domain": "customer",
+      "source_matches": [],
+      "status": "GENERIC_REFERENCE_COMPATIBLE",
+      "test_matches": [
+        "customer",
+        "customer_id"
+      ]
+    },
+    {
+      "domain": "wallet",
+      "source_matches": [
+        "wallet"
+      ],
+      "status": "EXPLICIT",
+      "test_matches": [
+        "wallet",
+        "wallet_id"
+      ]
+    },
+    {
+      "domain": "financial_account",
+      "source_matches": [],
+      "status": "GENERIC_REFERENCE_COMPATIBLE",
+      "test_matches": [
+        "financial_account",
+        "account_id",
+        "account"
+      ]
+    },
+    {
+      "domain": "ledger_account",
+      "source_matches": [
+        "ledger"
+      ],
+      "status": "EXPLICIT",
+      "test_matches": [
+        "ledger",
+        "ledger_account"
+      ]
+    },
+    {
+      "domain": "money_currency",
+      "source_matches": [
+        "money",
+        "amount",
+        "currency"
+      ],
+      "status": "EXPLICIT",
+      "test_matches": [
+        "money",
+        "amount",
+        "currency"
+      ]
+    },
+    {
+      "domain": "balance_snapshot",
+      "source_matches": [],
+      "status": "GENERIC_REFERENCE_COMPATIBLE",
+      "test_matches": [
+        "balance",
+        "snapshot"
+      ]
+    }
+  ],
+  "receipt_reference_contract": {
+    "generic_reference_support": "PASS",
+    "reference_type": "PRESENT",
+    "reference_value": "PRESENT"
+  }
+}

@@ -1,0 +1,7 @@
+ReceiptMonetarySummary fields: ['adjustment_total', 'currency_code', 'gross_total', 'net_total', 'outstanding_amount', 'paid_amount', 'subtotal', 'tax_total']
+Receipt aggregate fields: ['adjustments', 'created_at', 'currency_code', 'delivered_at', 'expires_at', 'format', 'integrity_evidence', 'issued_at', 'issuer', 'line_items', 'metadata', 'monetary_summary', 'receipt_id', 'receipt_type', 'recipient', 'references', 'status', 'taxes', 'updated_at', 'version']
+Money canonical type: PRESENT
+Receipt currency vocabulary: PRESENT
+Receipt totals vocabulary: PRESENT
+Receipt rounding/amount vocabulary: PRESENT
+Receipt monetary integration: PASS

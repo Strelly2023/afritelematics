@@ -1,0 +1,199 @@
+{
+  "classification_vocabulary": [
+    "ABSENT",
+    "DEFERRED",
+    "IMPLEMENTED",
+    "NOT_REQUIRED",
+    "PARTIAL"
+  ],
+  "counts": {
+    "ABSENT": 0,
+    "DEFERRED": 0,
+    "IMPLEMENTED": 9,
+    "NOT_REQUIRED": 0,
+    "PARTIAL": 0
+  },
+  "implementation_required": false,
+  "rows": [
+    {
+      "area": "Currency normalization consistency",
+      "classification": "IMPLEMENTED",
+      "decision": "Retain and certify normalization behavior.",
+      "id": "MIG-001",
+      "implementation_evidence": [
+        "balance_snapshot",
+        "currency",
+        "exchange_rate_provider",
+        "fx",
+        "money"
+      ],
+      "test_evidence_count": 80
+    },
+    {
+      "area": "Minor-unit scale and rounding policy",
+      "classification": "IMPLEMENTED",
+      "decision": "Policy appears centralized.",
+      "id": "MIG-002",
+      "implementation_evidence": {
+        "centralized": true,
+        "rounding_modules": {
+          "money": 3
+        }
+      },
+      "test_evidence_count": 18
+    },
+    {
+      "area": "Same-currency mismatch rejection",
+      "classification": "IMPLEMENTED",
+      "decision": "Retain existing invariant.",
+      "id": "MIG-003",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "currency !="
+        ],
+        "currency": [
+          "currency !=",
+          "currency =="
+        ],
+        "fx": [
+          "currency !=",
+          "currency =="
+        ],
+        "money": [
+          "currency !="
+        ]
+      },
+      "test_evidence_count": 2
+    },
+    {
+      "area": "Exchange-rate direction",
+      "classification": "IMPLEMENTED",
+      "decision": "Direction contract is executable and tested.",
+      "id": "MIG-004",
+      "implementation_evidence": {
+        "fx": [
+          "base_currency",
+          "quote_currency"
+        ]
+      },
+      "test_evidence_count": 2
+    },
+    {
+      "area": "Exchange-rate inversion",
+      "classification": "IMPLEMENTED",
+      "decision": "Inversion is implemented and tested.",
+      "id": "MIG-005",
+      "implementation_evidence": {
+        "exchange_rate_provider": [
+          "inverse"
+        ],
+        "fx": [
+          "inverse"
+        ]
+      },
+      "test_evidence_count": 3
+    },
+    {
+      "area": "FX quote expiry validation",
+      "classification": "IMPLEMENTED",
+      "decision": "Expiry validation is implemented and tested.",
+      "id": "MIG-006",
+      "implementation_evidence": {
+        "fx": [
+          "expires_at",
+          "expiry",
+          "expired",
+          "is_expired"
+        ]
+      },
+      "test_evidence_count": 6
+    },
+    {
+      "area": "Provider and rate-source traceability",
+      "classification": "IMPLEMENTED",
+      "decision": "Provider/source lineage is traceable.",
+      "id": "MIG-007",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "provider",
+          "source"
+        ],
+        "currency": [
+          "provider",
+          "source"
+        ],
+        "exchange_rate_provider": [
+          "provider_id",
+          "rate_source",
+          "source_id",
+          "provider",
+          "source"
+        ],
+        "fx": [
+          "provider",
+          "source"
+        ],
+        "money": [
+          "provider"
+        ]
+      },
+      "test_evidence_count": 128
+    },
+    {
+      "area": "BalanceSnapshot monetary representation",
+      "classification": "IMPLEMENTED",
+      "decision": "BalanceSnapshot monetary representation is certified.",
+      "id": "MIG-008",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "Money",
+          "Decimal",
+          "Currency"
+        ],
+        "currency": [
+          "Money",
+          "Currency",
+          "currency_code"
+        ],
+        "exchange_rate_provider": [
+          "Money",
+          "Decimal",
+          "Currency"
+        ],
+        "fx": [
+          "Money",
+          "Decimal",
+          "Currency"
+        ],
+        "money": [
+          "Money",
+          "Decimal",
+          "Currency",
+          "currency_code"
+        ]
+      },
+      "test_evidence_count": 60
+    },
+    {
+      "area": "Cross-domain serialization alignment",
+      "classification": "IMPLEMENTED",
+      "decision": "Serialization contracts are aligned.",
+      "id": "MIG-009",
+      "implementation_evidence": {
+        "required_modules": [
+          "balance_snapshot",
+          "fx",
+          "money"
+        ],
+        "serialization_modules": [
+          "balance_snapshot",
+          "currency",
+          "exchange_rate_provider",
+          "fx",
+          "money"
+        ]
+      },
+      "test_evidence_count": 29
+    }
+  ]
+}

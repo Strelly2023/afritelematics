@@ -1,0 +1,1849 @@
+{
+  "classification_vocabulary": [
+    "ABSENT",
+    "DEFERRED",
+    "IMPLEMENTED",
+    "NOT_REQUIRED",
+    "PARTIAL"
+  ],
+  "counts": {
+    "ABSENT": 0,
+    "DEFERRED": 0,
+    "IMPLEMENTED": 14,
+    "NOT_REQUIRED": 0,
+    "PARTIAL": 0
+  },
+  "focused_certification_tests_required": false,
+  "focused_implementation_required": false,
+  "rows": [
+    {
+      "area": "Customer-to-wallet ownership",
+      "category": "customer_wallet_ownership",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-001",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "customer_id",
+          "wallet_id",
+          "owner"
+        ],
+        "customer": [
+          "customer_id"
+        ],
+        "financial_account": [
+          "customer_id",
+          "wallet_id",
+          "owner"
+        ],
+        "ledger_account": [
+          "wallet_id",
+          "owner_id",
+          "owner"
+        ],
+        "transaction": [
+          "wallet_id",
+          "wallet_reference"
+        ],
+        "wallet": [
+          "wallet_id",
+          "owner_id",
+          "owner"
+        ]
+      },
+      "test_evidence_count": 25
+    },
+    {
+      "area": "Customer-to-financial-account linkage",
+      "category": "customer_account_linkage",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-002",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "customer_id",
+          "financial_account_id",
+          "account_id"
+        ],
+        "customer": [
+          "customer_id"
+        ],
+        "financial_account": [
+          "customer_id",
+          "account_id"
+        ],
+        "ledger_account": [
+          "account_id"
+        ],
+        "remittance": [
+          "account_reference"
+        ],
+        "transfer": [
+          "account_id",
+          "account_reference"
+        ]
+      },
+      "test_evidence_count": 111
+    },
+    {
+      "area": "Wallet-to-ledger-account references",
+      "category": "wallet_ledger_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-003",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "wallet_id",
+          "ledger_account_id",
+          "ledger_account",
+          "account_id"
+        ],
+        "financial_account": [
+          "wallet_id",
+          "ledger_account_id",
+          "ledger_account",
+          "account_id"
+        ],
+        "ledger_account": [
+          "wallet_id",
+          "account_id"
+        ],
+        "transaction": [
+          "wallet_id",
+          "wallet_reference"
+        ],
+        "transfer": [
+          "account_id"
+        ],
+        "wallet": [
+          "wallet_id"
+        ]
+      },
+      "test_evidence_count": 45
+    },
+    {
+      "area": "Customer identity and tenant references",
+      "category": "identity_tenant_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-004",
+      "implementation_evidence": {
+        "customer": [
+          "identity_id",
+          "tenant_id"
+        ],
+        "financial_account": [
+          "tenant_id"
+        ],
+        "ledger_account": [
+          "tenant_id"
+        ],
+        "receipt": [
+          "party_id"
+        ],
+        "transfer": [
+          "party_id"
+        ],
+        "wallet": [
+          "tenant_id"
+        ]
+      },
+      "test_evidence_count": 1
+    },
+    {
+      "area": "Wallet and account currency compatibility",
+      "category": "currency_compatibility",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-005",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "currency",
+          "money",
+          "balance"
+        ],
+        "financial_account": [
+          "currency",
+          "money",
+          "balance"
+        ],
+        "ledger_account": [
+          "currency",
+          "money",
+          "balance"
+        ],
+        "money": [
+          "currency",
+          "currency_code",
+          "money"
+        ],
+        "receipt": [
+          "currency",
+          "currency_code",
+          "money"
+        ],
+        "remittance": [
+          "currency",
+          "currency_code",
+          "money",
+          "account_currency"
+        ],
+        "transaction": [
+          "currency",
+          "money",
+          "balance"
+        ],
+        "transfer": [
+          "currency",
+          "currency_code",
+          "money"
+        ],
+        "wallet": [
+          "currency",
+          "money",
+          "balance"
+        ]
+      },
+      "test_evidence_count": 69
+    },
+    {
+      "area": "Wallet and account status alignment",
+      "category": "status_alignment",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-006",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "status",
+          "state",
+          "frozen"
+        ],
+        "customer": [
+          "status",
+          "state",
+          "active",
+          "suspended",
+          "frozen",
+          "closed"
+        ],
+        "financial_account": [
+          "status",
+          "state",
+          "active",
+          "suspended",
+          "frozen",
+          "closed"
+        ],
+        "ledger_account": [
+          "status",
+          "state",
+          "active",
+          "suspended",
+          "frozen",
+          "closed"
+        ],
+        "money": [
+          "frozen"
+        ],
+        "receipt": [
+          "status",
+          "frozen"
+        ],
+        "remittance": [
+          "status",
+          "state",
+          "frozen"
+        ],
+        "transaction": [
+          "status",
+          "frozen"
+        ],
+        "transfer": [
+          "status",
+          "state",
+          "frozen"
+        ],
+        "wallet": [
+          "status",
+          "state",
+          "active",
+          "suspended",
+          "frozen",
+          "closed"
+        ]
+      },
+      "test_evidence_count": 102
+    },
+    {
+      "area": "Account activation, suspension, closure, and reopening",
+      "category": "account_lifecycle",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-007",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "transition"
+        ],
+        "customer": [
+          "activate",
+          "suspend",
+          "close",
+          "closed"
+        ],
+        "financial_account": [
+          "activate",
+          "suspend",
+          "close",
+          "closed"
+        ],
+        "ledger_account": [
+          "activate",
+          "suspend",
+          "close",
+          "closed",
+          "transition"
+        ],
+        "receipt": [
+          "transition"
+        ],
+        "remittance": [
+          "transition"
+        ],
+        "transaction": [
+          "transition"
+        ],
+        "transfer": [
+          "transition"
+        ],
+        "wallet": [
+          "activate",
+          "suspend",
+          "close",
+          "closed",
+          "transition"
+        ]
+      },
+      "test_evidence_count": 32
+    },
+    {
+      "area": "Wallet activation, freeze, suspension, and unfreeze",
+      "category": "wallet_lifecycle",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-008",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "transition"
+        ],
+        "customer": [
+          "activate",
+          "suspend"
+        ],
+        "financial_account": [
+          "activate",
+          "suspend",
+          "blocked"
+        ],
+        "ledger_account": [
+          "activate",
+          "freeze",
+          "suspend",
+          "transition"
+        ],
+        "money": [
+          "freeze"
+        ],
+        "receipt": [
+          "transition"
+        ],
+        "remittance": [
+          "transition"
+        ],
+        "transaction": [
+          "freeze",
+          "transition"
+        ],
+        "transfer": [
+          "transition"
+        ],
+        "wallet": [
+          "activate",
+          "freeze",
+          "suspend",
+          "transition"
+        ]
+      },
+      "test_evidence_count": 21
+    },
+    {
+      "area": "BalanceSnapshot ownership and monetary consistency",
+      "category": "balance_snapshot_consistency",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-009",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "wallet_id",
+          "account_id",
+          "balancecomponent",
+          "balancereconciliation",
+          "amount",
+          "currency"
+        ],
+        "financial_account": [
+          "wallet_id",
+          "account_id",
+          "currency"
+        ],
+        "ledger_account": [
+          "wallet_id",
+          "account_id",
+          "currency"
+        ],
+        "money": [
+          "amount",
+          "currency"
+        ],
+        "receipt": [
+          "amount",
+          "currency"
+        ],
+        "remittance": [
+          "amount",
+          "currency"
+        ],
+        "transaction": [
+          "wallet_id",
+          "amount",
+          "currency"
+        ],
+        "transfer": [
+          "account_id",
+          "amount",
+          "currency"
+        ],
+        "wallet": [
+          "wallet_id",
+          "currency"
+        ]
+      },
+      "test_evidence_count": 89
+    },
+    {
+      "area": "Transaction, transfer, and remittance identity propagation",
+      "category": "identity_propagation",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-010",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "customer_id",
+          "wallet_id",
+          "account_id",
+          "financial_account_id"
+        ],
+        "customer": [
+          "customer_id"
+        ],
+        "financial_account": [
+          "customer_id",
+          "wallet_id",
+          "account_id"
+        ],
+        "ledger_account": [
+          "wallet_id",
+          "account_id"
+        ],
+        "remittance": [
+          "remittance_id"
+        ],
+        "transaction": [
+          "wallet_id",
+          "transaction_id"
+        ],
+        "transfer": [
+          "account_id",
+          "transfer_id"
+        ],
+        "wallet": [
+          "wallet_id"
+        ]
+      },
+      "test_evidence_count": 197
+    },
+    {
+      "area": "Deterministic serialization and replay",
+      "category": "serialization_replay",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-011",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "customer": [
+          "canonical_dict",
+          "serialize",
+          "canonical"
+        ],
+        "financial_account": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "ledger_account": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "money": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "receipt": [
+          "canonical_dict",
+          "to_dict",
+          "canonical"
+        ],
+        "remittance": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "transaction": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "transfer": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "wallet": [
+          "canonical_dict",
+          "canonical"
+        ]
+      },
+      "test_evidence_count": 66
+    },
+    {
+      "area": "Immutable aggregate interaction",
+      "category": "immutable_interaction",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-012",
+      "implementation_evidence": {
+        "balance_snapshot.BalanceComponent": {
+          "dataclass": true,
+          "fields": [
+            "component_type",
+            "amount",
+            "ledger_account_id",
+            "wallet_id",
+            "reference_id",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "balance_snapshot.BalanceReconciliation": {
+          "dataclass": true,
+          "fields": [
+            "currency",
+            "posted",
+            "available",
+            "pending_debit",
+            "pending_credit",
+            "reserved",
+            "hold",
+            "overdraft",
+            "uncleared",
+            "expected_available",
+            "difference"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "balance_snapshot.BalanceSnapshot": {
+          "dataclass": true,
+          "fields": [
+            "snapshot_id",
+            "snapshot_type",
+            "status",
+            "currency",
+            "components",
+            "ledger_position",
+            "as_of",
+            "captured_at",
+            "customer_id",
+            "financial_account_id",
+            "wallet_id",
+            "ledger_account_id",
+            "source_journal_entry_id",
+            "source_reference_id",
+            "metadata",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "component_amount",
+            "create",
+            "get_component",
+            "invalidate",
+            "mark_reconciliation_required",
+            "mark_stale",
+            "mark_superseded",
+            "reconcile",
+            "require_component",
+            "require_reconciled",
+            "update_metadata"
+          ]
+        },
+        "balance_snapshot.BalanceSnapshotHistory": {
+          "dataclass": true,
+          "fields": [
+            "history_id",
+            "snapshots",
+            "metadata",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "advance",
+            "at_or_before",
+            "at_position",
+            "between_positions",
+            "between_times",
+            "canonical_dict",
+            "create",
+            "get_by_id",
+            "require_by_id",
+            "update_metadata"
+          ]
+        },
+        "balance_snapshot.BalanceSnapshotHistoryId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "of"
+          ]
+        },
+        "balance_snapshot.BalanceSnapshotId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "of"
+          ]
+        },
+        "balance_snapshot.BalanceSnapshotMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of",
+            "with_updates"
+          ]
+        },
+        "balance_snapshot.LedgerPosition": {
+          "dataclass": true,
+          "fields": [
+            "sequence",
+            "source"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "is_after",
+            "of"
+          ]
+        },
+        "customer.Customer": {
+          "dataclass": true,
+          "fields": [
+            "customer_id",
+            "customer_type",
+            "status",
+            "tier",
+            "name",
+            "novaid_identity_id",
+            "tenant_id",
+            "contacts",
+            "addresses",
+            "preferences",
+            "metadata",
+            "created_at",
+            "updated_at",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "activate",
+            "canonical_dict",
+            "change_tier",
+            "close",
+            "create",
+            "reinstate",
+            "rename",
+            "replace_addresses",
+            "replace_contacts",
+            "restrict",
+            "suspend",
+            "update_metadata",
+            "update_preferences"
+          ]
+        },
+        "customer.CustomerAddress": {
+          "dataclass": true,
+          "fields": [
+            "country_code",
+            "address_line_1",
+            "locality",
+            "address_line_2",
+            "administrative_area",
+            "postal_code"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "customer.CustomerContact": {
+          "dataclass": true,
+          "fields": [
+            "email",
+            "phone"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "customer.CustomerId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "customer.CustomerMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "get",
+            "of",
+            "with_value",
+            "without"
+          ]
+        },
+        "customer.CustomerName": {
+          "dataclass": true,
+          "fields": [
+            "legal_name",
+            "display_name"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "customer.CustomerPreferences": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "get",
+            "of",
+            "with_value",
+            "without"
+          ]
+        },
+        "financial_account.FinancialAccount": {
+          "dataclass": true,
+          "fields": [
+            "account_id",
+            "customer_id",
+            "tenant_id",
+            "account_type",
+            "purpose",
+            "status",
+            "currency",
+            "name",
+            "wallet_id",
+            "ledger_account_id",
+            "terms",
+            "restrictions",
+            "metadata",
+            "created_at",
+            "updated_at",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "activate",
+            "canonical_dict",
+            "change_restrictions",
+            "change_terms",
+            "close",
+            "create",
+            "link_ledger_account",
+            "link_wallet",
+            "mark_dormant",
+            "reactivate",
+            "rename",
+            "restrict",
+            "suspend",
+            "update_metadata"
+          ]
+        },
+        "financial_account.FinancialAccountId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "financial_account.FinancialAccountMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "get",
+            "of",
+            "with_value",
+            "without"
+          ]
+        },
+        "financial_account.FinancialAccountName": {
+          "dataclass": true,
+          "fields": [
+            "product_name",
+            "display_name"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "financial_account.FinancialAccountRestrictions": {
+          "dataclass": true,
+          "fields": [
+            "debit_blocked",
+            "credit_blocked",
+            "cash_withdrawal_blocked",
+            "international_transfer_blocked",
+            "allowed_channels",
+            "allowed_countries"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "financial_account.FinancialAccountTerms": {
+          "dataclass": true,
+          "fields": [
+            "minimum_balance",
+            "overdraft_limit",
+            "interest_rate_percent",
+            "maintenance_fee",
+            "notice_period_days"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "ledger_account.LedgerAccount": {
+          "dataclass": true,
+          "fields": [
+            "account_id",
+            "account_code",
+            "name",
+            "account_type",
+            "normal_balance",
+            "status",
+            "currency",
+            "created_at",
+            "updated_at",
+            "owner_id",
+            "wallet_id",
+            "tenant_id",
+            "parent_account_id",
+            "metadata",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "activate",
+            "can_transition_to",
+            "canonical_dict",
+            "close",
+            "create",
+            "restrict",
+            "suspend",
+            "transition_to",
+            "with_metadata"
+          ]
+        },
+        "ledger_account.LedgerAccountId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "of"
+          ]
+        },
+        "ledger_account.LedgerAccountMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "get",
+            "of",
+            "with_value",
+            "without"
+          ]
+        },
+        "money.Currency": {
+          "dataclass": true,
+          "fields": [
+            "code"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "money.Money": {
+          "dataclass": true,
+          "fields": [
+            "amount",
+            "currency"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "canonical_amount",
+            "canonical_dict",
+            "compare",
+            "multiply",
+            "of",
+            "require_non_negative",
+            "require_positive",
+            "zero"
+          ]
+        },
+        "receipt.Receipt": {
+          "dataclass": true,
+          "fields": [
+            "receipt_id",
+            "receipt_type",
+            "status",
+            "format",
+            "issuer",
+            "recipient",
+            "currency_code",
+            "line_items",
+            "adjustments",
+            "taxes",
+            "monetary_summary",
+            "references",
+            "integrity_evidence",
+            "issued_at",
+            "delivered_at",
+            "expires_at",
+            "created_at",
+            "updated_at",
+            "version",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "cancel",
+            "canonical_dict",
+            "create",
+            "expire",
+            "issue",
+            "mark_delivered",
+            "prepare",
+            "supersede",
+            "update_metadata",
+            "void"
+          ]
+        },
+        "receipt.ReceiptAdjustment": {
+          "dataclass": true,
+          "fields": [
+            "adjustment_id",
+            "adjustment_type",
+            "description",
+            "amount",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "receipt.ReceiptAdjustmentId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "of"
+          ]
+        },
+        "receipt.ReceiptId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "of"
+          ]
+        },
+        "receipt.ReceiptIntegrityEvidence": {
+          "dataclass": true,
+          "fields": [
+            "evidence_type",
+            "value",
+            "created_at",
+            "issuer",
+            "expires_at",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "is_expired_at"
+          ]
+        },
+        "receipt.ReceiptLineItem": {
+          "dataclass": true,
+          "fields": [
+            "line_item_id",
+            "line_item_type",
+            "description",
+            "quantity",
+            "unit_amount",
+            "total_amount",
+            "product_reference",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "receipt.ReceiptLineItemId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "of"
+          ]
+        },
+        "receipt.ReceiptMetadata": {
+          "dataclass": true,
+          "fields": [
+            "_values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "empty",
+            "get",
+            "of"
+          ]
+        },
+        "receipt.ReceiptMonetarySummary": {
+          "dataclass": true,
+          "fields": [
+            "currency_code",
+            "subtotal",
+            "adjustment_total",
+            "tax_total",
+            "gross_total",
+            "net_total",
+            "paid_amount",
+            "outstanding_amount"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "receipt.ReceiptParty": {
+          "dataclass": true,
+          "fields": [
+            "party_id",
+            "party_type",
+            "display_name",
+            "external_reference",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "receipt.ReceiptPartyId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "of"
+          ]
+        },
+        "receipt.ReceiptReference": {
+          "dataclass": true,
+          "fields": [
+            "reference_type",
+            "reference_value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "receipt.ReceiptTax": {
+          "dataclass": true,
+          "fields": [
+            "tax_id",
+            "tax_type",
+            "description",
+            "jurisdiction",
+            "rate",
+            "amount",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "receipt.ReceiptTaxId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "of"
+          ]
+        },
+        "receipt.ReceiptVerificationResult": {
+          "dataclass": true,
+          "fields": [
+            "status",
+            "verified_at",
+            "verifier",
+            "reason",
+            "integrity_evidence",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict"
+          ]
+        },
+        "remittance.Remittance": {
+          "dataclass": true,
+          "fields": [
+            "remittance_id",
+            "reference",
+            "status",
+            "remittance_type",
+            "direction",
+            "purpose",
+            "priority",
+            "sender",
+            "beneficiary",
+            "source_account",
+            "destination_account",
+            "source_amount",
+            "destination_amount",
+            "metadata",
+            "created_at",
+            "updated_at",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "authorize",
+            "cancel",
+            "canonical_dict",
+            "complete",
+            "create",
+            "expire",
+            "fail",
+            "mark_processing",
+            "reverse",
+            "submit",
+            "update_metadata",
+            "update_priority",
+            "update_reference",
+            "validate"
+          ]
+        },
+        "remittance.RemittanceAmountBreakdown": {
+          "dataclass": true,
+          "fields": [
+            "principal_amount",
+            "fees",
+            "charges",
+            "fx_cost",
+            "total_debit_amount",
+            "destination_amount",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "remittance.RemittanceCharge": {
+          "dataclass": true,
+          "fields": [
+            "charge_id",
+            "charge_type",
+            "amount",
+            "description"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "remittance.RemittanceCorridor": {
+          "dataclass": true,
+          "fields": [
+            "source_country_code",
+            "destination_country_code",
+            "source_currency_code",
+            "destination_currency_code"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "remittance.RemittanceFee": {
+          "dataclass": true,
+          "fields": [
+            "fee_type",
+            "amount",
+            "description",
+            "refundable"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "remittance.RemittanceFundingReference": {
+          "dataclass": true,
+          "fields": [
+            "funding_source_id",
+            "funding_source_type",
+            "account_reference",
+            "authorization_reference"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "remittance.RemittanceId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "of"
+          ]
+        },
+        "remittance.RemittanceInstruction": {
+          "dataclass": true,
+          "fields": [
+            "instruction_id",
+            "remittance_id",
+            "funding_reference",
+            "recipient_reference",
+            "corridor",
+            "requested_source_amount",
+            "expected_destination_amount",
+            "requested_at",
+            "expires_at",
+            "metadata",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create",
+            "is_expired"
+          ]
+        },
+        "remittance.RemittanceInstructionId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "of"
+          ]
+        },
+        "remittance.RemittanceInstructionMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "remittance.RemittanceMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "remittance.RemittancePricingMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "remittance.RemittanceRecipientReference": {
+          "dataclass": true,
+          "fields": [
+            "recipient_id",
+            "recipient_type",
+            "party_reference",
+            "account_reference",
+            "delivery_method",
+            "routing_reference"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "remittance.RemittanceReference": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "of"
+          ]
+        },
+        "transaction.Transaction": {
+          "dataclass": true,
+          "fields": [
+            "transaction_id",
+            "transaction_type",
+            "status",
+            "direction",
+            "amount",
+            "created_at",
+            "updated_at",
+            "source_wallet_id",
+            "destination_wallet_id",
+            "journal_entry_id",
+            "description",
+            "external_reference",
+            "idempotency_key",
+            "metadata",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "authorize",
+            "can_transition_to",
+            "cancel",
+            "canonical_dict",
+            "complete",
+            "create",
+            "fail",
+            "reverse",
+            "start_processing",
+            "with_metadata"
+          ]
+        },
+        "transaction.TransactionId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "of"
+          ]
+        },
+        "transaction.TransactionMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "get",
+            "of",
+            "with_value",
+            "without"
+          ]
+        },
+        "transfer.Transfer": {
+          "dataclass": true,
+          "fields": [
+            "transfer_id",
+            "reference",
+            "status",
+            "transfer_type",
+            "direction",
+            "purpose",
+            "priority",
+            "sender",
+            "beneficiary",
+            "source_account",
+            "destination_account",
+            "source_amount",
+            "destination_amount",
+            "metadata",
+            "created_at",
+            "updated_at",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "authorize",
+            "cancel",
+            "canonical_dict",
+            "complete",
+            "create",
+            "expire",
+            "fail",
+            "mark_processing",
+            "reverse",
+            "submit",
+            "update_metadata",
+            "update_priority",
+            "update_reference",
+            "validate"
+          ]
+        },
+        "transfer.TransferAccountReference": {
+          "dataclass": true,
+          "fields": [
+            "account_id",
+            "account_type",
+            "currency_code",
+            "institution_reference"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "transfer.TransferAmountBreakdown": {
+          "dataclass": true,
+          "fields": [
+            "source_amount",
+            "destination_amount",
+            "fees",
+            "charges",
+            "fee_total",
+            "charge_total",
+            "total_debit_amount",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "transfer.TransferBeneficiaryReference": {
+          "dataclass": true,
+          "fields": [
+            "beneficiary_id",
+            "beneficiary_type",
+            "party_reference",
+            "account_reference",
+            "delivery_method",
+            "routing_reference"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "transfer.TransferCharge": {
+          "dataclass": true,
+          "fields": [
+            "charge_code",
+            "amount",
+            "description",
+            "third_party",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "transfer.TransferFee": {
+          "dataclass": true,
+          "fields": [
+            "fee_type",
+            "amount",
+            "description",
+            "refundable",
+            "metadata"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create"
+          ]
+        },
+        "transfer.TransferFundingReference": {
+          "dataclass": true,
+          "fields": [
+            "funding_source_id",
+            "funding_source_type",
+            "account_reference",
+            "authorization_reference"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "transfer.TransferId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "of"
+          ]
+        },
+        "transfer.TransferInstruction": {
+          "dataclass": true,
+          "fields": [
+            "instruction_id",
+            "transfer_id",
+            "funding_reference",
+            "beneficiary_reference",
+            "requested_source_amount",
+            "expected_destination_amount",
+            "requested_at",
+            "expires_at",
+            "metadata",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "create",
+            "is_expired"
+          ]
+        },
+        "transfer.TransferInstructionId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "of"
+          ]
+        },
+        "transfer.TransferInstructionMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "transfer.TransferMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "transfer.TransferPartyReference": {
+          "dataclass": true,
+          "fields": [
+            "party_id",
+            "party_type",
+            "display_name"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "transfer.TransferPricingMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "of"
+          ]
+        },
+        "transfer.TransferReference": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "of"
+          ]
+        },
+        "wallet.Wallet": {
+          "dataclass": true,
+          "fields": [
+            "wallet_id",
+            "owner_id",
+            "wallet_type",
+            "status",
+            "home_currency",
+            "created_at",
+            "updated_at",
+            "tenant_id",
+            "external_reference",
+            "metadata",
+            "version"
+          ],
+          "frozen": true,
+          "methods": [
+            "activate",
+            "can_transition_to",
+            "canonical_dict",
+            "close",
+            "create",
+            "restrict",
+            "suspend",
+            "transition_to",
+            "with_metadata"
+          ]
+        },
+        "wallet.WalletId": {
+          "dataclass": true,
+          "fields": [
+            "value"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical",
+            "of"
+          ]
+        },
+        "wallet.WalletMetadata": {
+          "dataclass": true,
+          "fields": [
+            "values"
+          ],
+          "frozen": true,
+          "methods": [
+            "canonical_dict",
+            "get",
+            "of",
+            "with_value",
+            "without"
+          ]
+        }
+      },
+      "test_evidence_count": 82
+    },
+    {
+      "area": "Module-local Receipt reference compatibility",
+      "category": "receipt_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-013",
+      "implementation_evidence": {
+        "balance_snapshot": [
+          "customer",
+          "wallet",
+          "account"
+        ],
+        "customer": [
+          "customer"
+        ],
+        "financial_account": [
+          "customer",
+          "wallet",
+          "account",
+          "transaction",
+          "transfer"
+        ],
+        "ledger_account": [
+          "wallet",
+          "account",
+          "transfer"
+        ],
+        "money": [
+          "wallet"
+        ],
+        "receipt": [
+          "receipt_id",
+          "ReceiptReference",
+          "wallet",
+          "transaction",
+          "transfer",
+          "remittance"
+        ],
+        "remittance": [
+          "wallet",
+          "account",
+          "transfer",
+          "remittance"
+        ],
+        "transaction": [
+          "customer",
+          "wallet",
+          "transaction",
+          "transfer"
+        ],
+        "transfer": [
+          "wallet",
+          "account",
+          "transfer",
+          "remittance"
+        ],
+        "wallet": [
+          "wallet",
+          "transfer"
+        ]
+      },
+      "test_evidence_count": 33
+    },
+    {
+      "area": "Runtime and authority boundaries",
+      "category": "authority_boundary",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "CWG-014",
+      "implementation_evidence": {
+        "money": [
+          "persist"
+        ],
+        "receipt": [
+          "persist"
+        ],
+        "transaction": [
+          "persist"
+        ],
+        "transfer": [
+          "persist"
+        ],
+        "wallet": [
+          "persist"
+        ]
+      },
+      "test_evidence_count": 30
+    }
+  ],
+  "section_5_decision": "TEST_ONLY_CERTIFICATION_SUFFICIENT"
+}

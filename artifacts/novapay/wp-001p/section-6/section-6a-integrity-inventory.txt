@@ -1,0 +1,7 @@
+ReceiptIntegrityEvidence fields: ['created_at', 'evidence_type', 'expires_at', 'issuer', 'metadata', 'value']
+ReceiptVerificationResult fields: ['integrity_evidence', 'metadata', 'reason', 'status', 'verified_at', 'verifier']
+Integrity evidence immutability: PASS
+Verification result immutability: PASS
+Evidence reference vocabulary: PRESENT
+Verification status/result vocabulary: PRESENT
+Integrity and verification integration: PASS

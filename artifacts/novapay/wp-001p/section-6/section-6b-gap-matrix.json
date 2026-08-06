@@ -1,0 +1,174 @@
+{
+  "classification_vocabulary": [
+    "ABSENT",
+    "DEFERRED",
+    "IMPLEMENTED",
+    "NOT_REQUIRED",
+    "PARTIAL"
+  ],
+  "counts": {
+    "ABSENT": 0,
+    "DEFERRED": 0,
+    "IMPLEMENTED": 16,
+    "NOT_REQUIRED": 0,
+    "PARTIAL": 1
+  },
+  "focused_certification_tests_required": true,
+  "focused_implementation_required": false,
+  "rows": [
+    {
+      "area": "Transaction Receipt references",
+      "category": "transaction_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-001",
+      "source_evidence_present": true,
+      "test_evidence_count": 47
+    },
+    {
+      "area": "Transfer Receipt references",
+      "category": "transfer_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-002",
+      "source_evidence_present": true,
+      "test_evidence_count": 74
+    },
+    {
+      "area": "Remittance Receipt references",
+      "category": "remittance_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-003",
+      "source_evidence_present": true,
+      "test_evidence_count": 47
+    },
+    {
+      "area": "SettlementBatch Receipt references",
+      "category": "settlement_batch_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-004",
+      "source_evidence_present": true,
+      "test_evidence_count": 9
+    },
+    {
+      "area": "SettlementReconciliation Receipt references",
+      "category": "settlement_reconciliation_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-005",
+      "source_evidence_present": true,
+      "test_evidence_count": 30
+    },
+    {
+      "area": "Customer Receipt references",
+      "category": "customer_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-006",
+      "source_evidence_present": true,
+      "test_evidence_count": 126
+    },
+    {
+      "area": "Wallet Receipt references",
+      "category": "wallet_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-007",
+      "source_evidence_present": true,
+      "test_evidence_count": 79
+    },
+    {
+      "area": "FinancialAccount Receipt references",
+      "category": "financial_account_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-008",
+      "source_evidence_present": true,
+      "test_evidence_count": 116
+    },
+    {
+      "area": "LedgerAccount Receipt references",
+      "category": "ledger_account_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-009",
+      "source_evidence_present": true,
+      "test_evidence_count": 56
+    },
+    {
+      "area": "Money and currency integration",
+      "category": "money_currency_integration",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-010",
+      "source_evidence_present": true,
+      "test_evidence_count": 241
+    },
+    {
+      "area": "BalanceSnapshot Receipt references",
+      "category": "balance_snapshot_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-011",
+      "source_evidence_present": true,
+      "test_evidence_count": 93
+    },
+    {
+      "area": "Receipt monetary-summary consistency",
+      "category": "monetary_summary_consistency",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-012",
+      "source_evidence_present": true,
+      "test_evidence_count": 3
+    },
+    {
+      "area": "Receipt lifecycle compatibility",
+      "category": "lifecycle_compatibility",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-013",
+      "source_evidence_present": true,
+      "test_evidence_count": 201
+    },
+    {
+      "area": "Integrity evidence and verification relationship",
+      "category": "integrity_verification_relationship",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-014",
+      "source_evidence_present": true,
+      "test_evidence_count": 27
+    },
+    {
+      "area": "Deterministic serialization and replay",
+      "category": "serialization_replay",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-015",
+      "source_evidence_present": true,
+      "test_evidence_count": 172
+    },
+    {
+      "area": "Module-local Receipt public boundary",
+      "category": "public_boundary",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "RCG-016",
+      "source_evidence_present": true,
+      "test_evidence_count": 47
+    },
+    {
+      "area": "Runtime and authority boundaries",
+      "category": "authority_boundary",
+      "classification": "PARTIAL",
+      "decision": "Add forbidden execution, settlement, persistence, delivery, signing, and verification authority tests.",
+      "id": "RCG-017",
+      "source_evidence_present": false,
+      "test_evidence_count": 56
+    }
+  ],
+  "section_6_decision": "FOCUSED_CERTIFICATION_TESTS_REQUIRED"
+}

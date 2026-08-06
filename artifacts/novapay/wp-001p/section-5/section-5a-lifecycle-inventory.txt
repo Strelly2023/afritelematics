@@ -1,0 +1,34 @@
+Status/lifecycle types: 4
+customer.CustomerStatus
+financial_account.FinancialAccountStatus
+wallet.WalletStatus
+ledger_account.LedgerAccountStatus
+
+Lifecycle/restriction methods: 22
+customer.Customer.activate
+customer.Customer.close
+customer.Customer.restrict
+customer.Customer.suspend
+financial_account.FinancialAccount.activate
+financial_account.FinancialAccount.change_restrictions
+financial_account.FinancialAccount.close
+financial_account.FinancialAccount.reactivate
+financial_account.FinancialAccount.restrict
+financial_account.FinancialAccount.suspend
+wallet.Wallet.activate
+wallet.Wallet.can_transition_to
+wallet.Wallet.close
+wallet.Wallet.restrict
+wallet.Wallet.suspend
+wallet.Wallet.transition_to
+ledger_account.LedgerAccount.activate
+ledger_account.LedgerAccount.can_transition_to
+ledger_account.LedgerAccount.close
+ledger_account.LedgerAccount.restrict
+ledger_account.LedgerAccount.suspend
+ledger_account.LedgerAccount.transition_to
+
+Lifecycle/status inventory: PASS
+Activation contract: PRESENT
+Suspension/freeze/closure vocabulary: PRESENT
+Account and wallet restrictions: AUDITED

@@ -1,0 +1,22 @@
+NovaPay Phase 1 domain modules: 16
+01. balance_snapshot
+02. currency
+03. customer
+04. exchange_rate_provider
+05. financial_account
+06. fx
+07. journal_entry
+08. ledger_account
+09. money
+10. receipt
+11. remittance
+12. settlement_batch
+13. settlement_reconciliation
+14. transaction
+15. transfer
+16. wallet
+
+Canonical module count: 16
+Receipt module: PRESENT
+Settlement reconciliation module: PRESENT
+Phase 1 domain module inventory: PASS

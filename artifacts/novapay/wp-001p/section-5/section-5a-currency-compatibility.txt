@@ -1,0 +1,9 @@
+FinancialAccount fields: ['account_id', 'account_type', 'created_at', 'currency', 'customer_id', 'ledger_account_id', 'metadata', 'name', 'purpose', 'restrictions', 'status', 'tenant_id', 'terms', 'updated_at', 'version', 'wallet_id']
+Wallet fields: ['created_at', 'external_reference', 'home_currency', 'metadata', 'owner_id', 'status', 'tenant_id', 'updated_at', 'version', 'wallet_id', 'wallet_type']
+LedgerAccount fields: ['account_code', 'account_id', 'account_type', 'created_at', 'currency', 'metadata', 'name', 'normal_balance', 'owner_id', 'parent_account_id', 'status', 'tenant_id', 'updated_at', 'version', 'wallet_id']
+
+Money canonical type: PRESENT
+Currency vocabulary: PRESENT
+Wallet/account/ledger reference vocabulary: PRESENT
+Wallet and account currency compatibility: AUDITED
+Wallet-to-ledger authority references: AUDITED

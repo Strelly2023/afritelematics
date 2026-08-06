@@ -1,0 +1,56 @@
+MONETARY INTEGRATION GAP MATRIX
+===============================
+
+MIG-001 — Currency normalization consistency
+Classification: IMPLEMENTED
+Test evidence: 80
+Decision: Retain and certify normalization behavior.
+
+MIG-002 — Minor-unit scale and rounding policy
+Classification: IMPLEMENTED
+Test evidence: 18
+Decision: Policy appears centralized.
+
+MIG-003 — Same-currency mismatch rejection
+Classification: IMPLEMENTED
+Test evidence: 2
+Decision: Retain existing invariant.
+
+MIG-004 — Exchange-rate direction
+Classification: IMPLEMENTED
+Test evidence: 2
+Decision: Direction contract is executable and tested.
+
+MIG-005 — Exchange-rate inversion
+Classification: IMPLEMENTED
+Test evidence: 3
+Decision: Inversion is implemented and tested.
+
+MIG-006 — FX quote expiry validation
+Classification: IMPLEMENTED
+Test evidence: 6
+Decision: Expiry validation is implemented and tested.
+
+MIG-007 — Provider and rate-source traceability
+Classification: IMPLEMENTED
+Test evidence: 128
+Decision: Provider/source lineage is traceable.
+
+MIG-008 — BalanceSnapshot monetary representation
+Classification: IMPLEMENTED
+Test evidence: 60
+Decision: BalanceSnapshot monetary representation is certified.
+
+MIG-009 — Cross-domain serialization alignment
+Classification: IMPLEMENTED
+Test evidence: 29
+Decision: Serialization contracts are aligned.
+
+SUMMARY
+-------
+IMPLEMENTED=9
+PARTIAL=0
+ABSENT=0
+DEFERRED=0
+NOT_REQUIRED=0
+FOCUSED_IMPLEMENTATION_REQUIRED=NO

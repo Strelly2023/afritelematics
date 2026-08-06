@@ -1,0 +1,1240 @@
+{
+  "authority_boundary": {
+    "forbidden_members": [
+      "persist"
+    ]
+  },
+  "balance_snapshot_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [],
+    "status": "GENERIC_REFERENCE_COMPATIBLE",
+    "test_matches": [
+      "balance",
+      "snapshot"
+    ]
+  },
+  "customer_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [],
+    "status": "GENERIC_REFERENCE_COMPATIBLE",
+    "test_matches": [
+      "customer",
+      "customer_id"
+    ]
+  },
+  "financial_account_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [],
+    "status": "GENERIC_REFERENCE_COMPATIBLE",
+    "test_matches": [
+      "financial_account",
+      "account_id",
+      "account"
+    ]
+  },
+  "integrity_verification_relationship": {
+    "integrity_fields": [
+      "evidence_type",
+      "value",
+      "created_at",
+      "issuer",
+      "expires_at",
+      "metadata"
+    ],
+    "integrity_frozen": true,
+    "source_matches": [
+      "integrity_evidence",
+      "verification",
+      "verified_at",
+      "verifier",
+      "reason",
+      "status"
+    ],
+    "verification_fields": [
+      "status",
+      "verified_at",
+      "verifier",
+      "reason",
+      "integrity_evidence",
+      "metadata"
+    ],
+    "verification_frozen": true
+  },
+  "ledger_account_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [
+      "ledger"
+    ],
+    "status": "EXPLICIT",
+    "test_matches": [
+      "ledger",
+      "ledger_account"
+    ]
+  },
+  "lifecycle_compatibility": {
+    "receipt_methods": [
+      "cancel",
+      "canonical_dict",
+      "create",
+      "expire",
+      "issue",
+      "mark_delivered",
+      "prepare",
+      "supersede",
+      "update_metadata",
+      "void"
+    ],
+    "source_matches": [
+      "prepare",
+      "issue",
+      "mark_delivered",
+      "cancel",
+      "void",
+      "expire",
+      "supersede",
+      "status"
+    ]
+  },
+  "monetary_summary_consistency": {
+    "receipt_fields": [
+      "receipt_id",
+      "receipt_type",
+      "status",
+      "format",
+      "issuer",
+      "recipient",
+      "currency_code",
+      "line_items",
+      "adjustments",
+      "taxes",
+      "monetary_summary",
+      "references",
+      "integrity_evidence",
+      "issued_at",
+      "delivered_at",
+      "expires_at",
+      "created_at",
+      "updated_at",
+      "version",
+      "metadata"
+    ],
+    "source_matches": [
+      "currency_code",
+      "subtotal",
+      "adjustment_total",
+      "tax_total",
+      "gross_total",
+      "net_total",
+      "paid_amount",
+      "outstanding_amount"
+    ],
+    "summary_fields": [
+      "currency_code",
+      "subtotal",
+      "adjustment_total",
+      "tax_total",
+      "gross_total",
+      "net_total",
+      "paid_amount",
+      "outstanding_amount"
+    ]
+  },
+  "money_currency_integration": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [
+      "money",
+      "amount",
+      "currency"
+    ],
+    "status": "EXPLICIT",
+    "test_matches": [
+      "money",
+      "amount",
+      "currency"
+    ]
+  },
+  "public_boundary": {
+    "integrity_present": true,
+    "presentation_summary_present": false,
+    "receipt_module_export_count": 25,
+    "receipt_present": true,
+    "verification_present": true
+  },
+  "remittance_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [
+      "remittance"
+    ],
+    "status": "EXPLICIT",
+    "test_matches": [
+      "remittance",
+      "remittance_id"
+    ]
+  },
+  "serialization_replay": {
+    "runtime_inventory": {
+      "Receipt": {
+        "dataclass": true,
+        "fields": [
+          "receipt_id",
+          "receipt_type",
+          "status",
+          "format",
+          "issuer",
+          "recipient",
+          "currency_code",
+          "line_items",
+          "adjustments",
+          "taxes",
+          "monetary_summary",
+          "references",
+          "integrity_evidence",
+          "issued_at",
+          "delivered_at",
+          "expires_at",
+          "created_at",
+          "updated_at",
+          "version",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "cancel",
+          "canonical_dict",
+          "create",
+          "expire",
+          "issue",
+          "mark_delivered",
+          "prepare",
+          "supersede",
+          "update_metadata",
+          "void"
+        ]
+      },
+      "ReceiptAdjustment": {
+        "dataclass": true,
+        "fields": [
+          "adjustment_id",
+          "adjustment_type",
+          "description",
+          "amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptIntegrityEvidence": {
+        "dataclass": true,
+        "fields": [
+          "evidence_type",
+          "value",
+          "created_at",
+          "issuer",
+          "expires_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "is_expired_at"
+        ]
+      },
+      "ReceiptLineItem": {
+        "dataclass": true,
+        "fields": [
+          "line_item_id",
+          "line_item_type",
+          "description",
+          "quantity",
+          "unit_amount",
+          "total_amount",
+          "product_reference",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptMetadata": {
+        "dataclass": true,
+        "fields": [
+          "_values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "empty",
+          "get",
+          "of"
+        ]
+      },
+      "ReceiptMonetarySummary": {
+        "dataclass": true,
+        "fields": [
+          "currency_code",
+          "subtotal",
+          "adjustment_total",
+          "tax_total",
+          "gross_total",
+          "net_total",
+          "paid_amount",
+          "outstanding_amount"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptParty": {
+        "dataclass": true,
+        "fields": [
+          "party_id",
+          "party_type",
+          "display_name",
+          "external_reference",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptReference": {
+        "dataclass": true,
+        "fields": [
+          "reference_type",
+          "reference_value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "ReceiptTax": {
+        "dataclass": true,
+        "fields": [
+          "tax_id",
+          "tax_type",
+          "description",
+          "jurisdiction",
+          "rate",
+          "amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptVerificationResult": {
+        "dataclass": true,
+        "fields": [
+          "status",
+          "verified_at",
+          "verifier",
+          "reason",
+          "integrity_evidence",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      }
+    },
+    "section_6a_inventory": {
+      "Receipt": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "receipt_id",
+          "receipt_type",
+          "status",
+          "format",
+          "issuer",
+          "recipient",
+          "currency_code",
+          "line_items",
+          "adjustments",
+          "taxes",
+          "monetary_summary",
+          "references",
+          "integrity_evidence",
+          "issued_at",
+          "delivered_at",
+          "expires_at",
+          "created_at",
+          "updated_at",
+          "version",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "cancel",
+          "canonical_dict",
+          "create",
+          "expire",
+          "issue",
+          "mark_delivered",
+          "prepare",
+          "supersede",
+          "update_metadata",
+          "void"
+        ]
+      },
+      "ReceiptAdjustment": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "adjustment_id",
+          "adjustment_type",
+          "description",
+          "amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptAdjustmentId": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ]
+      },
+      "ReceiptAdjustmentType": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptFormat": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptId": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ]
+      },
+      "ReceiptIntegrityEvidence": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "evidence_type",
+          "value",
+          "created_at",
+          "issuer",
+          "expires_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "is_expired_at"
+        ]
+      },
+      "ReceiptIntegrityEvidenceType": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptLineItem": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "line_item_id",
+          "line_item_type",
+          "description",
+          "quantity",
+          "unit_amount",
+          "total_amount",
+          "product_reference",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptLineItemId": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ]
+      },
+      "ReceiptLineItemType": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptMetadata": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "_values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "empty",
+          "get",
+          "of"
+        ]
+      },
+      "ReceiptMonetarySummary": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "currency_code",
+          "subtotal",
+          "adjustment_total",
+          "tax_total",
+          "gross_total",
+          "net_total",
+          "paid_amount",
+          "outstanding_amount"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptParty": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "party_id",
+          "party_type",
+          "display_name",
+          "external_reference",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptPartyId": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ]
+      },
+      "ReceiptPartyType": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptReference": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "reference_type",
+          "reference_value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ]
+      },
+      "ReceiptReferenceType": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptStatus": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptTax": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "tax_id",
+          "tax_type",
+          "description",
+          "jurisdiction",
+          "rate",
+          "amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptTaxId": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ]
+      },
+      "ReceiptTaxType": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptType": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      },
+      "ReceiptVerificationResult": {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "status",
+          "verified_at",
+          "verifier",
+          "reason",
+          "integrity_evidence",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ]
+      },
+      "ReceiptVerificationStatus": {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ]
+      }
+    }
+  },
+  "settlement_batch_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [
+      "settlement",
+      "settlement_batch"
+    ],
+    "status": "EXPLICIT",
+    "test_matches": [
+      "settlement",
+      "settlement_batch",
+      "settlement_batch_id"
+    ]
+  },
+  "settlement_reconciliation_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [
+      "reconciliation"
+    ],
+    "status": "EXPLICIT",
+    "test_matches": [
+      "reconciliation",
+      "reconciliation_id"
+    ]
+  },
+  "transaction_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [
+      "transaction"
+    ],
+    "status": "EXPLICIT",
+    "test_matches": [
+      "transaction",
+      "transaction_id"
+    ]
+  },
+  "transfer_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [
+      "transfer"
+    ],
+    "status": "EXPLICIT",
+    "test_matches": [
+      "transfer",
+      "transfer_id"
+    ]
+  },
+  "wallet_references": {
+    "generic_reference_contract": {
+      "generic_reference_support": "PASS",
+      "reference_type": "PRESENT",
+      "reference_value": "PRESENT"
+    },
+    "source_matches": [
+      "wallet"
+    ],
+    "status": "EXPLICIT",
+    "test_matches": [
+      "wallet",
+      "wallet_id"
+    ]
+  }
+}

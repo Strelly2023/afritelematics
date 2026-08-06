@@ -1,0 +1,48 @@
+Module-declared public symbols: 207
+Domain-visible symbol occurrences: 168
+Top-level-visible symbol occurrences: 168
+Domain package __all__ count: 168
+Top-level package __all__ count: 190
+
+Module-local-only symbols: 39
+exchange_rate_provider.ExchangeRateProvider
+exchange_rate_provider.ExchangeRateProviderId
+exchange_rate_provider.ExchangeRateProviderRegistry
+exchange_rate_provider.ExchangeRateProviderRegistryId
+exchange_rate_provider.ExchangeRateProviderStatus
+exchange_rate_provider.ExchangeRateProviderType
+exchange_rate_provider.ProviderCapabilities
+exchange_rate_provider.ProviderEndpoint
+exchange_rate_provider.ProviderMetadata
+exchange_rate_provider.ProviderName
+exchange_rate_provider.ProviderTrustLevel
+exchange_rate_provider.RateSource
+exchange_rate_provider.RateSourceId
+exchange_rate_provider.RateSourceMetadata
+exchange_rate_provider.RateSourceStatus
+exchange_rate_provider.RateSourceType
+receipt.Receipt
+receipt.ReceiptAdjustment
+receipt.ReceiptAdjustmentId
+receipt.ReceiptAdjustmentType
+receipt.ReceiptFormat
+receipt.ReceiptId
+receipt.ReceiptIntegrityEvidenceType
+receipt.ReceiptLineItem
+receipt.ReceiptLineItemId
+receipt.ReceiptLineItemType
+receipt.ReceiptMetadata
+receipt.ReceiptMonetarySummary
+receipt.ReceiptParty
+receipt.ReceiptPartyId
+receipt.ReceiptPartyType
+receipt.ReceiptReference
+receipt.ReceiptReferenceType
+receipt.ReceiptStatus
+receipt.ReceiptTax
+receipt.ReceiptTaxId
+receipt.ReceiptTaxType
+receipt.ReceiptType
+receipt.ReceiptVerificationStatus
+
+Canonical export identity matrix: PASS

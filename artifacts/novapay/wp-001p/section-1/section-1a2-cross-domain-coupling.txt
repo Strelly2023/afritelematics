@@ -1,0 +1,31 @@
+Relative cross-domain import edges: 24
+balance_snapshot -> customer: 1
+balance_snapshot -> financial_account: 1
+balance_snapshot -> journal_entry: 1
+balance_snapshot -> ledger_account: 1
+balance_snapshot -> money: 1
+balance_snapshot -> wallet: 1
+currency -> money: 1
+financial_account -> customer: 1
+financial_account -> ledger_account: 1
+financial_account -> money: 1
+financial_account -> wallet: 1
+fx -> money: 1
+journal_entry -> ledger_account: 1
+journal_entry -> money: 1
+ledger_account -> money: 1
+receipt -> money: 1
+remittance -> money: 1
+remittance -> transfer: 1
+settlement_batch -> money: 1
+settlement_reconciliation -> settlement_batch: 1
+transaction -> journal_entry: 1
+transaction -> money: 1
+transaction -> wallet: 1
+wallet -> money: 1
+
+Receipt-related coupling edges: 1
+receipt -> money: 1
+
+Domain self-import edges: NONE
+Cross-domain coupling inventory: PASS

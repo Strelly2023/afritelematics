@@ -1,0 +1,121 @@
+PHASE 1 END-TO-END INTEGRATION GAP MATRIX
+=========================================
+
+E2E-001 — Customer identity and tenant propagation
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 161
+Decision: Preserve and certify the existing contract.
+
+E2E-002 — Customer-to-wallet ownership
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 29
+Decision: Preserve and certify the existing contract.
+
+E2E-003 — Customer-to-financial-account linkage
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 117
+Decision: Preserve and certify the existing contract.
+
+E2E-004 — Wallet and account monetary compatibility
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 542
+Decision: Preserve and certify the existing contract.
+
+E2E-005 — Transaction identifier propagation
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 47
+Decision: Preserve and certify the existing contract.
+
+E2E-006 — LedgerAccount and JournalEntry linkage
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 90
+Decision: Preserve and certify the existing contract.
+
+E2E-007 — Transfer integration
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 75
+Decision: Preserve and certify the existing contract.
+
+E2E-008 — Remittance integration
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 48
+Decision: Preserve and certify the existing contract.
+
+E2E-009 — SettlementBatch integration
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 10
+Decision: Preserve and certify the existing contract.
+
+E2E-010 — SettlementReconciliation integration
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 31
+Decision: Preserve and certify the existing contract.
+
+E2E-011 — Receipt reference propagation
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 53
+Decision: Preserve and certify the existing contract.
+
+E2E-012 — End-to-end monetary consistency
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 260
+Decision: Preserve and certify the existing contract.
+
+E2E-013 — Cross-domain lifecycle compatibility
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 250
+Decision: Preserve and certify the existing contract.
+
+E2E-014 — Deterministic serialization and replay
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 173
+Decision: Preserve and certify the existing contract.
+
+E2E-015 — Immutable aggregate interaction
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 145
+Decision: Preserve and certify the existing contract.
+
+E2E-016 — Module-local Receipt public boundary
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 47
+Decision: Preserve and certify the existing contract.
+
+E2E-017 — Runtime and authority boundaries
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 67
+Decision: Preserve and certify the existing contract.
+
+E2E-018 — Replay-safe import and runtime topology
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 14
+Decision: Preserve and certify the existing contract.
+
+SUMMARY
+-------
+IMPLEMENTED=18
+PARTIAL=0
+ABSENT=0
+DEFERRED=0
+NOT_REQUIRED=0
+FOCUSED_IMPLEMENTATION_REQUIRED=NO
+FOCUSED_CERTIFICATION_TESTS_REQUIRED=NO
+SECTION_7_DECISION=TEST_ONLY_CERTIFICATION_SUFFICIENT

@@ -1,0 +1,519 @@
+{
+  "classification_vocabulary": [
+    "ABSENT",
+    "DEFERRED",
+    "IMPLEMENTED",
+    "NOT_REQUIRED",
+    "PARTIAL"
+  ],
+  "counts": {
+    "ABSENT": 0,
+    "DEFERRED": 0,
+    "IMPLEMENTED": 12,
+    "NOT_REQUIRED": 0,
+    "PARTIAL": 0
+  },
+  "focused_certification_tests_required": false,
+  "focused_implementation_required": false,
+  "rows": [
+    {
+      "area": "Transaction-to-wallet ownership and references",
+      "category": "transaction_wallet",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-001",
+      "implementation_evidence": {
+        "financial_account": [
+          "wallet_id",
+          "wallet"
+        ],
+        "ledger_account": [
+          "wallet_id",
+          "wallet"
+        ],
+        "money": [
+          "wallet"
+        ],
+        "receipt": [
+          "wallet"
+        ],
+        "settlement_batch": [
+          "wallet"
+        ],
+        "settlement_reconciliation": [
+          "wallet"
+        ],
+        "transaction": [
+          "wallet_id",
+          "source_wallet",
+          "destination_wallet",
+          "wallet_reference",
+          "wallet"
+        ],
+        "transfer": [
+          "wallet"
+        ],
+        "wallet": [
+          "wallet_id",
+          "wallet"
+        ]
+      },
+      "test_evidence_count": 69
+    },
+    {
+      "area": "Transaction-to-ledger-account propagation",
+      "category": "transaction_ledger",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-002",
+      "implementation_evidence": {
+        "financial_account": [
+          "ledger_account_id",
+          "ledger_account",
+          "ledger"
+        ],
+        "journal_entry": [
+          "ledger_account",
+          "journal_entry",
+          "ledger"
+        ],
+        "ledger_account": [
+          "ledger"
+        ],
+        "money": [
+          "ledger"
+        ],
+        "receipt": [
+          "journal_entry",
+          "ledger"
+        ],
+        "settlement_batch": [
+          "ledger_account",
+          "journal_entry",
+          "ledger"
+        ],
+        "settlement_reconciliation": [
+          "ledger"
+        ],
+        "transaction": [
+          "journal_entry_id",
+          "journal_entry",
+          "ledger"
+        ],
+        "transfer": [
+          "ledger"
+        ],
+        "wallet": [
+          "ledger"
+        ]
+      },
+      "test_evidence_count": 64
+    },
+    {
+      "area": "Journal-entry debit and credit balancing",
+      "category": "journal_balancing",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-003",
+      "implementation_evidence": {
+        "financial_account": [
+          "debit",
+          "credit",
+          "balance",
+          "entries"
+        ],
+        "journal_entry": [
+          "debit",
+          "credit",
+          "balanced",
+          "balance",
+          "entries"
+        ],
+        "ledger_account": [
+          "debit",
+          "credit",
+          "balanced",
+          "balance",
+          "entries"
+        ],
+        "receipt": [
+          "debit",
+          "credit",
+          "entries"
+        ],
+        "settlement_batch": [
+          "entries"
+        ],
+        "settlement_reconciliation": [
+          "entries"
+        ],
+        "transaction": [
+          "debit",
+          "credit",
+          "balance"
+        ],
+        "transfer": [
+          "debit",
+          "entries"
+        ],
+        "wallet": [
+          "balance",
+          "entries"
+        ]
+      },
+      "test_evidence_count": 27
+    },
+    {
+      "area": "Transaction and journal idempotency",
+      "category": "idempotency",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-004",
+      "implementation_evidence": {
+        "customer": [
+          "duplicate"
+        ],
+        "financial_account": [
+          "duplicate"
+        ],
+        "journal_entry": [
+          "idempotency",
+          "duplicate"
+        ],
+        "receipt": [
+          "duplicate"
+        ],
+        "settlement_reconciliation": [
+          "duplicate"
+        ],
+        "transaction": [
+          "idempotency"
+        ],
+        "transfer": [
+          "duplicate"
+        ]
+      },
+      "test_evidence_count": 18
+    },
+    {
+      "area": "Transfer-to-transaction linkage",
+      "category": "transfer_transaction",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-005",
+      "implementation_evidence": {
+        "transaction": [
+          "transaction_id"
+        ],
+        "transfer": [
+          "transfer_id"
+        ]
+      },
+      "test_evidence_count": 3
+    },
+    {
+      "area": "Settlement-batch membership and references",
+      "category": "settlement_membership",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-006",
+      "implementation_evidence": {
+        "settlement_batch": [
+          "batch_id"
+        ],
+        "settlement_reconciliation": [
+          "settlement_batch_id",
+          "batch_id"
+        ]
+      },
+      "test_evidence_count": 3
+    },
+    {
+      "area": "Settlement-reconciliation linkage",
+      "category": "reconciliation_linkage",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-007",
+      "implementation_evidence": {
+        "settlement_reconciliation": [
+          "reconciliation_id",
+          "settlement_batch_id"
+        ],
+        "transaction": [
+          "transaction_id",
+          "journal_entry_id"
+        ],
+        "transfer": [
+          "transfer_id"
+        ]
+      },
+      "test_evidence_count": 23
+    },
+    {
+      "area": "Receipt reference compatibility",
+      "category": "receipt_references",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-008",
+      "implementation_evidence": {
+        "financial_account": [
+          "transaction",
+          "transfer",
+          "settlement",
+          "reconciliation"
+        ],
+        "journal_entry": [
+          "transfer",
+          "settlement"
+        ],
+        "ledger_account": [
+          "transfer",
+          "settlement"
+        ],
+        "money": [
+          "settlement"
+        ],
+        "receipt": [
+          "receipt_id",
+          "ReceiptReference",
+          "transaction",
+          "transfer",
+          "settlement",
+          "reconciliation"
+        ],
+        "settlement_batch": [
+          "transaction",
+          "transfer",
+          "settlement",
+          "reconciliation"
+        ],
+        "settlement_reconciliation": [
+          "settlement",
+          "reconciliation"
+        ],
+        "transaction": [
+          "transaction",
+          "transfer",
+          "settlement"
+        ],
+        "transfer": [
+          "transfer",
+          "settlement"
+        ],
+        "wallet": [
+          "transfer",
+          "settlement"
+        ]
+      },
+      "test_evidence_count": 29
+    },
+    {
+      "area": "Lifecycle and status alignment",
+      "category": "lifecycle_status",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-009",
+      "implementation_evidence": {
+        "customer": [
+          "status",
+          "state",
+          "lifecycle"
+        ],
+        "financial_account": [
+          "status",
+          "state",
+          "lifecycle"
+        ],
+        "journal_entry": [
+          "status",
+          "state",
+          "lifecycle",
+          "transition"
+        ],
+        "ledger_account": [
+          "status",
+          "state",
+          "lifecycle",
+          "transition"
+        ],
+        "receipt": [
+          "status",
+          "lifecycle",
+          "transition"
+        ],
+        "settlement_batch": [
+          "status",
+          "transition"
+        ],
+        "settlement_reconciliation": [
+          "status",
+          "state",
+          "lifecycle",
+          "transition"
+        ],
+        "transaction": [
+          "status",
+          "lifecycle",
+          "transition"
+        ],
+        "transfer": [
+          "status",
+          "state",
+          "transition"
+        ],
+        "wallet": [
+          "status",
+          "state",
+          "lifecycle",
+          "transition"
+        ]
+      },
+      "test_evidence_count": 154
+    },
+    {
+      "area": "Deterministic serialization and replay",
+      "category": "serialization_replay",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-010",
+      "implementation_evidence": {
+        "customer": [
+          "canonical_dict",
+          "serialize",
+          "canonical"
+        ],
+        "financial_account": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "journal_entry": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "ledger_account": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "money": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "receipt": [
+          "canonical_dict",
+          "to_dict",
+          "canonical"
+        ],
+        "settlement_batch": [
+          "canonical_dict",
+          "to_dict",
+          "canonical"
+        ],
+        "settlement_reconciliation": [
+          "canonical_dict",
+          "serialize",
+          "canonical"
+        ],
+        "transaction": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "transfer": [
+          "canonical_dict",
+          "canonical"
+        ],
+        "wallet": [
+          "canonical_dict",
+          "canonical"
+        ]
+      },
+      "test_evidence_count": 59
+    },
+    {
+      "area": "Event ordering and immutable aggregate interaction",
+      "category": "event_ordering",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-011",
+      "implementation_evidence": {
+        "customer": [
+          "version",
+          "occurred_at",
+          "created_at"
+        ],
+        "financial_account": [
+          "version",
+          "occurred_at",
+          "created_at"
+        ],
+        "journal_entry": [
+          "version",
+          "occurred_at",
+          "created_at"
+        ],
+        "ledger_account": [
+          "version",
+          "created_at"
+        ],
+        "receipt": [
+          "version",
+          "created_at"
+        ],
+        "settlement_batch": [
+          "version",
+          "occurred_at",
+          "created_at"
+        ],
+        "settlement_reconciliation": [
+          "sequence",
+          "version",
+          "created_at",
+          "recorded_at"
+        ],
+        "transaction": [
+          "version",
+          "occurred_at",
+          "created_at"
+        ],
+        "transfer": [
+          "version",
+          "occurred_at",
+          "created_at"
+        ],
+        "wallet": [
+          "version",
+          "created_at"
+        ]
+      },
+      "test_evidence_count": 42
+    },
+    {
+      "area": "Domain and runtime authority boundaries",
+      "category": "authority_boundary",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "TLG-012",
+      "implementation_evidence": {
+        "money": [
+          "persist"
+        ],
+        "receipt": [
+          "persist"
+        ],
+        "settlement_reconciliation": [
+          "persist"
+        ],
+        "transaction": [
+          "persist"
+        ],
+        "transfer": [
+          "persist"
+        ],
+        "wallet": [
+          "persist"
+        ]
+      },
+      "test_evidence_count": 38
+    }
+  ],
+  "section_3_decision": "TEST_ONLY_CERTIFICATION_SUFFICIENT"
+}

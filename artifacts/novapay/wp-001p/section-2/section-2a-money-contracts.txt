@@ -1,0 +1,7 @@
+Money fields: ['amount', 'currency']
+Money methods: ['canonical', 'canonical_amount', 'canonical_dict', 'compare', 'multiply', 'of', 'require_non_negative', 'require_positive', 'zero']
+Money annotations: {'amount': 'Decimal', 'currency': 'Currency'}
+Decimal type available: Decimal
+Money immutable: PASS
+Money authority boundary: PASS
+Money structural contract: PASS

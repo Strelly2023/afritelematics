@@ -1,0 +1,30 @@
+Monetary types with serialization contracts: 27
+money.Currency: canonical_dict
+money.Money: canonical_dict
+currency.CurrencyDefinition: canonical_dict
+currency.CurrencyMetadata: canonical_dict
+currency.CurrencyRegistry: canonical_dict
+fx.CurrencyPair: canonical_dict
+fx.ExchangeRate: canonical_dict
+fx.ExchangeRateId: canonical_dict
+fx.ExchangeRateValue: canonical_dict
+fx.FXMetadata: canonical_dict
+fx.FXQuote: canonical_dict
+fx.FXQuoteId: canonical_dict
+fx.FXValidityWindow: canonical_dict
+fx.RateSpread: canonical_dict
+exchange_rate_provider.ExchangeRateProvider: canonical_dict
+exchange_rate_provider.ExchangeRateProviderRegistry: canonical_dict
+exchange_rate_provider.ProviderCapabilities: canonical_dict
+exchange_rate_provider.ProviderEndpoint: canonical_dict
+exchange_rate_provider.ProviderMetadata: canonical_dict
+exchange_rate_provider.RateSource: canonical_dict
+exchange_rate_provider.RateSourceMetadata: canonical_dict
+balance_snapshot.BalanceComponent: canonical_dict
+balance_snapshot.BalanceReconciliation: canonical_dict
+balance_snapshot.BalanceSnapshot: canonical_dict
+balance_snapshot.BalanceSnapshotHistory: canonical_dict
+balance_snapshot.BalanceSnapshotMetadata: canonical_dict
+balance_snapshot.LedgerPosition: canonical_dict
+Required serialization types missing: []
+Monetary serialization inventory: PASS

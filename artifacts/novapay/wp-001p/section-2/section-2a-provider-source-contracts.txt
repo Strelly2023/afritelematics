@@ -1,0 +1,96 @@
+
+Symbol: ExchangeRateProvider
+Enum: False
+Dataclass: True
+Fields: ['provider_id', 'name', 'provider_type', 'status', 'trust_level', 'capabilities', 'endpoint', 'metadata', 'created_at', 'updated_at', 'version']
+Methods: ['activate', 'canonical_dict', 'create', 'mark_degraded', 'remove_endpoint', 'retire', 'supports_pair', 'supports_source_type', 'suspend', 'update_capabilities', 'update_endpoint', 'update_metadata', 'update_name', 'update_trust_level']
+
+Symbol: ExchangeRateProviderId
+Enum: False
+Dataclass: True
+Fields: ['value']
+Methods: ['canonical', 'of']
+
+Symbol: ExchangeRateProviderRegistry
+Enum: False
+Dataclass: True
+Fields: ['registry_id', 'providers', 'rate_sources', 'metadata', 'created_at', 'updated_at', 'version']
+Methods: ['active_sources_supporting_pair', 'canonical_dict', 'create', 'get_provider', 'get_rate_source', 'providers_by_status', 'providers_by_trust_level', 'providers_by_type', 'register_provider', 'register_rate_source', 'require_provider', 'require_rate_source', 'sources_by_status', 'sources_by_trust_level', 'sources_by_type', 'sources_for_provider', 'sources_supporting_pair', 'update_metadata', 'update_provider', 'update_rate_source']
+
+Symbol: ExchangeRateProviderRegistryId
+Enum: False
+Dataclass: True
+Fields: ['value']
+Methods: ['canonical', 'of']
+
+Symbol: ExchangeRateProviderStatus
+Enum: True
+Dataclass: False
+Methods: ['capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isascii', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'removeprefix', 'removesuffix', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+
+Symbol: ExchangeRateProviderType
+Enum: True
+Dataclass: False
+Methods: ['capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isascii', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'removeprefix', 'removesuffix', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+
+Symbol: ProviderCapabilities
+Enum: False
+Dataclass: True
+Fields: ['supported_currency_pairs', 'supported_rate_source_types', 'supports_streaming', 'supports_historical_rates', 'supports_inverse_rates', 'maximum_staleness_seconds', 'expected_latency_ms', 'expected_reliability']
+Methods: ['canonical_dict', 'of', 'supports_pair', 'supports_source_type']
+
+Symbol: ProviderEndpoint
+Enum: False
+Dataclass: True
+Fields: ['url', 'description']
+Methods: ['canonical_dict', 'of']
+
+Symbol: ProviderMetadata
+Enum: False
+Dataclass: True
+Fields: ['values']
+Methods: ['canonical_dict', 'of', 'with_updates']
+
+Symbol: ProviderName
+Enum: False
+Dataclass: True
+Fields: ['value']
+Methods: ['canonical', 'of']
+
+Symbol: ProviderTrustLevel
+Enum: True
+Dataclass: False
+Methods: ['capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isascii', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'removeprefix', 'removesuffix', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+
+Symbol: RateSource
+Enum: False
+Dataclass: True
+Fields: ['rate_source_id', 'provider_id', 'source_type', 'status', 'trust_level', 'priority', 'supported_currency_pairs', 'maximum_staleness_seconds', 'expected_latency_ms', 'expected_reliability', 'metadata', 'created_at', 'updated_at', 'version']
+Methods: ['activate', 'canonical_dict', 'create', 'mark_degraded', 'retire', 'supports_pair', 'suspend', 'update_freshness_policy', 'update_metadata', 'update_priority', 'update_supported_currency_pairs', 'update_trust_level']
+
+Symbol: RateSourceId
+Enum: False
+Dataclass: True
+Fields: ['value']
+Methods: ['canonical', 'of']
+
+Symbol: RateSourceMetadata
+Enum: False
+Dataclass: True
+Fields: ['values']
+Methods: ['canonical_dict', 'of', 'with_updates']
+
+Symbol: RateSourceStatus
+Enum: True
+Dataclass: False
+Methods: ['capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isascii', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'removeprefix', 'removesuffix', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+
+Symbol: RateSourceType
+Enum: True
+Dataclass: False
+Methods: ['capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isascii', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'removeprefix', 'removesuffix', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+
+Provider-related symbols: ['ExchangeRateProvider', 'ExchangeRateProviderId', 'ExchangeRateProviderRegistry', 'ExchangeRateProviderRegistryId', 'ExchangeRateProviderStatus', 'ExchangeRateProviderType', 'ProviderCapabilities', 'ProviderEndpoint', 'ProviderMetadata', 'ProviderName', 'ProviderTrustLevel']
+Source-related symbols: ['RateSource', 'RateSourceId', 'RateSourceMetadata', 'RateSourceStatus', 'RateSourceType']
+Provider/source vocabulary: PRESENT
+Provider/source authority boundary: PASS

@@ -1,0 +1,5 @@
+BalanceSnapshot fields: ['as_of', 'captured_at', 'components', 'currency', 'customer_id', 'financial_account_id', 'ledger_account_id', 'ledger_position', 'metadata', 'snapshot_id', 'snapshot_type', 'source_journal_entry_id', 'source_reference_id', 'status', 'version', 'wallet_id']
+BalanceSnapshot ownership vocabulary: PRESENT
+BalanceSnapshot monetary vocabulary: PRESENT
+Balance component/reconciliation vocabulary: PRESENT
+BalanceSnapshot ownership and monetary consistency: PASS

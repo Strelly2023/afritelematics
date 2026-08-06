@@ -1,0 +1,9 @@
+Authority violations: 0
+Payment execution authority: NONE
+Ledger-posting authority: NONE
+External settlement authority: NONE
+Persistence authority: NONE
+Delivery authority: NONE
+Cryptographic authority: NONE
+External verification authority: NONE
+Canonical authority-boundary matrix: PASS

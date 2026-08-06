@@ -1,0 +1,5 @@
+Receipt relative imports: 1
+line 33: .money
+Forbidden runtime imports: 0
+Receipt forbidden runtime imports: NONE
+Receipt replay-safe import coupling: PASS

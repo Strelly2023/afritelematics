@@ -1,0 +1,268 @@
+{
+  "categories": {
+    "customer_identity": {
+      "module_count": 5,
+      "module_matches": {
+        "balance_snapshot": [
+          "customer_id"
+        ],
+        "customer": [
+          "customer_id",
+          "identity_id"
+        ],
+        "financial_account": [
+          "customer_id"
+        ],
+        "receipt": [
+          "party_id"
+        ],
+        "transfer": [
+          "party_id"
+        ]
+      },
+      "tokens": [
+        "customer_id",
+        "identity_id",
+        "customer_reference",
+        "party_id"
+      ]
+    },
+    "financial_account": {
+      "module_count": 7,
+      "module_matches": {
+        "balance_snapshot": [
+          "financial_account_id",
+          "account_id"
+        ],
+        "financial_account": [
+          "account_id"
+        ],
+        "journal_entry": [
+          "account_id"
+        ],
+        "ledger_account": [
+          "account_id"
+        ],
+        "remittance": [
+          "account_reference"
+        ],
+        "settlement_batch": [
+          "account_reference"
+        ],
+        "transfer": [
+          "account_id",
+          "account_reference"
+        ]
+      },
+      "tokens": [
+        "financial_account_id",
+        "account_id",
+        "account_reference"
+      ]
+    },
+    "ledger": {
+      "module_count": 5,
+      "module_matches": {
+        "balance_snapshot": [
+          "ledger_account_id",
+          "journal_entry_id",
+          "entry_id"
+        ],
+        "financial_account": [
+          "ledger_account_id"
+        ],
+        "journal_entry": [
+          "entry_id"
+        ],
+        "settlement_batch": [
+          "entry_id"
+        ],
+        "transaction": [
+          "journal_entry_id",
+          "entry_id"
+        ]
+      },
+      "tokens": [
+        "ledger_account_id",
+        "journal_entry_id",
+        "entry_id"
+      ]
+    },
+    "receipt": {
+      "module_count": 2,
+      "module_matches": {
+        "receipt": [
+          "receipt_id",
+          "reference_type",
+          "reference_value"
+        ],
+        "settlement_batch": [
+          "reference_type"
+        ]
+      },
+      "tokens": [
+        "receipt_id",
+        "receipt_reference",
+        "reference_type",
+        "reference_value"
+      ]
+    },
+    "reconciliation": {
+      "module_count": 5,
+      "module_matches": {
+        "balance_snapshot": [
+          "reconciliation"
+        ],
+        "financial_account": [
+          "reconciliation"
+        ],
+        "receipt": [
+          "settlement_reconciliation",
+          "reconciliation"
+        ],
+        "settlement_batch": [
+          "reconciliation"
+        ],
+        "settlement_reconciliation": [
+          "reconciliation_id",
+          "reconciliation"
+        ]
+      },
+      "tokens": [
+        "reconciliation_id",
+        "settlement_reconciliation",
+        "reconciliation"
+      ]
+    },
+    "remittance": {
+      "module_count": 1,
+      "module_matches": {
+        "remittance": [
+          "remittance_id"
+        ]
+      },
+      "tokens": [
+        "remittance_id",
+        "remittance_reference"
+      ]
+    },
+    "settlement": {
+      "module_count": 2,
+      "module_matches": {
+        "settlement_batch": [
+          "batch_id"
+        ],
+        "settlement_reconciliation": [
+          "settlement_batch_id",
+          "batch_id"
+        ]
+      },
+      "tokens": [
+        "settlement_batch_id",
+        "settlement_id",
+        "batch_id"
+      ]
+    },
+    "tenant_boundary": {
+      "module_count": 4,
+      "module_matches": {
+        "customer": [
+          "tenant_id",
+          "tenant"
+        ],
+        "financial_account": [
+          "tenant_id",
+          "tenant"
+        ],
+        "ledger_account": [
+          "tenant_id",
+          "tenant"
+        ],
+        "wallet": [
+          "tenant_id",
+          "tenant"
+        ]
+      },
+      "tokens": [
+        "tenant_id",
+        "legal_entity_id",
+        "tenant"
+      ]
+    },
+    "transaction": {
+      "module_count": 1,
+      "module_matches": {
+        "transaction": [
+          "transaction_id"
+        ]
+      },
+      "tokens": [
+        "transaction_id",
+        "transaction_reference"
+      ]
+    },
+    "transfer": {
+      "module_count": 1,
+      "module_matches": {
+        "transfer": [
+          "transfer_id"
+        ]
+      },
+      "tokens": [
+        "transfer_id",
+        "transfer_reference"
+      ]
+    },
+    "wallet": {
+      "module_count": 10,
+      "module_matches": {
+        "balance_snapshot": [
+          "wallet_id",
+          "wallet"
+        ],
+        "financial_account": [
+          "wallet_id",
+          "wallet"
+        ],
+        "ledger_account": [
+          "wallet_id",
+          "wallet"
+        ],
+        "receipt": [
+          "wallet"
+        ],
+        "remittance": [
+          "wallet"
+        ],
+        "settlement_batch": [
+          "wallet"
+        ],
+        "settlement_reconciliation": [
+          "wallet"
+        ],
+        "transaction": [
+          "wallet_id",
+          "wallet_reference",
+          "wallet"
+        ],
+        "transfer": [
+          "wallet"
+        ],
+        "wallet": [
+          "wallet_id",
+          "wallet"
+        ]
+      },
+      "tokens": [
+        "wallet_id",
+        "wallet_reference",
+        "wallet"
+      ]
+    }
+  },
+  "generic_receipt_reference": {
+    "reference_type": "PRESENT",
+    "reference_value": "PRESENT"
+  },
+  "module_count": 12
+}

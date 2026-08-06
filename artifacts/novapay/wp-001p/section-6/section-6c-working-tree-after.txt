@@ -1,0 +1,41 @@
+ M afritech/architecture/anchor_indexer.py
+ M afritech/tests/novapay/test_domain_settlement_batch_exports.py
+ M docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md
+ M services/administration/app_registry.py
+?? afritech/tests/novapay/test_phase1_customer_account_wallet_integration_certification.py
+?? afritech/tests/novapay/test_phase1_monetary_integration_certification.py
+?? afritech/tests/novapay/test_phase1_receipt_runtime_authority_boundary_certification.py
+?? afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py
+?? afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py
+?? artifacts/environment-audit/
+?? artifacts/novacodepro/studio-upgrade/
+?? artifacts/novalogistics/recovery/
+?? artifacts/novaride/completion-matrix/
+?? artifacts/novaride/database/
+?? artifacts/novaride/docker-recovery/
+?? artifacts/novaride/e2e/
+?? artifacts/novaride/final/
+?? artifacts/novaride/ga/
+?? artifacts/novaride/mobile/
+?? artifacts/novaride/native-identity-audit/
+?? artifacts/novaride/observability/
+?? artifacts/novaride/operational/
+?? artifacts/novaride/performance/
+?? artifacts/novaride/pilot/
+?? artifacts/novaride/production-operations/
+?? artifacts/novaride/prr/
+?? artifacts/novaride/public-pilot/
+?? artifacts/novaride/quality/
+?? artifacts/novaride/runtime/
+?? artifacts/novaride/security/
+?? artifacts/novaride/storage-recovery/
+?? artifacts/product-factory-enterprise/
+?? contracts/__init__.py
+?? deploy/production/.env.production.trust-node.novaid-20260730T031602Z.bak
+?? deploy/production/.env.production.trust-node.phase3b2a.20260730T012431Z.bak
+?? deploy/production/.env.production.trust-node.phase3b2b.20260730T014405Z.bak
+?? deploy/production/.env.production.trust-node.phase3b3a4.20260730T031448Z.bak
+?? deploy/production/requirements-api.lock
+?? deploy/staging/api-entrypoint.sh
+?? novapay_agent_app/node_modules
+?? scripts/novaride/completion_generator_matrix_report.py

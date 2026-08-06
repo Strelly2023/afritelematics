@@ -1,0 +1,1619 @@
+{
+  "balance_snapshot_money": {
+    "source_occurrences": {
+      "balance_snapshot": [
+        "Money",
+        "Decimal",
+        "Currency"
+      ],
+      "currency": [
+        "Money",
+        "Currency",
+        "currency_code"
+      ],
+      "exchange_rate_provider": [
+        "Money",
+        "Decimal",
+        "Currency"
+      ],
+      "fx": [
+        "Money",
+        "Decimal",
+        "Currency"
+      ],
+      "money": [
+        "Money",
+        "Decimal",
+        "Currency",
+        "currency_code"
+      ]
+    }
+  },
+  "currency_normalization": {
+    "normalization_modules": [
+      "balance_snapshot",
+      "currency",
+      "exchange_rate_provider",
+      "fx",
+      "money"
+    ],
+    "strip_locations": [
+      {
+        "line": 43,
+        "module": "money"
+      },
+      {
+        "line": 68,
+        "module": "money"
+      },
+      {
+        "line": 63,
+        "module": "currency"
+      },
+      {
+        "line": 47,
+        "module": "fx"
+      },
+      {
+        "line": 305,
+        "module": "fx"
+      },
+      {
+        "line": 693,
+        "module": "fx"
+      },
+      {
+        "line": 715,
+        "module": "fx"
+      },
+      {
+        "line": 736,
+        "module": "fx"
+      },
+      {
+        "line": 402,
+        "module": "fx"
+      },
+      {
+        "line": 83,
+        "module": "fx"
+      },
+      {
+        "line": 124,
+        "module": "fx"
+      },
+      {
+        "line": 166,
+        "module": "fx"
+      },
+      {
+        "line": 386,
+        "module": "fx"
+      },
+      {
+        "line": 127,
+        "module": "exchange_rate_provider"
+      },
+      {
+        "line": 93,
+        "module": "balance_snapshot"
+      }
+    ],
+    "upper_locations": [
+      {
+        "line": 43,
+        "module": "money"
+      },
+      {
+        "line": 63,
+        "module": "currency"
+      },
+      {
+        "line": 601,
+        "module": "currency"
+      },
+      {
+        "line": 386,
+        "module": "fx"
+      },
+      {
+        "line": 853,
+        "module": "exchange_rate_provider"
+      },
+      {
+        "line": 2268,
+        "module": "exchange_rate_provider"
+      },
+      {
+        "line": 209,
+        "module": "exchange_rate_provider"
+      }
+    ]
+  },
+  "exchange_rate_direction": {
+    "source_occurrences": {
+      "fx": [
+        "base_currency",
+        "quote_currency"
+      ]
+    }
+  },
+  "exchange_rate_inversion": {
+    "source_occurrences": {
+      "exchange_rate_provider": [
+        "inverse"
+      ],
+      "fx": [
+        "inverse"
+      ]
+    }
+  },
+  "precision_and_rounding": {
+    "decimal_from_float_literals": [],
+    "quantize_locations": [
+      {
+        "line": 143,
+        "module": "money"
+      },
+      {
+        "line": 168,
+        "module": "money"
+      }
+    ],
+    "rounding_locations": [
+      {
+        "line": 145,
+        "module": "money",
+        "symbol": "ROUND_HALF_EVEN"
+      }
+    ],
+    "rounding_module_counts": {
+      "money": 3
+    }
+  },
+  "provider_source_traceability": {
+    "source_occurrences": {
+      "balance_snapshot": [
+        "provider",
+        "source"
+      ],
+      "currency": [
+        "provider",
+        "source"
+      ],
+      "exchange_rate_provider": [
+        "provider_id",
+        "rate_source",
+        "source_id",
+        "provider",
+        "source"
+      ],
+      "fx": [
+        "provider",
+        "source"
+      ],
+      "money": [
+        "provider"
+      ]
+    }
+  },
+  "quote_expiry": {
+    "source_occurrences": {
+      "fx": [
+        "expires_at",
+        "expiry",
+        "expired",
+        "is_expired"
+      ]
+    }
+  },
+  "runtime_types": {
+    "balance_snapshot.BalanceComponent": {
+      "fields": [
+        "component_type",
+        "amount",
+        "ledger_account_id",
+        "wallet_id",
+        "reference_id",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "create"
+      ]
+    },
+    "balance_snapshot.BalanceComponentType": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "balance_snapshot.BalanceReconciliation": {
+      "fields": [
+        "currency",
+        "posted",
+        "available",
+        "pending_debit",
+        "pending_credit",
+        "reserved",
+        "hold",
+        "overdraft",
+        "uncleared",
+        "expected_available",
+        "difference"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict"
+      ]
+    },
+    "balance_snapshot.BalanceSnapshot": {
+      "fields": [
+        "snapshot_id",
+        "snapshot_type",
+        "status",
+        "currency",
+        "components",
+        "ledger_position",
+        "as_of",
+        "captured_at",
+        "customer_id",
+        "financial_account_id",
+        "wallet_id",
+        "ledger_account_id",
+        "source_journal_entry_id",
+        "source_reference_id",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "component_amount",
+        "create",
+        "get_component",
+        "invalidate",
+        "mark_reconciliation_required",
+        "mark_stale",
+        "mark_superseded",
+        "reconcile",
+        "require_component",
+        "require_reconciled",
+        "update_metadata"
+      ]
+    },
+    "balance_snapshot.BalanceSnapshotHistory": {
+      "fields": [
+        "history_id",
+        "snapshots",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "advance",
+        "at_or_before",
+        "at_position",
+        "between_positions",
+        "between_times",
+        "canonical_dict",
+        "create",
+        "get_by_id",
+        "require_by_id",
+        "update_metadata"
+      ]
+    },
+    "balance_snapshot.BalanceSnapshotHistoryId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "balance_snapshot.BalanceSnapshotId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "balance_snapshot.BalanceSnapshotMetadata": {
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of",
+        "with_updates"
+      ]
+    },
+    "balance_snapshot.BalanceSnapshotStatus": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "balance_snapshot.BalanceSnapshotType": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "balance_snapshot.LedgerPosition": {
+      "fields": [
+        "sequence",
+        "source"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "is_after",
+        "of"
+      ]
+    },
+    "currency.CurrencyCountryCodes": {
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "contains",
+        "of"
+      ]
+    },
+    "currency.CurrencyDefinition": {
+      "fields": [
+        "currency_definition_id",
+        "currency",
+        "name",
+        "symbol",
+        "currency_type",
+        "status",
+        "minor_units",
+        "rounding_mode",
+        "country_codes",
+        "numeric_code",
+        "fund_code",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "canonical_dict",
+        "create",
+        "reactivate",
+        "retire",
+        "supports_country",
+        "suspend",
+        "update_country_codes",
+        "update_metadata",
+        "update_name",
+        "update_symbol"
+      ]
+    },
+    "currency.CurrencyDefinitionId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "currency.CurrencyMetadata": {
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of",
+        "with_updates"
+      ]
+    },
+    "currency.CurrencyName": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "currency.CurrencyRegistry": {
+      "fields": [
+        "currency_registry_id",
+        "definitions",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "active_definitions",
+        "canonical_dict",
+        "contains_code",
+        "contains_id",
+        "create",
+        "definitions_by_type",
+        "definitions_for_country",
+        "get_by_code",
+        "get_by_id",
+        "register",
+        "require_by_code",
+        "require_by_id",
+        "update_definition",
+        "update_metadata"
+      ]
+    },
+    "currency.CurrencyRegistryId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "currency.CurrencyRoundingMode": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "currency.CurrencyStatus": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "currency.CurrencySymbol": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "of"
+      ]
+    },
+    "currency.CurrencyType": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "exchange_rate_provider.ExchangeRateProvider": {
+      "fields": [
+        "provider_id",
+        "name",
+        "provider_type",
+        "status",
+        "trust_level",
+        "capabilities",
+        "endpoint",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "canonical_dict",
+        "create",
+        "mark_degraded",
+        "remove_endpoint",
+        "retire",
+        "supports_pair",
+        "supports_source_type",
+        "suspend",
+        "update_capabilities",
+        "update_endpoint",
+        "update_metadata",
+        "update_name",
+        "update_trust_level"
+      ]
+    },
+    "exchange_rate_provider.ExchangeRateProviderId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "exchange_rate_provider.ExchangeRateProviderRegistry": {
+      "fields": [
+        "registry_id",
+        "providers",
+        "rate_sources",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "active_sources_supporting_pair",
+        "canonical_dict",
+        "create",
+        "get_provider",
+        "get_rate_source",
+        "providers_by_status",
+        "providers_by_trust_level",
+        "providers_by_type",
+        "register_provider",
+        "register_rate_source",
+        "require_provider",
+        "require_rate_source",
+        "sources_by_status",
+        "sources_by_trust_level",
+        "sources_by_type",
+        "sources_for_provider",
+        "sources_supporting_pair",
+        "update_metadata",
+        "update_provider",
+        "update_rate_source"
+      ]
+    },
+    "exchange_rate_provider.ExchangeRateProviderRegistryId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "exchange_rate_provider.ExchangeRateProviderStatus": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "exchange_rate_provider.ExchangeRateProviderType": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "exchange_rate_provider.ProviderCapabilities": {
+      "fields": [
+        "supported_currency_pairs",
+        "supported_rate_source_types",
+        "supports_streaming",
+        "supports_historical_rates",
+        "supports_inverse_rates",
+        "maximum_staleness_seconds",
+        "expected_latency_ms",
+        "expected_reliability"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of",
+        "supports_pair",
+        "supports_source_type"
+      ]
+    },
+    "exchange_rate_provider.ProviderEndpoint": {
+      "fields": [
+        "url",
+        "description"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "exchange_rate_provider.ProviderMetadata": {
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of",
+        "with_updates"
+      ]
+    },
+    "exchange_rate_provider.ProviderName": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "exchange_rate_provider.ProviderTrustLevel": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "exchange_rate_provider.RateSource": {
+      "fields": [
+        "rate_source_id",
+        "provider_id",
+        "source_type",
+        "status",
+        "trust_level",
+        "priority",
+        "supported_currency_pairs",
+        "maximum_staleness_seconds",
+        "expected_latency_ms",
+        "expected_reliability",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "canonical_dict",
+        "create",
+        "mark_degraded",
+        "retire",
+        "supports_pair",
+        "suspend",
+        "update_freshness_policy",
+        "update_metadata",
+        "update_priority",
+        "update_supported_currency_pairs",
+        "update_trust_level"
+      ]
+    },
+    "exchange_rate_provider.RateSourceId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "of"
+      ]
+    },
+    "exchange_rate_provider.RateSourceMetadata": {
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "of",
+        "with_updates"
+      ]
+    },
+    "exchange_rate_provider.RateSourceStatus": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "exchange_rate_provider.RateSourceType": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "fx.CurrencyPair": {
+      "fields": [
+        "base_currency",
+        "quote_currency"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "inverse",
+        "of",
+        "parse"
+      ]
+    },
+    "fx.ExchangeRate": {
+      "fields": [
+        "exchange_rate_id",
+        "pair",
+        "rate",
+        "spread",
+        "source",
+        "status",
+        "provider",
+        "provider_reference",
+        "validity",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "convert_base_amount",
+        "convert_quote_amount",
+        "create",
+        "expire",
+        "is_active_at",
+        "is_expired_at",
+        "publish",
+        "resume",
+        "revoke",
+        "supersede",
+        "suspend",
+        "update_metadata",
+        "update_provider_reference",
+        "update_rate",
+        "update_spread",
+        "update_validity"
+      ]
+    },
+    "fx.ExchangeRateId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "fx.ExchangeRateSource": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "fx.ExchangeRateStatus": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "fx.ExchangeRateValue": {
+      "fields": [
+        "rate"
+      ],
+      "frozen": true,
+      "methods": [
+        "apply",
+        "canonical",
+        "canonical_dict",
+        "inverse",
+        "of"
+      ]
+    },
+    "fx.FXMetadata": {
+      "fields": [
+        "values"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "get",
+        "of",
+        "with_value",
+        "without"
+      ]
+    },
+    "fx.FXQuote": {
+      "fields": [
+        "fx_quote_id",
+        "exchange_rate_id",
+        "pair",
+        "source_amount",
+        "destination_amount",
+        "rate",
+        "spread",
+        "status",
+        "provider",
+        "provider_reference",
+        "validity",
+        "customer_id",
+        "transaction_id",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "accept",
+        "cancel",
+        "canonical_dict",
+        "consume",
+        "create",
+        "expire",
+        "is_active_at",
+        "is_expired_at",
+        "offer",
+        "quote_base_amount",
+        "quote_destination_amount",
+        "reject",
+        "update_customer_reference",
+        "update_metadata",
+        "update_transaction_reference"
+      ]
+    },
+    "fx.FXQuoteId": {
+      "fields": [
+        "value"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "fx.FXQuoteStatus": {
+      "fields": [],
+      "frozen": false,
+      "methods": [
+        "capitalize",
+        "casefold",
+        "center",
+        "count",
+        "encode",
+        "endswith",
+        "expandtabs",
+        "find",
+        "format",
+        "format_map",
+        "index",
+        "isalnum",
+        "isalpha",
+        "isascii",
+        "isdecimal",
+        "isdigit",
+        "isidentifier",
+        "islower",
+        "isnumeric",
+        "isprintable",
+        "isspace",
+        "istitle",
+        "isupper",
+        "join",
+        "ljust",
+        "lower",
+        "lstrip",
+        "maketrans",
+        "partition",
+        "removeprefix",
+        "removesuffix",
+        "replace",
+        "rfind",
+        "rindex",
+        "rjust",
+        "rpartition",
+        "rsplit",
+        "rstrip",
+        "split",
+        "splitlines",
+        "startswith",
+        "strip",
+        "swapcase",
+        "title",
+        "translate",
+        "upper",
+        "zfill"
+      ]
+    },
+    "fx.FXValidityWindow": {
+      "fields": [
+        "valid_from",
+        "expires_at"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical_dict",
+        "is_active_at",
+        "is_expired_at"
+      ]
+    },
+    "fx.RateSpread": {
+      "fields": [
+        "basis_points"
+      ],
+      "frozen": true,
+      "methods": [
+        "add_to",
+        "canonical_dict",
+        "of",
+        "subtract_from"
+      ]
+    },
+    "money.Currency": {
+      "fields": [
+        "code"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_dict",
+        "of"
+      ]
+    },
+    "money.Money": {
+      "fields": [
+        "amount",
+        "currency"
+      ],
+      "frozen": true,
+      "methods": [
+        "canonical",
+        "canonical_amount",
+        "canonical_dict",
+        "compare",
+        "multiply",
+        "of",
+        "require_non_negative",
+        "require_positive",
+        "zero"
+      ]
+    }
+  },
+  "same_currency": {
+    "source_occurrences": {
+      "balance_snapshot": [
+        "currency !="
+      ],
+      "currency": [
+        "currency !=",
+        "currency =="
+      ],
+      "fx": [
+        "currency !=",
+        "currency =="
+      ],
+      "money": [
+        "currency !="
+      ]
+    }
+  },
+  "serialization": {
+    "source_occurrences": {
+      "balance_snapshot": [
+        "canonical_dict"
+      ],
+      "currency": [
+        "canonical_dict"
+      ],
+      "exchange_rate_provider": [
+        "canonical_dict"
+      ],
+      "fx": [
+        "canonical_dict"
+      ],
+      "money": [
+        "canonical_dict"
+      ]
+    }
+  }
+}

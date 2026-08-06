@@ -1,0 +1,63 @@
+Types with serialization contracts: 52
+transfer.Transfer: canonical_dict
+transfer.TransferAccountReference: canonical_dict
+transfer.TransferAmountBreakdown: canonical_dict
+transfer.TransferBeneficiaryReference: canonical_dict
+transfer.TransferCharge: canonical_dict
+transfer.TransferFee: canonical_dict
+transfer.TransferFundingReference: canonical_dict
+transfer.TransferInstruction: canonical_dict
+transfer.TransferInstructionMetadata: canonical_dict
+transfer.TransferMetadata: canonical_dict
+transfer.TransferPartyReference: canonical_dict
+transfer.TransferPricingMetadata: canonical_dict
+remittance.Remittance: canonical_dict
+remittance.RemittanceAmountBreakdown: canonical_dict
+remittance.RemittanceCharge: canonical_dict
+remittance.RemittanceCorridor: canonical_dict
+remittance.RemittanceFee: canonical_dict
+remittance.RemittanceFundingReference: canonical_dict
+remittance.RemittanceInstruction: canonical_dict
+remittance.RemittanceInstructionMetadata: canonical_dict
+remittance.RemittanceMetadata: canonical_dict
+remittance.RemittancePricingMetadata: canonical_dict
+remittance.RemittanceRecipientReference: canonical_dict
+settlement_batch.SettlementBatch: canonical_dict
+settlement_batch.SettlementEntry: canonical_dict
+settlement_batch.SettlementFailure: canonical_dict
+settlement_batch.SettlementInstruction: canonical_dict
+settlement_batch.SettlementInstructionMetadata: canonical_dict
+settlement_batch.SettlementMetadata: canonical_dict
+settlement_batch.SettlementParticipant: canonical_dict
+settlement_batch.SettlementReference: canonical_dict
+settlement_batch.SettlementResult: canonical_dict
+settlement_batch.SettlementSummary: canonical_dict
+settlement_batch.SettlementWindow: canonical_dict
+settlement_reconciliation.ReconciliationDifference: canonical_dict
+settlement_reconciliation.ReconciliationEvidence: canonical_dict
+settlement_reconciliation.ReconciliationItem: canonical_dict
+settlement_reconciliation.ReconciliationMetadata: canonical_dict
+settlement_reconciliation.ReconciliationObservation: canonical_dict
+settlement_reconciliation.ReconciliationResult: canonical_dict
+settlement_reconciliation.ReconciliationSummary: canonical_dict
+settlement_reconciliation.SettlementReconciliation: canonical_dict
+receipt.Receipt: canonical_dict
+receipt.ReceiptAdjustment: canonical_dict
+receipt.ReceiptIntegrityEvidence: canonical_dict
+receipt.ReceiptLineItem: canonical_dict
+receipt.ReceiptMetadata: canonical_dict
+receipt.ReceiptMonetarySummary: canonical_dict
+receipt.ReceiptParty: canonical_dict
+receipt.ReceiptReference: canonical_dict
+receipt.ReceiptTax: canonical_dict
+receipt.ReceiptVerificationResult: canonical_dict
+
+Modules with idempotency vocabulary: 4
+transfer
+remittance
+settlement_reconciliation
+receipt
+
+Serialization inventory: PASS
+Replay-compatible canonical output: PRESENT
+Idempotency vocabulary: PRESENT

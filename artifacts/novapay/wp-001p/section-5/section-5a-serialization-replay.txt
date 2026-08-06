@@ -1,0 +1,30 @@
+Types with serialization contracts: 23
+customer.Customer: canonical_dict
+customer.CustomerAddress: canonical_dict
+customer.CustomerContact: canonical_dict
+customer.CustomerId: canonical_dict
+customer.CustomerMetadata: canonical_dict
+customer.CustomerName: canonical_dict
+customer.CustomerPreferences: canonical_dict
+financial_account.FinancialAccount: canonical_dict
+financial_account.FinancialAccountId: canonical_dict
+financial_account.FinancialAccountMetadata: canonical_dict
+financial_account.FinancialAccountName: canonical_dict
+financial_account.FinancialAccountRestrictions: canonical_dict
+financial_account.FinancialAccountTerms: canonical_dict
+wallet.Wallet: canonical_dict
+wallet.WalletMetadata: canonical_dict
+ledger_account.LedgerAccount: canonical_dict
+ledger_account.LedgerAccountMetadata: canonical_dict
+balance_snapshot.BalanceComponent: canonical_dict
+balance_snapshot.BalanceReconciliation: canonical_dict
+balance_snapshot.BalanceSnapshot: canonical_dict
+balance_snapshot.BalanceSnapshotHistory: canonical_dict
+balance_snapshot.BalanceSnapshotMetadata: canonical_dict
+balance_snapshot.LedgerPosition: canonical_dict
+
+Non-frozen dataclasses: 0
+
+Serialization inventory: PASS
+Deterministic replay vocabulary: PRESENT
+Aggregate immutability: PASS

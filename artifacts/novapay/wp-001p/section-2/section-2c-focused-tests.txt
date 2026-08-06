@@ -1,0 +1,19 @@
+.....F
+=================================== FAILURES ===================================
+___________ test_exchange_rate_direction_and_inversion_are_certified ___________
+
+    def test_exchange_rate_direction_and_inversion_are_certified() -> None:
+        field_names = {item.name for item in fields(fx.ExchangeRate)}
+        field_text = " ".join(field_names).lower()
+        implementation = inspect.getsource(fx.ExchangeRate).lower()
+        tests = _focused_test_source().lower()
+        assert any(token in field_text for token in ("base", "source", "from"))
+>       assert any(token in field_text for token in ("quote", "target", "to"))
+E       assert False
+E        +  where False = any(<generator object test_exchange_rate_direction_and_inversion_are_certified.<locals>.<genexpr> at 0x1065de6c0>)
+
+afritech/tests/novapay/test_phase1_monetary_integration_certification.py:151: AssertionError
+=========================== short test summary info ============================
+FAILED afritech/tests/novapay/test_phase1_monetary_integration_certification.py::test_exchange_rate_direction_and_inversion_are_certified
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 5 passed in 0.75s

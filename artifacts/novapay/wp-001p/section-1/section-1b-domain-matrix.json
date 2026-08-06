@@ -1,0 +1,7687 @@
+[
+  {
+    "aggregate_candidates": [
+      "BalanceReconciliation",
+      "BalanceSnapshot",
+      "BalanceSnapshotHistory",
+      "BalanceSnapshotHistoryId",
+      "BalanceSnapshotId",
+      "BalanceSnapshotMetadata"
+    ],
+    "class_count": 11,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "component_type",
+          "amount",
+          "ledger_account_id",
+          "wallet_id",
+          "reference_id",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "BalanceComponent",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "BalanceComponentType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "currency",
+          "posted",
+          "available",
+          "pending_debit",
+          "pending_credit",
+          "reserved",
+          "hold",
+          "overdraft",
+          "uncleared",
+          "expected_available",
+          "difference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "BalanceReconciliation",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "snapshot_id",
+          "snapshot_type",
+          "status",
+          "currency",
+          "components",
+          "ledger_position",
+          "as_of",
+          "captured_at",
+          "customer_id",
+          "financial_account_id",
+          "wallet_id",
+          "ledger_account_id",
+          "source_journal_entry_id",
+          "source_reference_id",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "component_amount",
+          "create",
+          "get_component",
+          "invalidate",
+          "mark_reconciliation_required",
+          "mark_stale",
+          "mark_superseded",
+          "reconcile",
+          "require_component",
+          "require_reconciled",
+          "update_metadata"
+        ],
+        "symbol": "BalanceSnapshot",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "history_id",
+          "snapshots",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "advance",
+          "at_or_before",
+          "at_position",
+          "between_positions",
+          "between_times",
+          "canonical_dict",
+          "create",
+          "get_by_id",
+          "require_by_id",
+          "update_metadata"
+        ],
+        "symbol": "BalanceSnapshotHistory",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "BalanceSnapshotHistoryId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "BalanceSnapshotId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of",
+          "with_updates"
+        ],
+        "symbol": "BalanceSnapshotMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "BalanceSnapshotStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "BalanceSnapshotType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "sequence",
+          "source"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "is_after",
+          "of"
+        ],
+        "symbol": "LedgerPosition",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 3,
+    "enums": [
+      "BalanceComponentType",
+      "BalanceSnapshotStatus",
+      "BalanceSnapshotType"
+    ],
+    "identifiers": [
+      "BalanceSnapshotHistoryId",
+      "BalanceSnapshotId"
+    ],
+    "module": "balance_snapshot",
+    "module_all_count": 11,
+    "record_candidates": [
+      "BalanceComponent",
+      "LedgerPosition"
+    ],
+    "reference_types": [],
+    "status_types": [
+      "BalanceSnapshotStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "CurrencyCountryCodes",
+      "CurrencyDefinition",
+      "CurrencyDefinitionId",
+      "CurrencyMetadata",
+      "CurrencyName",
+      "CurrencyRegistry",
+      "CurrencyRegistryId",
+      "CurrencySymbol"
+    ],
+    "class_count": 11,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "contains",
+          "of"
+        ],
+        "symbol": "CurrencyCountryCodes",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "currency_definition_id",
+          "currency",
+          "name",
+          "symbol",
+          "currency_type",
+          "status",
+          "minor_units",
+          "rounding_mode",
+          "country_codes",
+          "numeric_code",
+          "fund_code",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "canonical_dict",
+          "create",
+          "reactivate",
+          "retire",
+          "supports_country",
+          "suspend",
+          "update_country_codes",
+          "update_metadata",
+          "update_name",
+          "update_symbol"
+        ],
+        "symbol": "CurrencyDefinition",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "CurrencyDefinitionId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of",
+          "with_updates"
+        ],
+        "symbol": "CurrencyMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "CurrencyName",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "currency_registry_id",
+          "definitions",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "active_definitions",
+          "canonical_dict",
+          "contains_code",
+          "contains_id",
+          "create",
+          "definitions_by_type",
+          "definitions_for_country",
+          "get_by_code",
+          "get_by_id",
+          "register",
+          "require_by_code",
+          "require_by_id",
+          "update_definition",
+          "update_metadata"
+        ],
+        "symbol": "CurrencyRegistry",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "CurrencyRegistryId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "CurrencyRoundingMode",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "CurrencyStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "CurrencySymbol",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "CurrencyType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 3,
+    "enums": [
+      "CurrencyRoundingMode",
+      "CurrencyStatus",
+      "CurrencyType"
+    ],
+    "identifiers": [
+      "CurrencyDefinitionId",
+      "CurrencyRegistryId"
+    ],
+    "module": "currency",
+    "module_all_count": 14,
+    "record_candidates": [],
+    "reference_types": [],
+    "status_types": [
+      "CurrencyStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "Customer",
+      "CustomerAddress",
+      "CustomerContact",
+      "CustomerId",
+      "CustomerMetadata",
+      "CustomerName",
+      "CustomerPreferences"
+    ],
+    "class_count": 10,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "customer_id",
+          "customer_type",
+          "status",
+          "tier",
+          "name",
+          "novaid_identity_id",
+          "tenant_id",
+          "contacts",
+          "addresses",
+          "preferences",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "canonical_dict",
+          "change_tier",
+          "close",
+          "create",
+          "reinstate",
+          "rename",
+          "replace_addresses",
+          "replace_contacts",
+          "restrict",
+          "suspend",
+          "update_metadata",
+          "update_preferences"
+        ],
+        "symbol": "Customer",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "country_code",
+          "address_line_1",
+          "locality",
+          "address_line_2",
+          "administrative_area",
+          "postal_code"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "CustomerAddress",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "email",
+          "phone"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "CustomerContact",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "CustomerId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "CustomerMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "legal_name",
+          "display_name"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "CustomerName",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "CustomerPreferences",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "CustomerStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "CustomerTier",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "CustomerType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 3,
+    "enums": [
+      "CustomerStatus",
+      "CustomerTier",
+      "CustomerType"
+    ],
+    "identifiers": [
+      "CustomerId"
+    ],
+    "module": "customer",
+    "module_all_count": 10,
+    "record_candidates": [],
+    "reference_types": [],
+    "status_types": [
+      "CustomerStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "ExchangeRateProvider",
+      "ExchangeRateProviderId",
+      "ExchangeRateProviderRegistry",
+      "ExchangeRateProviderRegistryId",
+      "RateSource",
+      "RateSourceId",
+      "RateSourceMetadata"
+    ],
+    "class_count": 16,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "provider_id",
+          "name",
+          "provider_type",
+          "status",
+          "trust_level",
+          "capabilities",
+          "endpoint",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "canonical_dict",
+          "create",
+          "mark_degraded",
+          "remove_endpoint",
+          "retire",
+          "supports_pair",
+          "supports_source_type",
+          "suspend",
+          "update_capabilities",
+          "update_endpoint",
+          "update_metadata",
+          "update_name",
+          "update_trust_level"
+        ],
+        "symbol": "ExchangeRateProvider",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "ExchangeRateProviderId",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "registry_id",
+          "providers",
+          "rate_sources",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "active_sources_supporting_pair",
+          "canonical_dict",
+          "create",
+          "get_provider",
+          "get_rate_source",
+          "providers_by_status",
+          "providers_by_trust_level",
+          "providers_by_type",
+          "register_provider",
+          "register_rate_source",
+          "require_provider",
+          "require_rate_source",
+          "sources_by_status",
+          "sources_by_trust_level",
+          "sources_by_type",
+          "sources_for_provider",
+          "sources_supporting_pair",
+          "update_metadata",
+          "update_provider",
+          "update_rate_source"
+        ],
+        "symbol": "ExchangeRateProviderRegistry",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "ExchangeRateProviderRegistryId",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ExchangeRateProviderStatus",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ExchangeRateProviderType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "supported_currency_pairs",
+          "supported_rate_source_types",
+          "supports_streaming",
+          "supports_historical_rates",
+          "supports_inverse_rates",
+          "maximum_staleness_seconds",
+          "expected_latency_ms",
+          "expected_reliability"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of",
+          "supports_pair",
+          "supports_source_type"
+        ],
+        "symbol": "ProviderCapabilities",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "url",
+          "description"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "ProviderEndpoint",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of",
+          "with_updates"
+        ],
+        "symbol": "ProviderMetadata",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "ProviderName",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ProviderTrustLevel",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "rate_source_id",
+          "provider_id",
+          "source_type",
+          "status",
+          "trust_level",
+          "priority",
+          "supported_currency_pairs",
+          "maximum_staleness_seconds",
+          "expected_latency_ms",
+          "expected_reliability",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "canonical_dict",
+          "create",
+          "mark_degraded",
+          "retire",
+          "supports_pair",
+          "suspend",
+          "update_freshness_policy",
+          "update_metadata",
+          "update_priority",
+          "update_supported_currency_pairs",
+          "update_trust_level"
+        ],
+        "symbol": "RateSource",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "RateSourceId",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of",
+          "with_updates"
+        ],
+        "symbol": "RateSourceMetadata",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "RateSourceStatus",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "RateSourceType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      }
+    ],
+    "enum_count": 5,
+    "enums": [
+      "ExchangeRateProviderStatus",
+      "ExchangeRateProviderType",
+      "ProviderTrustLevel",
+      "RateSourceStatus",
+      "RateSourceType"
+    ],
+    "identifiers": [
+      "ExchangeRateProviderId",
+      "ExchangeRateProviderRegistryId",
+      "RateSourceId"
+    ],
+    "module": "exchange_rate_provider",
+    "module_all_count": 16,
+    "record_candidates": [
+      "ProviderCapabilities",
+      "ProviderEndpoint",
+      "ProviderMetadata",
+      "ProviderName"
+    ],
+    "reference_types": [],
+    "status_types": [
+      "ExchangeRateProviderStatus",
+      "RateSourceStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "FinancialAccount",
+      "FinancialAccountId",
+      "FinancialAccountMetadata",
+      "FinancialAccountName",
+      "FinancialAccountRestrictions",
+      "FinancialAccountTerms"
+    ],
+    "class_count": 9,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "account_id",
+          "customer_id",
+          "tenant_id",
+          "account_type",
+          "purpose",
+          "status",
+          "currency",
+          "name",
+          "wallet_id",
+          "ledger_account_id",
+          "terms",
+          "restrictions",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "canonical_dict",
+          "change_restrictions",
+          "change_terms",
+          "close",
+          "create",
+          "link_ledger_account",
+          "link_wallet",
+          "mark_dormant",
+          "reactivate",
+          "rename",
+          "restrict",
+          "suspend",
+          "update_metadata"
+        ],
+        "symbol": "FinancialAccount",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "FinancialAccountId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "FinancialAccountMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "product_name",
+          "display_name"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "FinancialAccountName",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "FinancialAccountPurpose",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "debit_blocked",
+          "credit_blocked",
+          "cash_withdrawal_blocked",
+          "international_transfer_blocked",
+          "allowed_channels",
+          "allowed_countries"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "FinancialAccountRestrictions",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "FinancialAccountStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "minimum_balance",
+          "overdraft_limit",
+          "interest_rate_percent",
+          "maintenance_fee",
+          "notice_period_days"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "FinancialAccountTerms",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "FinancialAccountType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 3,
+    "enums": [
+      "FinancialAccountPurpose",
+      "FinancialAccountStatus",
+      "FinancialAccountType"
+    ],
+    "identifiers": [
+      "FinancialAccountId"
+    ],
+    "module": "financial_account",
+    "module_all_count": 9,
+    "record_candidates": [],
+    "reference_types": [],
+    "status_types": [
+      "FinancialAccountStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "CurrencyPair",
+      "ExchangeRate",
+      "ExchangeRateId",
+      "ExchangeRateValue",
+      "FXQuote",
+      "FXQuoteId",
+      "RateSpread"
+    ],
+    "class_count": 12,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "base_currency",
+          "quote_currency"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "inverse",
+          "of",
+          "parse"
+        ],
+        "symbol": "CurrencyPair",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "exchange_rate_id",
+          "pair",
+          "rate",
+          "spread",
+          "source",
+          "status",
+          "provider",
+          "provider_reference",
+          "validity",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "convert_base_amount",
+          "convert_quote_amount",
+          "create",
+          "expire",
+          "is_active_at",
+          "is_expired_at",
+          "publish",
+          "resume",
+          "revoke",
+          "supersede",
+          "suspend",
+          "update_metadata",
+          "update_provider_reference",
+          "update_rate",
+          "update_spread",
+          "update_validity"
+        ],
+        "symbol": "ExchangeRate",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "ExchangeRateId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ExchangeRateSource",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ExchangeRateStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "rate"
+        ],
+        "frozen": true,
+        "methods": [
+          "apply",
+          "canonical",
+          "canonical_dict",
+          "inverse",
+          "of"
+        ],
+        "symbol": "ExchangeRateValue",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "FXMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "fx_quote_id",
+          "exchange_rate_id",
+          "pair",
+          "source_amount",
+          "destination_amount",
+          "rate",
+          "spread",
+          "status",
+          "provider",
+          "provider_reference",
+          "validity",
+          "customer_id",
+          "transaction_id",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "accept",
+          "cancel",
+          "canonical_dict",
+          "consume",
+          "create",
+          "expire",
+          "is_active_at",
+          "is_expired_at",
+          "offer",
+          "quote_base_amount",
+          "quote_destination_amount",
+          "reject",
+          "update_customer_reference",
+          "update_metadata",
+          "update_transaction_reference"
+        ],
+        "symbol": "FXQuote",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "FXQuoteId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "FXQuoteStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "valid_from",
+          "expires_at"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "is_active_at",
+          "is_expired_at"
+        ],
+        "symbol": "FXValidityWindow",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "basis_points"
+        ],
+        "frozen": true,
+        "methods": [
+          "add_to",
+          "canonical_dict",
+          "of",
+          "subtract_from"
+        ],
+        "symbol": "RateSpread",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 3,
+    "enums": [
+      "ExchangeRateSource",
+      "ExchangeRateStatus",
+      "FXQuoteStatus"
+    ],
+    "identifiers": [
+      "ExchangeRateId",
+      "FXQuoteId"
+    ],
+    "module": "fx",
+    "module_all_count": 12,
+    "record_candidates": [
+      "FXMetadata",
+      "FXValidityWindow"
+    ],
+    "reference_types": [],
+    "status_types": [
+      "ExchangeRateStatus",
+      "FXQuoteStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "JournalEntry",
+      "JournalEntryId",
+      "JournalEntryMetadata"
+    ],
+    "class_count": 9,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "entry_id",
+          "entry_type",
+          "status",
+          "lines",
+          "created_at",
+          "updated_at",
+          "description",
+          "reference_id",
+          "idempotency_key",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "can_transition_to",
+          "canonical_dict",
+          "create",
+          "post",
+          "reverse",
+          "void",
+          "with_metadata"
+        ],
+        "symbol": "JournalEntry",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "JournalEntryId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "JournalEntryMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "JournalEntryStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "JournalEntryType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "line_id",
+          "account_id",
+          "side",
+          "amount",
+          "currency",
+          "description",
+          "reference_id",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "credit",
+          "debit"
+        ],
+        "symbol": "PostingLine",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "PostingLineId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "PostingLineMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "PostingSide",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 3,
+    "enums": [
+      "JournalEntryStatus",
+      "JournalEntryType",
+      "PostingSide"
+    ],
+    "identifiers": [
+      "JournalEntryId",
+      "PostingLineId"
+    ],
+    "module": "journal_entry",
+    "module_all_count": 9,
+    "record_candidates": [
+      "PostingLine",
+      "PostingLineId",
+      "PostingLineMetadata"
+    ],
+    "reference_types": [],
+    "status_types": [
+      "JournalEntryStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "LedgerAccount",
+      "LedgerAccountId",
+      "LedgerAccountMetadata"
+    ],
+    "class_count": 6,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "account_id",
+          "account_code",
+          "name",
+          "account_type",
+          "normal_balance",
+          "status",
+          "currency",
+          "created_at",
+          "updated_at",
+          "owner_id",
+          "wallet_id",
+          "tenant_id",
+          "parent_account_id",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "can_transition_to",
+          "canonical_dict",
+          "close",
+          "create",
+          "restrict",
+          "suspend",
+          "transition_to",
+          "with_metadata"
+        ],
+        "symbol": "LedgerAccount",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "LedgerAccountId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "LedgerAccountMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "LedgerAccountStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "LedgerAccountType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "NormalBalanceSide",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 3,
+    "enums": [
+      "LedgerAccountStatus",
+      "LedgerAccountType",
+      "NormalBalanceSide"
+    ],
+    "identifiers": [
+      "LedgerAccountId"
+    ],
+    "module": "ledger_account",
+    "module_all_count": 6,
+    "record_candidates": [],
+    "reference_types": [],
+    "status_types": [
+      "LedgerAccountStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "Currency",
+      "Money"
+    ],
+    "class_count": 2,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "code"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "Currency",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "amount",
+          "currency"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "canonical_amount",
+          "canonical_dict",
+          "compare",
+          "multiply",
+          "of",
+          "require_non_negative",
+          "require_positive",
+          "zero"
+        ],
+        "symbol": "Money",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 0,
+    "enums": [],
+    "identifiers": [],
+    "module": "money",
+    "module_all_count": 4,
+    "record_candidates": [],
+    "reference_types": [],
+    "status_types": []
+  },
+  {
+    "aggregate_candidates": [
+      "Receipt",
+      "ReceiptAdjustment",
+      "ReceiptAdjustmentId",
+      "ReceiptId",
+      "ReceiptIntegrityEvidence",
+      "ReceiptLineItem",
+      "ReceiptLineItemId",
+      "ReceiptMetadata",
+      "ReceiptMonetarySummary",
+      "ReceiptParty",
+      "ReceiptPartyId",
+      "ReceiptReference",
+      "ReceiptTax",
+      "ReceiptTaxId",
+      "ReceiptVerificationResult"
+    ],
+    "class_count": 25,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "receipt_id",
+          "receipt_type",
+          "status",
+          "format",
+          "issuer",
+          "recipient",
+          "currency_code",
+          "line_items",
+          "adjustments",
+          "taxes",
+          "monetary_summary",
+          "references",
+          "integrity_evidence",
+          "issued_at",
+          "delivered_at",
+          "expires_at",
+          "created_at",
+          "updated_at",
+          "version",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "cancel",
+          "canonical_dict",
+          "create",
+          "expire",
+          "issue",
+          "mark_delivered",
+          "prepare",
+          "supersede",
+          "update_metadata",
+          "void"
+        ],
+        "symbol": "Receipt",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "adjustment_id",
+          "adjustment_type",
+          "description",
+          "amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "ReceiptAdjustment",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReceiptAdjustmentId",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptAdjustmentType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptFormat",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReceiptId",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "evidence_type",
+          "value",
+          "created_at",
+          "issuer",
+          "expires_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "is_expired_at"
+        ],
+        "symbol": "ReceiptIntegrityEvidence",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptIntegrityEvidenceType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "line_item_id",
+          "line_item_type",
+          "description",
+          "quantity",
+          "unit_amount",
+          "total_amount",
+          "product_reference",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "ReceiptLineItem",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReceiptLineItemId",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptLineItemType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "_values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "empty",
+          "get",
+          "of"
+        ],
+        "symbol": "ReceiptMetadata",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "currency_code",
+          "subtotal",
+          "adjustment_total",
+          "tax_total",
+          "gross_total",
+          "net_total",
+          "paid_amount",
+          "outstanding_amount"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "ReceiptMonetarySummary",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "party_id",
+          "party_type",
+          "display_name",
+          "external_reference",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "ReceiptParty",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReceiptPartyId",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptPartyType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "reference_type",
+          "reference_value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "ReceiptReference",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptReferenceType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptStatus",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "tax_id",
+          "tax_type",
+          "description",
+          "jurisdiction",
+          "rate",
+          "amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "ReceiptTax",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReceiptTaxId",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptTaxType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptType",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "status",
+          "verified_at",
+          "verifier",
+          "reason",
+          "integrity_evidence",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "ReceiptVerificationResult",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReceiptVerificationStatus",
+        "visibility": {
+          "domain": "ABSENT",
+          "module": "PRESENT",
+          "top_level": "ABSENT"
+        }
+      }
+    ],
+    "enum_count": 10,
+    "enums": [
+      "ReceiptAdjustmentType",
+      "ReceiptFormat",
+      "ReceiptIntegrityEvidenceType",
+      "ReceiptLineItemType",
+      "ReceiptPartyType",
+      "ReceiptReferenceType",
+      "ReceiptStatus",
+      "ReceiptTaxType",
+      "ReceiptType",
+      "ReceiptVerificationStatus"
+    ],
+    "identifiers": [
+      "ReceiptAdjustmentId",
+      "ReceiptId",
+      "ReceiptLineItemId",
+      "ReceiptPartyId",
+      "ReceiptTaxId"
+    ],
+    "module": "receipt",
+    "module_all_count": 25,
+    "record_candidates": [],
+    "reference_types": [
+      "ReceiptReference",
+      "ReceiptReferenceType"
+    ],
+    "status_types": [
+      "ReceiptStatus",
+      "ReceiptVerificationStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "Remittance",
+      "RemittanceAmountBreakdown",
+      "RemittanceCharge",
+      "RemittanceCorridor",
+      "RemittanceFee",
+      "RemittanceFundingReference",
+      "RemittanceId",
+      "RemittanceInstruction",
+      "RemittanceInstructionId",
+      "RemittanceInstructionMetadata",
+      "RemittanceMetadata",
+      "RemittancePricingMetadata",
+      "RemittanceRecipientReference",
+      "RemittanceReference"
+    ],
+    "class_count": 20,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "remittance_id",
+          "reference",
+          "status",
+          "remittance_type",
+          "direction",
+          "purpose",
+          "priority",
+          "sender",
+          "beneficiary",
+          "source_account",
+          "destination_account",
+          "source_amount",
+          "destination_amount",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "authorize",
+          "cancel",
+          "canonical_dict",
+          "complete",
+          "create",
+          "expire",
+          "fail",
+          "mark_processing",
+          "reverse",
+          "submit",
+          "update_metadata",
+          "update_priority",
+          "update_reference",
+          "validate"
+        ],
+        "symbol": "Remittance",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "principal_amount",
+          "fees",
+          "charges",
+          "fx_cost",
+          "total_debit_amount",
+          "destination_amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "RemittanceAmountBreakdown",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "charge_id",
+          "charge_type",
+          "amount",
+          "description"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "RemittanceCharge",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "source_country_code",
+          "destination_country_code",
+          "source_currency_code",
+          "destination_currency_code"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "RemittanceCorridor",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "RemittanceDirection",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "fee_type",
+          "amount",
+          "description",
+          "refundable"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "RemittanceFee",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "RemittanceFeeType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "funding_source_id",
+          "funding_source_type",
+          "account_reference",
+          "authorization_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "RemittanceFundingReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "RemittanceId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "instruction_id",
+          "remittance_id",
+          "funding_reference",
+          "recipient_reference",
+          "corridor",
+          "requested_source_amount",
+          "expected_destination_amount",
+          "requested_at",
+          "expires_at",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "is_expired"
+        ],
+        "symbol": "RemittanceInstruction",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "RemittanceInstructionId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "RemittanceInstructionMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "RemittanceMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "RemittancePricingMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "RemittancePriority",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "RemittancePurpose",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "recipient_id",
+          "recipient_type",
+          "party_reference",
+          "account_reference",
+          "delivery_method",
+          "routing_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "RemittanceRecipientReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "RemittanceReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "RemittanceStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "RemittanceType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 6,
+    "enums": [
+      "RemittanceDirection",
+      "RemittanceFeeType",
+      "RemittancePriority",
+      "RemittancePurpose",
+      "RemittanceStatus",
+      "RemittanceType"
+    ],
+    "identifiers": [
+      "RemittanceId",
+      "RemittanceInstructionId"
+    ],
+    "module": "remittance",
+    "module_all_count": 20,
+    "record_candidates": [],
+    "reference_types": [
+      "RemittanceFundingReference",
+      "RemittanceRecipientReference",
+      "RemittanceReference"
+    ],
+    "status_types": [
+      "RemittanceStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "SettlementBatch",
+      "SettlementBatchId",
+      "SettlementEntry",
+      "SettlementEntryId"
+    ],
+    "class_count": 20,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "batch_id",
+          "batch_type",
+          "status",
+          "window",
+          "settlement_currency_code",
+          "gross_amount",
+          "net_amount",
+          "participants",
+          "references",
+          "entry_count",
+          "created_at",
+          "updated_at",
+          "version",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "cancel",
+          "canonical_dict",
+          "complete",
+          "create",
+          "expire",
+          "fail",
+          "mark_processing",
+          "mark_ready",
+          "open",
+          "partially_complete",
+          "reconcile",
+          "update_metadata",
+          "update_window",
+          "validate"
+        ],
+        "symbol": "SettlementBatch",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "SettlementBatchId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "SettlementBatchStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "SettlementBatchType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "entry_id",
+          "batch_id",
+          "status",
+          "amount",
+          "settlement_currency_code",
+          "source_participant_id",
+          "destination_participant_id",
+          "reference",
+          "created_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "SettlementEntry",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "SettlementEntryId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "SettlementEntryStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "failure_code",
+          "message",
+          "occurred_at",
+          "entry_id",
+          "retryable",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "SettlementFailure",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "instruction_id",
+          "batch_id",
+          "source_participant_id",
+          "destination_participant_id",
+          "amount",
+          "settlement_currency_code",
+          "reference",
+          "requested_at",
+          "effective_at",
+          "expires_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "is_expired"
+        ],
+        "symbol": "SettlementInstruction",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "SettlementInstructionId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "SettlementInstructionMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "SettlementMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "participant_id",
+          "participant_type",
+          "account_reference",
+          "currency_code",
+          "jurisdiction_code",
+          "provider_code"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "SettlementParticipant",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "SettlementParticipantId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "SettlementParticipantType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "reference_type",
+          "reference_id",
+          "external_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "SettlementReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "SettlementReferenceType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "batch_id",
+          "status",
+          "gross_amount",
+          "net_amount",
+          "settlement_currency_code",
+          "successful_entry_count",
+          "failed_entry_count",
+          "excluded_entry_count",
+          "failures",
+          "completed_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "SettlementResult",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "batch_id",
+          "status",
+          "settlement_currency_code",
+          "gross_amount",
+          "net_amount",
+          "total_entry_count",
+          "successful_entry_count",
+          "failed_entry_count",
+          "excluded_entry_count",
+          "participant_count",
+          "opened_at",
+          "closed_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict"
+        ],
+        "symbol": "SettlementSummary",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "opens_at",
+          "closes_at",
+          "cutoff_at",
+          "timezone_name"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "contains"
+        ],
+        "symbol": "SettlementWindow",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 5,
+    "enums": [
+      "SettlementBatchStatus",
+      "SettlementBatchType",
+      "SettlementEntryStatus",
+      "SettlementParticipantType",
+      "SettlementReferenceType"
+    ],
+    "identifiers": [
+      "SettlementBatchId",
+      "SettlementEntryId",
+      "SettlementInstructionId",
+      "SettlementParticipantId"
+    ],
+    "module": "settlement_batch",
+    "module_all_count": 20,
+    "record_candidates": [
+      "SettlementFailure",
+      "SettlementInstruction",
+      "SettlementInstructionId",
+      "SettlementInstructionMetadata",
+      "SettlementMetadata",
+      "SettlementParticipant",
+      "SettlementParticipantId",
+      "SettlementReference",
+      "SettlementResult",
+      "SettlementSummary",
+      "SettlementWindow"
+    ],
+    "reference_types": [
+      "SettlementReference",
+      "SettlementReferenceType"
+    ],
+    "status_types": [
+      "SettlementBatchStatus",
+      "SettlementEntryStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "ReconciliationDifference",
+      "ReconciliationDifferenceId",
+      "ReconciliationEvidence",
+      "ReconciliationEvidenceId",
+      "ReconciliationItem",
+      "ReconciliationItemId",
+      "ReconciliationMetadata",
+      "ReconciliationObservation",
+      "ReconciliationObservationId",
+      "ReconciliationResult",
+      "ReconciliationSummary",
+      "SettlementReconciliation",
+      "SettlementReconciliationId"
+    ],
+    "class_count": 19,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "difference_id",
+          "difference_type",
+          "field_name",
+          "expected_value",
+          "observed_value",
+          "detected_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "ReconciliationDifference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReconciliationDifferenceId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReconciliationDifferenceType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "evidence_id",
+          "evidence_type",
+          "reference",
+          "recorded_at",
+          "digest",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "ReconciliationEvidence",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReconciliationEvidenceId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReconciliationEvidenceType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "item_id",
+          "status",
+          "expected_reference",
+          "observed_reference",
+          "observation_ids",
+          "difference_ids",
+          "evidence_ids",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "ReconciliationItem",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReconciliationItemId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReconciliationItemStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "empty",
+          "of"
+        ],
+        "symbol": "ReconciliationMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "observation_id",
+          "source",
+          "reference",
+          "observed_at",
+          "observed_value",
+          "currency_code",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "ReconciliationObservation",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "ReconciliationObservationId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReconciliationObservationSource",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "reconciliation_id",
+          "status",
+          "summary",
+          "completed_at",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "ReconciliationResult",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReconciliationStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "total_items",
+          "pending_items",
+          "matched_items",
+          "partially_matched_items",
+          "unmatched_items",
+          "missing_expected_items",
+          "missing_observed_items",
+          "duplicate_items",
+          "conflict_items",
+          "excluded_items",
+          "review_required_items"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "empty",
+          "from_items"
+        ],
+        "symbol": "ReconciliationSummary",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "ReconciliationType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "reconciliation_id",
+          "reconciliation_type",
+          "status",
+          "settlement_batch_id",
+          "expected_entry_count",
+          "created_at",
+          "updated_at",
+          "version",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "cancel",
+          "canonical_dict",
+          "close",
+          "create",
+          "expire",
+          "mark_exception",
+          "mark_matched",
+          "mark_partially_matched",
+          "mark_unmatched",
+          "open",
+          "require_review",
+          "start_collecting",
+          "start_comparing",
+          "update_metadata"
+        ],
+        "symbol": "SettlementReconciliation",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "of"
+        ],
+        "symbol": "SettlementReconciliationId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 6,
+    "enums": [
+      "ReconciliationDifferenceType",
+      "ReconciliationEvidenceType",
+      "ReconciliationItemStatus",
+      "ReconciliationObservationSource",
+      "ReconciliationStatus",
+      "ReconciliationType"
+    ],
+    "identifiers": [
+      "ReconciliationDifferenceId",
+      "ReconciliationEvidenceId",
+      "ReconciliationItemId",
+      "ReconciliationObservationId",
+      "SettlementReconciliationId"
+    ],
+    "module": "settlement_reconciliation",
+    "module_all_count": 19,
+    "record_candidates": [],
+    "reference_types": [],
+    "status_types": [
+      "ReconciliationItemStatus",
+      "ReconciliationStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "Transaction",
+      "TransactionId",
+      "TransactionMetadata"
+    ],
+    "class_count": 6,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "transaction_id",
+          "transaction_type",
+          "status",
+          "direction",
+          "amount",
+          "created_at",
+          "updated_at",
+          "source_wallet_id",
+          "destination_wallet_id",
+          "journal_entry_id",
+          "description",
+          "external_reference",
+          "idempotency_key",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "authorize",
+          "can_transition_to",
+          "cancel",
+          "canonical_dict",
+          "complete",
+          "create",
+          "fail",
+          "reverse",
+          "start_processing",
+          "with_metadata"
+        ],
+        "symbol": "Transaction",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransactionDirection",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "TransactionId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "TransactionMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransactionStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransactionType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 3,
+    "enums": [
+      "TransactionDirection",
+      "TransactionStatus",
+      "TransactionType"
+    ],
+    "identifiers": [
+      "TransactionId"
+    ],
+    "module": "transaction",
+    "module_all_count": 6,
+    "record_candidates": [],
+    "reference_types": [],
+    "status_types": [
+      "TransactionStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "Transfer",
+      "TransferAccountReference",
+      "TransferAmountBreakdown",
+      "TransferBeneficiaryReference",
+      "TransferCharge",
+      "TransferFee",
+      "TransferFundingReference",
+      "TransferId",
+      "TransferInstruction",
+      "TransferInstructionId",
+      "TransferInstructionMetadata",
+      "TransferMetadata",
+      "TransferPartyReference",
+      "TransferPricingMetadata",
+      "TransferReference"
+    ],
+    "class_count": 21,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "transfer_id",
+          "reference",
+          "status",
+          "transfer_type",
+          "direction",
+          "purpose",
+          "priority",
+          "sender",
+          "beneficiary",
+          "source_account",
+          "destination_account",
+          "source_amount",
+          "destination_amount",
+          "metadata",
+          "created_at",
+          "updated_at",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "authorize",
+          "cancel",
+          "canonical_dict",
+          "complete",
+          "create",
+          "expire",
+          "fail",
+          "mark_processing",
+          "reverse",
+          "submit",
+          "update_metadata",
+          "update_priority",
+          "update_reference",
+          "validate"
+        ],
+        "symbol": "Transfer",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "account_id",
+          "account_type",
+          "currency_code",
+          "institution_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "TransferAccountReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "source_amount",
+          "destination_amount",
+          "fees",
+          "charges",
+          "fee_total",
+          "charge_total",
+          "total_debit_amount",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "TransferAmountBreakdown",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "beneficiary_id",
+          "beneficiary_type",
+          "party_reference",
+          "account_reference",
+          "delivery_method",
+          "routing_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "TransferBeneficiaryReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "charge_code",
+          "amount",
+          "description",
+          "third_party",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "TransferCharge",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransferDirection",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "fee_type",
+          "amount",
+          "description",
+          "refundable",
+          "metadata"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create"
+        ],
+        "symbol": "TransferFee",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransferFeeType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "funding_source_id",
+          "funding_source_type",
+          "account_reference",
+          "authorization_reference"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "TransferFundingReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "TransferId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "instruction_id",
+          "transfer_id",
+          "funding_reference",
+          "beneficiary_reference",
+          "requested_source_amount",
+          "expected_destination_amount",
+          "requested_at",
+          "expires_at",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "create",
+          "is_expired"
+        ],
+        "symbol": "TransferInstruction",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "TransferInstructionId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "TransferInstructionMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "TransferMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "party_id",
+          "party_type",
+          "display_name"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "TransferPartyReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "of"
+        ],
+        "symbol": "TransferPricingMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransferPriority",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransferPurpose",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "TransferReference",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransferStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "TransferType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 6,
+    "enums": [
+      "TransferDirection",
+      "TransferFeeType",
+      "TransferPriority",
+      "TransferPurpose",
+      "TransferStatus",
+      "TransferType"
+    ],
+    "identifiers": [
+      "TransferId",
+      "TransferInstructionId"
+    ],
+    "module": "transfer",
+    "module_all_count": 21,
+    "record_candidates": [],
+    "reference_types": [
+      "TransferAccountReference",
+      "TransferBeneficiaryReference",
+      "TransferFundingReference",
+      "TransferPartyReference",
+      "TransferReference"
+    ],
+    "status_types": [
+      "TransferStatus"
+    ]
+  },
+  {
+    "aggregate_candidates": [
+      "Wallet",
+      "WalletId",
+      "WalletMetadata"
+    ],
+    "class_count": 5,
+    "classes": [
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "wallet_id",
+          "owner_id",
+          "wallet_type",
+          "status",
+          "home_currency",
+          "created_at",
+          "updated_at",
+          "tenant_id",
+          "external_reference",
+          "metadata",
+          "version"
+        ],
+        "frozen": true,
+        "methods": [
+          "activate",
+          "can_transition_to",
+          "canonical_dict",
+          "close",
+          "create",
+          "restrict",
+          "suspend",
+          "transition_to",
+          "with_metadata"
+        ],
+        "symbol": "Wallet",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "value"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical",
+          "of"
+        ],
+        "symbol": "WalletId",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": true,
+        "enum": false,
+        "fields": [
+          "values"
+        ],
+        "frozen": true,
+        "methods": [
+          "canonical_dict",
+          "get",
+          "of",
+          "with_value",
+          "without"
+        ],
+        "symbol": "WalletMetadata",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "WalletStatus",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      },
+      {
+        "dataclass": false,
+        "enum": true,
+        "fields": [],
+        "frozen": false,
+        "methods": [
+          "capitalize",
+          "casefold",
+          "center",
+          "count",
+          "encode",
+          "endswith",
+          "expandtabs",
+          "find",
+          "format",
+          "format_map",
+          "index",
+          "isalnum",
+          "isalpha",
+          "isascii",
+          "isdecimal",
+          "isdigit",
+          "isidentifier",
+          "islower",
+          "isnumeric",
+          "isprintable",
+          "isspace",
+          "istitle",
+          "isupper",
+          "join",
+          "ljust",
+          "lower",
+          "lstrip",
+          "maketrans",
+          "partition",
+          "removeprefix",
+          "removesuffix",
+          "replace",
+          "rfind",
+          "rindex",
+          "rjust",
+          "rpartition",
+          "rsplit",
+          "rstrip",
+          "split",
+          "splitlines",
+          "startswith",
+          "strip",
+          "swapcase",
+          "title",
+          "translate",
+          "upper",
+          "zfill"
+        ],
+        "symbol": "WalletType",
+        "visibility": {
+          "domain": "PRESENT",
+          "module": "PRESENT",
+          "top_level": "PRESENT"
+        }
+      }
+    ],
+    "enum_count": 2,
+    "enums": [
+      "WalletStatus",
+      "WalletType"
+    ],
+    "identifiers": [
+      "WalletId"
+    ],
+    "module": "wallet",
+    "module_all_count": 5,
+    "record_candidates": [],
+    "reference_types": [],
+    "status_types": [
+      "WalletStatus"
+    ]
+  }
+]

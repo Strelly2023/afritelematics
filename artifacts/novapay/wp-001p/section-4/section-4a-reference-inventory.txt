@@ -1,0 +1,125 @@
+Reference-like fields: 120
+transfer.Transfer.transfer_id: <class 'afritech.novapay.domain.transfer.TransferId'>
+transfer.Transfer.reference: <class 'afritech.novapay.domain.transfer.TransferReference'>
+transfer.Transfer.transfer_type: <enum 'TransferType'>
+transfer.Transfer.sender: <class 'afritech.novapay.domain.transfer.TransferPartyReference'>
+transfer.Transfer.beneficiary: <class 'afritech.novapay.domain.transfer.TransferPartyReference'>
+transfer.Transfer.source_account: <class 'afritech.novapay.domain.transfer.TransferAccountReference'>
+transfer.Transfer.destination_account: <class 'afritech.novapay.domain.transfer.TransferAccountReference'>
+transfer.TransferAccountReference.account_id: <class 'str'>
+transfer.TransferAccountReference.account_type: <class 'str'>
+transfer.TransferAccountReference.institution_reference: str | None
+transfer.TransferBeneficiaryReference.beneficiary_id: <class 'str'>
+transfer.TransferBeneficiaryReference.beneficiary_type: <class 'str'>
+transfer.TransferBeneficiaryReference.party_reference: <class 'afritech.novapay.domain.transfer.TransferPartyReference'>
+transfer.TransferBeneficiaryReference.account_reference: <class 'afritech.novapay.domain.transfer.TransferAccountReference'>
+transfer.TransferBeneficiaryReference.routing_reference: str | None
+transfer.TransferFundingReference.funding_source_id: <class 'str'>
+transfer.TransferFundingReference.account_reference: <class 'afritech.novapay.domain.transfer.TransferAccountReference'>
+transfer.TransferFundingReference.authorization_reference: str | None
+transfer.TransferInstruction.instruction_id: <class 'afritech.novapay.domain.transfer.TransferInstructionId'>
+transfer.TransferInstruction.transfer_id: <class 'afritech.novapay.domain.transfer.TransferId'>
+transfer.TransferInstruction.funding_reference: <class 'afritech.novapay.domain.transfer.TransferFundingReference'>
+transfer.TransferInstruction.beneficiary_reference: <class 'afritech.novapay.domain.transfer.TransferBeneficiaryReference'>
+transfer.TransferPartyReference.party_id: <class 'str'>
+remittance.Remittance.remittance_id: <class 'afritech.novapay.domain.remittance.RemittanceId'>
+remittance.Remittance.reference: <class 'afritech.novapay.domain.remittance.RemittanceReference'>
+remittance.Remittance.remittance_type: <enum 'RemittanceType'>
+remittance.Remittance.sender: <class 'afritech.novapay.domain.transfer.TransferPartyReference'>
+remittance.Remittance.beneficiary: <class 'afritech.novapay.domain.transfer.TransferPartyReference'>
+remittance.Remittance.source_account: <class 'afritech.novapay.domain.transfer.TransferAccountReference'>
+remittance.Remittance.destination_account: <class 'afritech.novapay.domain.transfer.TransferAccountReference'>
+remittance.RemittanceCharge.charge_id: <class 'str'>
+remittance.RemittanceFundingReference.funding_source_id: <class 'str'>
+remittance.RemittanceFundingReference.account_reference: <class 'afritech.novapay.domain.transfer.TransferAccountReference'>
+remittance.RemittanceFundingReference.authorization_reference: str | None
+remittance.RemittanceInstruction.instruction_id: <class 'afritech.novapay.domain.remittance.RemittanceInstructionId'>
+remittance.RemittanceInstruction.remittance_id: <class 'afritech.novapay.domain.remittance.RemittanceId'>
+remittance.RemittanceInstruction.funding_reference: <class 'afritech.novapay.domain.remittance.RemittanceFundingReference'>
+remittance.RemittanceInstruction.recipient_reference: <class 'afritech.novapay.domain.remittance.RemittanceRecipientReference'>
+remittance.RemittanceInstruction.corridor: <class 'afritech.novapay.domain.remittance.RemittanceCorridor'>
+remittance.RemittanceRecipientReference.recipient_id: <class 'str'>
+remittance.RemittanceRecipientReference.party_reference: <class 'afritech.novapay.domain.transfer.TransferPartyReference'>
+remittance.RemittanceRecipientReference.account_reference: <class 'afritech.novapay.domain.transfer.TransferAccountReference'>
+remittance.RemittanceRecipientReference.routing_reference: str | None
+settlement_batch.SettlementBatch.batch_id: <class 'afritech.novapay.domain.settlement_batch.SettlementBatchId'>
+settlement_batch.SettlementBatch.batch_type: <enum 'SettlementBatchType'>
+settlement_batch.SettlementBatch.settlement_currency_code: <class 'str'>
+settlement_batch.SettlementBatch.references: tuple[afritech.novapay.domain.settlement_batch.SettlementReference, ...]
+settlement_batch.SettlementEntry.entry_id: <class 'afritech.novapay.domain.settlement_batch.SettlementEntryId'>
+settlement_batch.SettlementEntry.batch_id: <class 'afritech.novapay.domain.settlement_batch.SettlementBatchId'>
+settlement_batch.SettlementEntry.settlement_currency_code: <class 'str'>
+settlement_batch.SettlementEntry.source_participant_id: <class 'afritech.novapay.domain.settlement_batch.SettlementParticipantId'>
+settlement_batch.SettlementEntry.destination_participant_id: <class 'afritech.novapay.domain.settlement_batch.SettlementParticipantId'>
+settlement_batch.SettlementEntry.reference: <class 'afritech.novapay.domain.settlement_batch.SettlementReference'>
+settlement_batch.SettlementFailure.entry_id: afritech.novapay.domain.settlement_batch.SettlementEntryId | None
+settlement_batch.SettlementInstruction.instruction_id: <class 'afritech.novapay.domain.settlement_batch.SettlementInstructionId'>
+settlement_batch.SettlementInstruction.batch_id: <class 'afritech.novapay.domain.settlement_batch.SettlementBatchId'>
+settlement_batch.SettlementInstruction.source_participant_id: <class 'afritech.novapay.domain.settlement_batch.SettlementParticipantId'>
+settlement_batch.SettlementInstruction.destination_participant_id: <class 'afritech.novapay.domain.settlement_batch.SettlementParticipantId'>
+settlement_batch.SettlementInstruction.settlement_currency_code: <class 'str'>
+settlement_batch.SettlementInstruction.reference: <class 'afritech.novapay.domain.settlement_batch.SettlementReference'>
+settlement_batch.SettlementParticipant.participant_id: <class 'afritech.novapay.domain.settlement_batch.SettlementParticipantId'>
+settlement_batch.SettlementParticipant.account_reference: <class 'str'>
+settlement_batch.SettlementParticipant.provider_code: str | None
+settlement_batch.SettlementReference.reference_type: <enum 'SettlementReferenceType'>
+settlement_batch.SettlementReference.reference_id: <class 'str'>
+settlement_batch.SettlementReference.external_reference: str | None
+settlement_batch.SettlementResult.batch_id: <class 'afritech.novapay.domain.settlement_batch.SettlementBatchId'>
+settlement_batch.SettlementResult.settlement_currency_code: <class 'str'>
+settlement_batch.SettlementSummary.batch_id: <class 'afritech.novapay.domain.settlement_batch.SettlementBatchId'>
+settlement_batch.SettlementSummary.settlement_currency_code: <class 'str'>
+settlement_reconciliation.ReconciliationDifference.difference_id: <class 'afritech.novapay.domain.settlement_reconciliation.ReconciliationDifferenceId'>
+settlement_reconciliation.ReconciliationEvidence.evidence_id: <class 'afritech.novapay.domain.settlement_reconciliation.ReconciliationEvidenceId'>
+settlement_reconciliation.ReconciliationEvidence.evidence_type: <enum 'ReconciliationEvidenceType'>
+settlement_reconciliation.ReconciliationEvidence.reference: <class 'str'>
+settlement_reconciliation.ReconciliationItem.item_id: <class 'afritech.novapay.domain.settlement_reconciliation.ReconciliationItemId'>
+settlement_reconciliation.ReconciliationItem.expected_reference: <class 'str'>
+settlement_reconciliation.ReconciliationItem.observed_reference: str | None
+settlement_reconciliation.ReconciliationItem.observation_ids: tuple[afritech.novapay.domain.settlement_reconciliation.ReconciliationObservationId, ...]
+settlement_reconciliation.ReconciliationItem.difference_ids: tuple[afritech.novapay.domain.settlement_reconciliation.ReconciliationDifferenceId, ...]
+settlement_reconciliation.ReconciliationItem.evidence_ids: tuple[afritech.novapay.domain.settlement_reconciliation.ReconciliationEvidenceId, ...]
+settlement_reconciliation.ReconciliationObservation.observation_id: <class 'afritech.novapay.domain.settlement_reconciliation.ReconciliationObservationId'>
+settlement_reconciliation.ReconciliationObservation.reference: <class 'str'>
+settlement_reconciliation.ReconciliationResult.reconciliation_id: <class 'afritech.novapay.domain.settlement_reconciliation.SettlementReconciliationId'>
+settlement_reconciliation.SettlementReconciliation.reconciliation_id: <class 'afritech.novapay.domain.settlement_reconciliation.SettlementReconciliationId'>
+settlement_reconciliation.SettlementReconciliation.reconciliation_type: <enum 'ReconciliationType'>
+settlement_reconciliation.SettlementReconciliation.settlement_batch_id: <class 'afritech.novapay.domain.settlement_batch.SettlementBatchId'>
+transaction.Transaction.transaction_id: <class 'afritech.novapay.domain.transaction.TransactionId'>
+transaction.Transaction.transaction_type: <enum 'TransactionType'>
+transaction.Transaction.source_wallet_id: afritech.novapay.domain.wallet.WalletId | None
+transaction.Transaction.destination_wallet_id: afritech.novapay.domain.wallet.WalletId | None
+transaction.Transaction.journal_entry_id: afritech.novapay.domain.journal_entry.JournalEntryId | None
+transaction.Transaction.external_reference: str | None
+transaction.Transaction.idempotency_key: str | None
+customer.Customer.customer_id: <class 'afritech.novapay.domain.customer.CustomerId'>
+customer.Customer.customer_type: <enum 'CustomerType'>
+customer.Customer.novaid_identity_id: <class 'str'>
+customer.Customer.tenant_id: <class 'str'>
+customer.Customer.preferences: <class 'afritech.novapay.domain.customer.CustomerPreferences'>
+financial_account.FinancialAccount.account_id: <class 'afritech.novapay.domain.financial_account.FinancialAccountId'>
+financial_account.FinancialAccount.customer_id: <class 'afritech.novapay.domain.customer.CustomerId'>
+financial_account.FinancialAccount.tenant_id: <class 'str'>
+financial_account.FinancialAccount.account_type: <enum 'FinancialAccountType'>
+financial_account.FinancialAccount.wallet_id: afritech.novapay.domain.wallet.WalletId | None
+financial_account.FinancialAccount.ledger_account_id: afritech.novapay.domain.ledger_account.LedgerAccountId | None
+financial_account.FinancialAccountRestrictions.international_transfer_blocked: <class 'bool'>
+receipt.Receipt.receipt_id: <class 'afritech.novapay.domain.receipt.ReceiptId'>
+receipt.Receipt.receipt_type: <enum 'ReceiptType'>
+receipt.Receipt.references: tuple[afritech.novapay.domain.receipt.ReceiptReference, ...]
+receipt.Receipt.integrity_evidence: tuple[str, ...]
+receipt.ReceiptAdjustment.adjustment_id: <class 'afritech.novapay.domain.receipt.ReceiptAdjustmentId'>
+receipt.ReceiptIntegrityEvidence.evidence_type: <enum 'ReceiptIntegrityEvidenceType'>
+receipt.ReceiptLineItem.line_item_id: <class 'afritech.novapay.domain.receipt.ReceiptLineItemId'>
+receipt.ReceiptLineItem.product_reference: str | None
+receipt.ReceiptMonetarySummary.paid_amount: <class 'afritech.novapay.domain.money.Money'>
+receipt.ReceiptParty.party_id: <class 'afritech.novapay.domain.receipt.ReceiptPartyId'>
+receipt.ReceiptParty.external_reference: str | None
+receipt.ReceiptReference.reference_type: <enum 'ReceiptReferenceType'>
+receipt.ReceiptReference.reference_value: <class 'str'>
+receipt.ReceiptTax.tax_id: <class 'afritech.novapay.domain.receipt.ReceiptTaxId'>
+receipt.ReceiptVerificationResult.integrity_evidence: tuple[afritech.novapay.domain.receipt.ReceiptIntegrityEvidence, ...]
+
+Transfer reference vocabulary: PRESENT
+Settlement reference vocabulary: PRESENT
+Identifier and reference inventory: PASS

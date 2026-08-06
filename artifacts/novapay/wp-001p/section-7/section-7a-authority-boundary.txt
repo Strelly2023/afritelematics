@@ -1,0 +1,6 @@
+Runtime-field violations: 0
+Persistence authority in domain aggregates: NONE
+Provider/network authority in domain aggregates: NONE
+Service execution authority in domain aggregates: NONE
+Delivery/signing/verification authority: NONE
+End-to-end authority boundary: PASS

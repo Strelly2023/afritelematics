@@ -1,0 +1,83 @@
+CUSTOMER, ACCOUNT, AND WALLET GAP MATRIX
+========================================
+
+CWG-001 — Customer-to-wallet ownership
+Classification: IMPLEMENTED
+Test evidence: 25
+Decision: Preserve and certify the existing contract.
+
+CWG-002 — Customer-to-financial-account linkage
+Classification: IMPLEMENTED
+Test evidence: 111
+Decision: Preserve and certify the existing contract.
+
+CWG-003 — Wallet-to-ledger-account references
+Classification: IMPLEMENTED
+Test evidence: 45
+Decision: Preserve and certify the existing contract.
+
+CWG-004 — Customer identity and tenant references
+Classification: IMPLEMENTED
+Test evidence: 1
+Decision: Preserve and certify the existing contract.
+
+CWG-005 — Wallet and account currency compatibility
+Classification: IMPLEMENTED
+Test evidence: 69
+Decision: Preserve and certify the existing contract.
+
+CWG-006 — Wallet and account status alignment
+Classification: IMPLEMENTED
+Test evidence: 102
+Decision: Preserve and certify the existing contract.
+
+CWG-007 — Account activation, suspension, closure, and reopening
+Classification: IMPLEMENTED
+Test evidence: 32
+Decision: Preserve and certify the existing contract.
+
+CWG-008 — Wallet activation, freeze, suspension, and unfreeze
+Classification: IMPLEMENTED
+Test evidence: 21
+Decision: Preserve and certify the existing contract.
+
+CWG-009 — BalanceSnapshot ownership and monetary consistency
+Classification: IMPLEMENTED
+Test evidence: 89
+Decision: Preserve and certify the existing contract.
+
+CWG-010 — Transaction, transfer, and remittance identity propagation
+Classification: IMPLEMENTED
+Test evidence: 197
+Decision: Preserve and certify the existing contract.
+
+CWG-011 — Deterministic serialization and replay
+Classification: IMPLEMENTED
+Test evidence: 66
+Decision: Preserve and certify the existing contract.
+
+CWG-012 — Immutable aggregate interaction
+Classification: IMPLEMENTED
+Test evidence: 82
+Decision: Preserve and certify the existing contract.
+
+CWG-013 — Module-local Receipt reference compatibility
+Classification: IMPLEMENTED
+Test evidence: 33
+Decision: Preserve and certify the existing contract.
+
+CWG-014 — Runtime and authority boundaries
+Classification: IMPLEMENTED
+Test evidence: 30
+Decision: Preserve and certify the existing contract.
+
+SUMMARY
+-------
+IMPLEMENTED=14
+PARTIAL=0
+ABSENT=0
+DEFERRED=0
+NOT_REQUIRED=0
+FOCUSED_IMPLEMENTATION_REQUIRED=NO
+FOCUSED_CERTIFICATION_TESTS_REQUIRED=NO
+SECTION_5_DECISION=TEST_ONLY_CERTIFICATION_SUFFICIENT

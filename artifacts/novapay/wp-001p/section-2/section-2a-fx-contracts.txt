@@ -1,0 +1,9 @@
+ExchangeRate fields: ['exchange_rate_id', 'pair', 'rate', 'spread', 'source', 'status', 'provider', 'provider_reference', 'validity', 'metadata', 'created_at', 'updated_at', 'version']
+ExchangeRate methods: ['canonical_dict', 'convert_base_amount', 'convert_quote_amount', 'create', 'expire', 'is_active_at', 'is_expired_at', 'publish', 'resume', 'revoke', 'supersede', 'suspend', 'update_metadata', 'update_provider_reference', 'update_rate', 'update_spread', 'update_validity']
+FXQuote fields: ['fx_quote_id', 'exchange_rate_id', 'pair', 'source_amount', 'destination_amount', 'rate', 'spread', 'status', 'provider', 'provider_reference', 'validity', 'customer_id', 'transaction_id', 'metadata', 'created_at', 'updated_at', 'version']
+FXQuote methods: ['accept', 'cancel', 'canonical_dict', 'consume', 'create', 'expire', 'is_active_at', 'is_expired_at', 'offer', 'quote_base_amount', 'quote_destination_amount', 'reject', 'update_customer_reference', 'update_metadata', 'update_transaction_reference']
+Exchange-rate direction fields: PRESENT
+FX quote expiry field: NOT_STRUCTURALLY_IDENTIFIED
+ExchangeRate immutable: PASS
+FXQuote immutable: PASS
+FX authority boundary: PASS

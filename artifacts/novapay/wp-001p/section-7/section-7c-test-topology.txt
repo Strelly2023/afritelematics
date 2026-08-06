@@ -1,0 +1,26 @@
+WP-001P SECTION 7C TEST TOPOLOGY
+================================
+
+End-to-end integration contracts: 18
+Supporting replay-safety test: 1
+Total pytest functions: 19
+
+test_customer_identity_and_tenant_propagation
+test_customer_to_wallet_ownership
+test_customer_to_financial_account_linkage
+test_wallet_and_account_monetary_compatibility
+test_transaction_identifier_propagation
+test_ledger_account_and_journal_entry_linkage
+test_transfer_integration
+test_remittance_integration
+test_settlement_batch_integration
+test_settlement_reconciliation_integration
+test_receipt_reference_propagation
+test_end_to_end_monetary_consistency
+test_cross_domain_lifecycle_compatibility
+test_deterministic_serialization_and_replay
+test_immutable_aggregate_interaction
+test_receipt_remains_module_local
+test_runtime_and_authority_boundaries
+test_canonical_public_identities
+test_phase1_modules_remain_replay_safe

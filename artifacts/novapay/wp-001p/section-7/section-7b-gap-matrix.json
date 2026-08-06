@@ -1,0 +1,183 @@
+{
+  "classification_vocabulary": [
+    "ABSENT",
+    "DEFERRED",
+    "IMPLEMENTED",
+    "NOT_REQUIRED",
+    "PARTIAL"
+  ],
+  "counts": {
+    "ABSENT": 0,
+    "DEFERRED": 0,
+    "IMPLEMENTED": 18,
+    "NOT_REQUIRED": 0,
+    "PARTIAL": 0
+  },
+  "focused_certification_tests_required": false,
+  "focused_implementation_required": false,
+  "rows": [
+    {
+      "area": "Customer identity and tenant propagation",
+      "category": "customer_identity_tenant_propagation",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-001",
+      "source_evidence_present": true,
+      "test_evidence_count": 161
+    },
+    {
+      "area": "Customer-to-wallet ownership",
+      "category": "customer_wallet_ownership",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-002",
+      "source_evidence_present": true,
+      "test_evidence_count": 29
+    },
+    {
+      "area": "Customer-to-financial-account linkage",
+      "category": "customer_financial_account_linkage",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-003",
+      "source_evidence_present": true,
+      "test_evidence_count": 117
+    },
+    {
+      "area": "Wallet and account monetary compatibility",
+      "category": "wallet_account_monetary_compatibility",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-004",
+      "source_evidence_present": true,
+      "test_evidence_count": 542
+    },
+    {
+      "area": "Transaction identifier propagation",
+      "category": "transaction_identifier_propagation",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-005",
+      "source_evidence_present": true,
+      "test_evidence_count": 47
+    },
+    {
+      "area": "LedgerAccount and JournalEntry linkage",
+      "category": "ledger_journal_linkage",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-006",
+      "source_evidence_present": true,
+      "test_evidence_count": 90
+    },
+    {
+      "area": "Transfer integration",
+      "category": "transfer_integration",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-007",
+      "source_evidence_present": true,
+      "test_evidence_count": 75
+    },
+    {
+      "area": "Remittance integration",
+      "category": "remittance_integration",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-008",
+      "source_evidence_present": true,
+      "test_evidence_count": 48
+    },
+    {
+      "area": "SettlementBatch integration",
+      "category": "settlement_batch_integration",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-009",
+      "source_evidence_present": true,
+      "test_evidence_count": 10
+    },
+    {
+      "area": "SettlementReconciliation integration",
+      "category": "settlement_reconciliation_integration",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-010",
+      "source_evidence_present": true,
+      "test_evidence_count": 31
+    },
+    {
+      "area": "Receipt reference propagation",
+      "category": "receipt_reference_propagation",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-011",
+      "source_evidence_present": true,
+      "test_evidence_count": 53
+    },
+    {
+      "area": "End-to-end monetary consistency",
+      "category": "end_to_end_monetary_consistency",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-012",
+      "source_evidence_present": true,
+      "test_evidence_count": 260
+    },
+    {
+      "area": "Cross-domain lifecycle compatibility",
+      "category": "cross_domain_lifecycle_compatibility",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-013",
+      "source_evidence_present": true,
+      "test_evidence_count": 250
+    },
+    {
+      "area": "Deterministic serialization and replay",
+      "category": "deterministic_serialization_replay",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-014",
+      "source_evidence_present": true,
+      "test_evidence_count": 173
+    },
+    {
+      "area": "Immutable aggregate interaction",
+      "category": "immutable_aggregate_interaction",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-015",
+      "source_evidence_present": true,
+      "test_evidence_count": 145
+    },
+    {
+      "area": "Module-local Receipt public boundary",
+      "category": "receipt_public_boundary",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-016",
+      "source_evidence_present": true,
+      "test_evidence_count": 47
+    },
+    {
+      "area": "Runtime and authority boundaries",
+      "category": "runtime_authority_boundaries",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-017",
+      "source_evidence_present": true,
+      "test_evidence_count": 67
+    },
+    {
+      "area": "Replay-safe import and runtime topology",
+      "category": "replay_safe_import_runtime_topology",
+      "classification": "IMPLEMENTED",
+      "decision": "Preserve and certify the existing contract.",
+      "id": "E2E-018",
+      "source_evidence_present": true,
+      "test_evidence_count": 14
+    }
+  ],
+  "section_7_decision": "TEST_ONLY_CERTIFICATION_SUFFICIENT"
+}

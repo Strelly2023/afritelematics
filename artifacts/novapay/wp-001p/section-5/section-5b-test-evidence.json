@@ -1,0 +1,4549 @@
+{
+  "categories": {
+    "account_lifecycle": [
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 115,
+        "test": "test_activate_pending_customer"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 147,
+        "test": "test_activate_rejects_non_pending_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 211,
+        "test": "test_suspend_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 241,
+        "test": "test_suspend_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 310,
+        "test": "test_close_accepts_every_non_closed_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 333,
+        "test": "test_closed_customer_is_terminal"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 397,
+        "test": "test_closed_account_requires_full_restriction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 407,
+        "test": "test_closed_account_accepts_full_restriction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 119,
+        "test": "test_activate_pending_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 152,
+        "test": "test_activate_rejects_non_pending"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 215,
+        "test": "test_suspend_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 244,
+        "test": "test_suspend_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 306,
+        "test": "test_reactivate_returns_account_to_active"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 335,
+        "test": "test_reactivate_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 356,
+        "test": "test_close_accepts_every_non_closed_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 382,
+        "test": "test_closed_account_is_terminal"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 842,
+        "test": "test_activate_returns_new_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 864,
+        "test": "test_pending_can_be_closed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 873,
+        "test": "test_pending_cannot_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 883,
+        "test": "test_active_can_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 897,
+        "test": "test_restricted_can_be_reactivated"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 910,
+        "test": "test_suspended_can_be_restricted"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 927,
+        "test": "test_closed_account_has_no_transitions"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 651,
+        "test": "test_activate_returns_new_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 671,
+        "test": "test_pending_wallet_can_be_closed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 680,
+        "test": "test_pending_wallet_cannot_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 688,
+        "test": "test_active_wallet_can_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 701,
+        "test": "test_restricted_wallet_can_be_reactivated"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 714,
+        "test": "test_suspended_wallet_can_be_restricted"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 731,
+        "test": "test_closed_wallet_has_no_allowed_transitions"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 149,
+        "test": "test_unknown_capability_fails_closed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 154,
+        "test": "test_empty_capability_fails_closed"
+      }
+    ],
+    "authority_boundary": [
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 632,
+        "test": "test_snapshot_contains_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 608,
+        "test": "test_history_contains_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 644,
+        "test": "test_history_advance_contains_no_ledger_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 436,
+        "test": "test_balance_component_has_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 378,
+        "test": "test_reconciliation_contains_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 601,
+        "test": "test_financial_account_contains_no_balance_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1411,
+        "test": "test_receipt_aggregate_has_no_runtime_fields"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_integrity_evidence.py",
+        "line": 558,
+        "test": "test_record_adds_no_execution_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 879,
+        "test": "test_lifecycle_methods_add_no_execution_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 905,
+        "test": "test_lifecycle_module_adds_no_repository_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 995,
+        "test": "test_primitive_dataclasses_have_no_runtime_fields"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 915,
+        "test": "test_records_add_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 840,
+        "test": "test_aggregate_has_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 1252,
+        "test": "test_instruction_domain_has_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 842,
+        "test": "test_lifecycle_has_no_runtime_execution_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 869,
+        "test": "test_pricing_domain_has_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 859,
+        "test": "test_primitive_types_have_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 794,
+        "test": "test_transfer_contains_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 949,
+        "test": "test_instruction_contains_no_execution_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_lifecycle.py",
+        "line": 765,
+        "test": "test_lifecycle_methods_contain_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 905,
+        "test": "test_pricing_values_contain_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 788,
+        "test": "test_transfer_primitives_contain_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 824,
+        "test": "test_transfer_account_reference_contains_no_balance_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 187,
+        "test": "test_domain_records_have_no_runtime_execution_or_persistence_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 498,
+        "test": "test_immutable_interactions_and_authority_boundaries_are_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 18,
+        "test": "test_authority_map_is_valid"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 49,
+        "test": "test_novaride_is_a_consumer_not_payment_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 68,
+        "test": "test_authority_entries_are_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 75,
+        "test": "test_authority_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 91,
+        "test": "test_authority_requires_non_empty_text"
+      }
+    ],
+    "balance_snapshot_consistency": [
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 104,
+        "test": "test_create_wallet_balance_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 147,
+        "test": "test_snapshot_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 154,
+        "test": "test_snapshot_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 158,
+        "test": "test_snapshot_exact_field_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 201,
+        "test": "test_snapshot_requires_components"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 209,
+        "test": "test_snapshot_rejects_non_component_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 223,
+        "test": "test_snapshot_requires_posted_component"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 235,
+        "test": "test_snapshot_requires_available_component"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 247,
+        "test": "test_snapshot_rejects_duplicate_component_types"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 261,
+        "test": "test_snapshot_rejects_mixed_currencies"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 287,
+        "test": "test_snapshot_type_requires_owner"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 303,
+        "test": "test_treasury_snapshot_does_not_require_account_owner"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 331,
+        "test": "test_component_wallet_must_match_snapshot_wallet"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 348,
+        "test": "test_component_ledger_account_must_match_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 375,
+        "test": "test_snapshot_rejects_captured_at_before_as_of"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 392,
+        "test": "test_snapshot_rejects_naive_datetime"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 406,
+        "test": "test_snapshot_normalizes_datetime_to_utc"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 433,
+        "test": "test_snapshot_rejects_invalid_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 467,
+        "test": "test_snapshot_rejects_non_integer_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 515,
+        "test": "test_negative_projected_balance_is_preserved"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 537,
+        "test": "test_snapshot_preserves_money_precision"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 563,
+        "test": "test_snapshot_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 620,
+        "test": "test_snapshot_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 632,
+        "test": "test_snapshot_contains_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 655,
+        "test": "test_balance_snapshot_module_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_exports.py",
+        "line": 31,
+        "test": "test_domain_exports_balance_snapshot_symbol"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_exports.py",
+        "line": 48,
+        "test": "test_top_level_exports_balance_snapshot_symbol"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_exports.py",
+        "line": 91,
+        "test": "test_balance_snapshot_module_contract_is_complete"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 111,
+        "test": "test_create_balance_snapshot_history"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 151,
+        "test": "test_history_requires_snapshots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 162,
+        "test": "test_history_rejects_non_snapshot_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 204,
+        "test": "test_history_rejects_duplicate_snapshot_ids"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 358,
+        "test": "test_history_rejects_multiple_current_snapshots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 378,
+        "test": "test_current_snapshot_must_be_latest"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 405,
+        "test": "test_history_without_current_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 550,
+        "test": "test_history_preserves_snapshot_reconciliation"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 629,
+        "test": "test_balance_snapshot_module_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 108,
+        "test": "test_mark_snapshot_superseded"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 135,
+        "test": "test_mark_snapshot_stale"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 164,
+        "test": "test_invalidate_current_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 249,
+        "test": "test_terminal_snapshot_rejects_further_transitions"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 329,
+        "test": "test_snapshot_metadata_update_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 347,
+        "test": "test_snapshot_metadata_update_rejects_no_op"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 365,
+        "test": "test_history_advance_adds_new_current_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 446,
+        "test": "test_history_advance_rejects_non_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 454,
+        "test": "test_history_advance_requires_current_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 29,
+        "test": "test_balance_snapshot_id_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 39,
+        "test": "test_balance_snapshot_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 55,
+        "test": "test_balance_snapshot_id_rejects_empty"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 70,
+        "test": "test_balance_snapshot_id_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 85,
+        "test": "test_balance_enums_are_string_enums"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 113,
+        "test": "test_balance_enums_parse_normalized_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 129,
+        "test": "test_balance_enums_reject_unknown_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 218,
+        "test": "test_balance_snapshot_metadata_normalizes_keys"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 236,
+        "test": "test_balance_snapshot_metadata_is_defensive"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 249,
+        "test": "test_balance_snapshot_metadata_updates_immutably"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 280,
+        "test": "test_balance_snapshot_metadata_rejects_sensitive_keys"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 294,
+        "test": "test_balance_snapshot_metadata_rejects_unsupported_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 306,
+        "test": "test_create_balance_component"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 334,
+        "test": "test_balance_component_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 344,
+        "test": "test_balance_component_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 353,
+        "test": "test_balance_component_exact_field_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 367,
+        "test": "test_balance_component_requires_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 388,
+        "test": "test_balance_component_preserves_money_precision"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 402,
+        "test": "test_balance_component_allows_negative_projection_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 411,
+        "test": "test_balance_component_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 436,
+        "test": "test_balance_component_has_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 458,
+        "test": "test_balance_snapshot_module_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 476,
+        "test": "test_balance_snapshot_aggregate_is_available_in_module"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 119,
+        "test": "test_balance_reconciliation_exact_field_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 218,
+        "test": "test_reconciled_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 235,
+        "test": "test_unreconciled_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 399,
+        "test": "test_snapshot_reconciliation_methods_are_read_only"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 412,
+        "test": "test_balance_snapshot_module_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 601,
+        "test": "test_financial_account_contains_no_balance_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 222,
+        "test": "test_normal_balance_side_parse_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 229,
+        "test": "test_normal_balance_side_returns_existing_enum"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 236,
+        "test": "test_normal_balance_side_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 244,
+        "test": "test_normal_balance_side_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 252,
+        "test": "test_normal_balance_side_rejects_unknown_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 527,
+        "test": "test_create_assigns_required_normal_balance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 617,
+        "test": "test_constructor_rejects_wrong_normal_balance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 1076,
+        "test": "test_ledger_account_has_no_authoritative_balance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 771,
+        "test": "test_summary_accepts_balanced_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_exports.py",
+        "line": 80,
+        "test": "test_existing_balance_snapshot_identity_is_preserved"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 770,
+        "test": "test_transaction_has_no_authoritative_balance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 824,
+        "test": "test_transfer_account_reference_contains_no_balance_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 885,
+        "test": "test_wallet_has_no_authoritative_balance_field"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 32,
+        "test": "test_wallet_balance_is_a_projection_only"
+      }
+    ],
+    "currency_compatibility": [
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 537,
+        "test": "test_snapshot_preserves_money_precision"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 556,
+        "test": "test_history_preserves_canonical_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 516,
+        "test": "test_history_advance_rejects_mixed_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 367,
+        "test": "test_balance_component_requires_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 388,
+        "test": "test_balance_component_preserves_money_precision"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 340,
+        "test": "test_reconciliation_preserves_money_precision"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 138,
+        "test": "test_financial_account_requires_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_exports.py",
+        "line": 93,
+        "test": "test_existing_money_exports_preserved"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 408,
+        "test": "test_factory_normalizes_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 713,
+        "test": "test_rejects_invalid_currency_text"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 731,
+        "test": "test_rejects_invalid_currency_type"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 450,
+        "test": "test_line_item_rejects_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 501,
+        "test": "test_line_item_serializes_money_records"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 538,
+        "test": "test_line_item_money_payload_is_isolated"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 763,
+        "test": "test_summary_normalizes_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 834,
+        "test": "test_summary_rejects_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 332,
+        "test": "test_remittance_preserves_money_instances"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 440,
+        "test": "test_cross_currency_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 444,
+        "test": "test_same_currency_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 606,
+        "test": "test_source_amount_currency_must_match_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 619,
+        "test": "test_destination_amount_currency_must_match_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 683,
+        "test": "test_amounts_reject_non_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 672,
+        "test": "test_cross_currency_corridor_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 676,
+        "test": "test_same_currency_corridor_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 745,
+        "test": "test_corridor_rejects_invalid_currency_codes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 1092,
+        "test": "test_instruction_rejects_funding_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 1106,
+        "test": "test_instruction_rejects_recipient_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 718,
+        "test": "test_lifecycle_preserves_identity_and_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 741,
+        "test": "test_update_preserves_identity_and_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 325,
+        "test": "test_fee_rejects_non_money_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 455,
+        "test": "test_charge_rejects_non_money_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 583,
+        "test": "test_amount_breakdown_same_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 591,
+        "test": "test_amount_breakdown_preserves_money_instances"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 739,
+        "test": "test_amount_breakdown_rejects_fee_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 753,
+        "test": "test_amount_breakdown_rejects_charge_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 767,
+        "test": "test_amount_breakdown_rejects_fx_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 788,
+        "test": "test_amount_breakdown_rejects_total_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 384,
+        "test": "test_transaction_requires_money_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 305,
+        "test": "test_factory_preserves_money_instances"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 318,
+        "test": "test_source_currency_code"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 322,
+        "test": "test_destination_currency_code"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 326,
+        "test": "test_cross_currency_transfer"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 330,
+        "test": "test_same_currency_transfer"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 435,
+        "test": "test_transfer_rejects_non_money_source_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 445,
+        "test": "test_transfer_rejects_non_money_destination_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 455,
+        "test": "test_transfer_rejects_source_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 470,
+        "test": "test_transfer_rejects_destination_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 485,
+        "test": "test_transfer_allows_account_without_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 761,
+        "test": "test_canonical_dict_preserves_money_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 519,
+        "test": "test_instruction_preserves_money_instances"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 532,
+        "test": "test_instruction_currency_codes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 540,
+        "test": "test_same_currency_instruction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 617,
+        "test": "test_instruction_rejects_non_money_source"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 627,
+        "test": "test_instruction_rejects_non_money_destination"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 637,
+        "test": "test_instruction_rejects_funding_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 653,
+        "test": "test_instruction_rejects_beneficiary_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_lifecycle.py",
+        "line": 635,
+        "test": "test_lifecycle_preserves_identity_and_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 344,
+        "test": "test_transfer_fee_preserves_money_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 374,
+        "test": "test_transfer_fee_rejects_non_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 469,
+        "test": "test_transfer_charge_preserves_money_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 579,
+        "test": "test_amount_breakdown_preserves_money_instances"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 619,
+        "test": "test_amount_breakdown_same_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 679,
+        "test": "test_fee_currency_must_match_source"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 696,
+        "test": "test_charge_currency_must_match_source"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 728,
+        "test": "test_declared_totals_must_match_source_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 753,
+        "test": "test_breakdown_rejects_negative_money_fields"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 501,
+        "test": "test_account_reference_rejects_invalid_currency_code"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 512,
+        "test": "test_account_reference_allows_missing_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 247,
+        "test": "test_fx_quote_and_currency_pair_consistency_is_certified"
+      }
+    ],
+    "customer_account_linkage": [
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 16,
+        "test": "test_customer_id_trims_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 22,
+        "test": "test_customer_id_of_trims_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 28,
+        "test": "test_customer_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 45,
+        "test": "test_customer_id_accepts_supported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 60,
+        "test": "test_customer_id_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 78,
+        "test": "test_customer_id_rejects_non_string_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 98,
+        "test": "test_customer_id_rejects_unsupported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 108,
+        "test": "test_customer_id_rejects_value_longer_than_128_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 116,
+        "test": "test_customer_id_supports_stable_string_conversion"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 122,
+        "test": "test_customer_id_has_value_equality_and_hashing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 131,
+        "test": "test_customer_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 138,
+        "test": "test_customer_id_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 144,
+        "test": "test_customer_id_canonical_dict_is_deterministic"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 73,
+        "test": "test_create_current_financial_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 113,
+        "test": "test_financial_account_normalizes_references"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 125,
+        "test": "test_financial_account_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 134,
+        "test": "test_financial_account_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 138,
+        "test": "test_financial_account_requires_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 148,
+        "test": "test_financial_account_requires_name_value_object"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 166,
+        "test": "test_financial_account_requires_identifiers"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 420,
+        "test": "test_financial_account_normalizes_terms_mapping"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 432,
+        "test": "test_financial_account_normalizes_restrictions_mapping"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 446,
+        "test": "test_financial_account_rejects_invalid_terms"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 456,
+        "test": "test_financial_account_rejects_invalid_restrictions"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 466,
+        "test": "test_financial_account_metadata_rejects_sensitive_data"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 478,
+        "test": "test_financial_account_timestamp_normalization"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 498,
+        "test": "test_financial_account_rejects_naive_timestamp"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 508,
+        "test": "test_financial_account_rejects_updated_before_created"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 525,
+        "test": "test_financial_account_rejects_invalid_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 544,
+        "test": "test_financial_account_rejects_non_integer_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 554,
+        "test": "test_financial_account_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 589,
+        "test": "test_financial_account_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 601,
+        "test": "test_financial_account_contains_no_balance_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_exports.py",
+        "line": 57,
+        "test": "test_financial_account_identity_across_import_paths"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 16,
+        "test": "test_financial_account_id_trims_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 24,
+        "test": "test_financial_account_id_of_trims_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 34,
+        "test": "test_financial_account_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 53,
+        "test": "test_financial_account_id_accepts_supported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 68,
+        "test": "test_financial_account_id_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 88,
+        "test": "test_financial_account_id_rejects_non_string_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 108,
+        "test": "test_financial_account_id_rejects_unsupported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 118,
+        "test": "test_financial_account_id_rejects_long_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 126,
+        "test": "test_financial_account_id_string_conversion"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 134,
+        "test": "test_financial_account_id_canonical_scalar"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 144,
+        "test": "test_financial_account_id_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 154,
+        "test": "test_financial_account_id_value_equality_and_hashing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 171,
+        "test": "test_financial_account_id_supports_ordering"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 182,
+        "test": "test_financial_account_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 193,
+        "test": "test_financial_account_id_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 254,
+        "test": "test_financial_account_type_stable_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 318,
+        "test": "test_financial_account_type_parse_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 325,
+        "test": "test_financial_account_type_parse_returns_existing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 343,
+        "test": "test_financial_account_type_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 358,
+        "test": "test_financial_account_type_rejects_non_strings"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 397,
+        "test": "test_financial_account_status_stable_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 437,
+        "test": "test_financial_account_status_parse_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 444,
+        "test": "test_financial_account_status_parse_returns_existing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 461,
+        "test": "test_financial_account_status_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 476,
+        "test": "test_financial_account_status_rejects_non_strings"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 539,
+        "test": "test_financial_account_purpose_stable_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 603,
+        "test": "test_financial_account_purpose_parse_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 610,
+        "test": "test_financial_account_purpose_parse_returns_existing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 627,
+        "test": "test_financial_account_purpose_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 642,
+        "test": "test_financial_account_purpose_rejects_non_strings"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 660,
+        "test": "test_financial_account_enums_are_string_enums"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 668,
+        "test": "test_financial_account_module_public_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 17,
+        "test": "test_financial_account_name_normalizes_product_name"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 26,
+        "test": "test_financial_account_name_normalizes_display_name"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 36,
+        "test": "test_financial_account_name_falls_back_to_product_name"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 46,
+        "test": "test_financial_account_name_of_returns_existing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 54,
+        "test": "test_financial_account_name_of_rejects_display_for_existing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 73,
+        "test": "test_financial_account_name_rejects_empty_product_name"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 83,
+        "test": "test_financial_account_name_rejects_long_product_name"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 91,
+        "test": "test_financial_account_name_rejects_long_display_name"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 102,
+        "test": "test_financial_account_name_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 109,
+        "test": "test_financial_account_name_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 121,
+        "test": "test_financial_account_terms_defaults"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 131,
+        "test": "test_financial_account_terms_normalize_numeric_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 156,
+        "test": "test_financial_account_terms_reject_negative_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 182,
+        "test": "test_financial_account_terms_reject_invalid_numeric_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 191,
+        "test": "test_financial_account_terms_reject_interest_over_100"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 208,
+        "test": "test_financial_account_terms_reject_invalid_notice_period"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 228,
+        "test": "test_financial_account_terms_reject_non_integer_notice_period"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 240,
+        "test": "test_financial_account_terms_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 258,
+        "test": "test_financial_account_restrictions_defaults"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 270,
+        "test": "test_financial_account_restrictions_normalize_collections"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 296,
+        "test": "test_financial_account_restrictions_detect_fully_blocked"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 314,
+        "test": "test_financial_account_restrictions_require_boolean_flags"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 332,
+        "test": "test_financial_account_restrictions_reject_duplicate_channels"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 345,
+        "test": "test_financial_account_restrictions_reject_duplicate_countries"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 367,
+        "test": "test_financial_account_restrictions_reject_invalid_country"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 379,
+        "test": "test_financial_account_restrictions_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 396,
+        "test": "test_financial_account_metadata_defaults_empty"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 403,
+        "test": "test_financial_account_metadata_normalizes_keys"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 417,
+        "test": "test_financial_account_metadata_defensive_copy"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 443,
+        "test": "test_financial_account_metadata_rejects_sensitive_keys"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 455,
+        "test": "test_financial_account_metadata_sensitive_check_case_insensitive"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 465,
+        "test": "test_financial_account_metadata_with_value_revalidates"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 480,
+        "test": "test_financial_account_metadata_without_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 494,
+        "test": "test_financial_account_metadata_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 515,
+        "test": "test_financial_account_metadata_rejects_non_mapping"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 525,
+        "test": "test_financial_account_value_objects_are_slotted"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 537,
+        "test": "test_financial_account_module_public_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 80,
+        "test": "test_ledger_account_id_normalizes_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 88,
+        "test": "test_ledger_account_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 106,
+        "test": "test_ledger_account_id_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 113,
+        "test": "test_ledger_account_id_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 121,
+        "test": "test_ledger_account_id_accepts_supported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 129,
+        "test": "test_ledger_account_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 136,
+        "test": "test_ledger_account_ids_are_orderable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 164,
+        "test": "test_party_customer_and_financial_account_references_are_certified"
+      }
+    ],
+    "customer_wallet_ownership": [
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 287,
+        "test": "test_snapshot_type_requires_owner"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 303,
+        "test": "test_treasury_snapshot_does_not_require_account_owner"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 270,
+        "test": "test_history_rejects_mixed_owners"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 529,
+        "test": "test_history_advance_rejects_mixed_owner"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 16,
+        "test": "test_customer_id_trims_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 22,
+        "test": "test_customer_id_of_trims_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 28,
+        "test": "test_customer_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 45,
+        "test": "test_customer_id_accepts_supported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 60,
+        "test": "test_customer_id_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 78,
+        "test": "test_customer_id_rejects_non_string_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 98,
+        "test": "test_customer_id_rejects_unsupported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 108,
+        "test": "test_customer_id_rejects_value_longer_than_128_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 116,
+        "test": "test_customer_id_supports_stable_string_conversion"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 122,
+        "test": "test_customer_id_has_value_equality_and_hashing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 131,
+        "test": "test_customer_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 138,
+        "test": "test_customer_id_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 144,
+        "test": "test_customer_id_canonical_dict_is_deterministic"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 65,
+        "test": "test_wallet_id_normalizes_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 73,
+        "test": "test_wallet_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 91,
+        "test": "test_wallet_id_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 96,
+        "test": "test_wallet_id_rejects_non_string_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 104,
+        "test": "test_wallet_id_accepts_supported_identifier_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 110,
+        "test": "test_wallet_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 117,
+        "test": "test_wallet_ids_are_orderable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 144,
+        "test": "test_transfer_and_remittance_ownership_references_are_certified"
+      }
+    ],
+    "identity_propagation": [
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 16,
+        "test": "test_customer_id_trims_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 22,
+        "test": "test_customer_id_of_trims_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 28,
+        "test": "test_customer_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 45,
+        "test": "test_customer_id_accepts_supported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 60,
+        "test": "test_customer_id_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 78,
+        "test": "test_customer_id_rejects_non_string_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 98,
+        "test": "test_customer_id_rejects_unsupported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 108,
+        "test": "test_customer_id_rejects_value_longer_than_128_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 116,
+        "test": "test_customer_id_supports_stable_string_conversion"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 122,
+        "test": "test_customer_id_has_value_equality_and_hashing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 131,
+        "test": "test_customer_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 138,
+        "test": "test_customer_id_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 144,
+        "test": "test_customer_id_canonical_dict_is_deterministic"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_exports.py",
+        "line": 57,
+        "test": "test_financial_account_identity_across_import_paths"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_exports.py",
+        "line": 122,
+        "test": "test_existing_transaction_exports_preserved"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 16,
+        "test": "test_financial_account_id_trims_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 24,
+        "test": "test_financial_account_id_of_trims_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 34,
+        "test": "test_financial_account_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 53,
+        "test": "test_financial_account_id_accepts_supported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 68,
+        "test": "test_financial_account_id_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 88,
+        "test": "test_financial_account_id_rejects_non_string_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 108,
+        "test": "test_financial_account_id_rejects_unsupported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 118,
+        "test": "test_financial_account_id_rejects_long_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 126,
+        "test": "test_financial_account_id_string_conversion"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 134,
+        "test": "test_financial_account_id_canonical_scalar"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 144,
+        "test": "test_financial_account_id_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 154,
+        "test": "test_financial_account_id_value_equality_and_hashing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 171,
+        "test": "test_financial_account_id_supports_ordering"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 182,
+        "test": "test_financial_account_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 193,
+        "test": "test_financial_account_id_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 80,
+        "test": "test_ledger_account_id_normalizes_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 88,
+        "test": "test_ledger_account_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 106,
+        "test": "test_ledger_account_id_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 113,
+        "test": "test_ledger_account_id_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 121,
+        "test": "test_ledger_account_id_accepts_supported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 129,
+        "test": "test_ledger_account_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 136,
+        "test": "test_ledger_account_ids_are_orderable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 232,
+        "test": "test_remittance_construction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 257,
+        "test": "test_remittance_factory_defaults_updated_at"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 265,
+        "test": "test_remittance_factory_normalizes_primitives"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 291,
+        "test": "test_remittance_preserves_identifier_instances"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 306,
+        "test": "test_remittance_preserves_party_references"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 319,
+        "test": "test_remittance_preserves_account_references"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 332,
+        "test": "test_remittance_preserves_money_instances"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 345,
+        "test": "test_remittance_metadata_normalization"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 363,
+        "test": "test_remittance_metadata_preserves_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 377,
+        "test": "test_remittance_datetime_normalizes_to_utc"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 483,
+        "test": "test_remittance_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 490,
+        "test": "test_remittance_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 889,
+        "test": "test_remittance_aggregate_is_publicly_exported"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_exports.py",
+        "line": 32,
+        "test": "test_remittance_module_export_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_exports.py",
+        "line": 41,
+        "test": "test_domain_exports_all_remittance_symbols"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_exports.py",
+        "line": 47,
+        "test": "test_top_level_exports_all_remittance_symbols"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_exports.py",
+        "line": 73,
+        "test": "test_existing_transfer_identity_is_preserved"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_exports.py",
+        "line": 101,
+        "test": "test_remittance_exports_have_no_runtime_singletons"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 386,
+        "test": "test_reverse_completed_remittance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 817,
+        "test": "test_lifecycle_metadata_is_remittance_metadata"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 39,
+        "test": "test_remittance_status_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 46,
+        "test": "test_remittance_status_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 103,
+        "test": "test_remittance_type_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 110,
+        "test": "test_remittance_type_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 136,
+        "test": "test_remittance_direction_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 143,
+        "test": "test_remittance_direction_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 201,
+        "test": "test_remittance_purpose_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 208,
+        "test": "test_remittance_purpose_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 236,
+        "test": "test_remittance_priority_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 243,
+        "test": "test_remittance_priority_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 338,
+        "test": "test_remittance_id_accepts_valid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 347,
+        "test": "test_remittance_id_preserves_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 367,
+        "test": "test_remittance_id_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 383,
+        "test": "test_remittance_id_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 390,
+        "test": "test_remittance_id_is_orderable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 407,
+        "test": "test_remittance_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 425,
+        "test": "test_remittance_reference_accepts_valid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 434,
+        "test": "test_remittance_reference_preserves_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 456,
+        "test": "test_remittance_reference_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 472,
+        "test": "test_remittance_reference_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 479,
+        "test": "test_remittance_reference_is_orderable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 496,
+        "test": "test_remittance_reference_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 833,
+        "test": "test_remittance_aggregate_is_present"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 837,
+        "test": "test_completed_remittance_domain_is_publicly_exported"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 67,
+        "test": "test_transaction_id_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 86,
+        "test": "test_transaction_id_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 93,
+        "test": "test_transaction_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 104,
+        "test": "test_all_transaction_types_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 116,
+        "test": "test_all_transaction_statuses_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 140,
+        "test": "test_transaction_direction_parses_aliases"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 151,
+        "test": "test_transaction_type_status_and_direction_reject_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 176,
+        "test": "test_transaction_status_semantics"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 185,
+        "test": "test_transaction_metadata_is_defensively_copied"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 203,
+        "test": "test_transaction_metadata_updates_are_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 234,
+        "test": "test_transaction_metadata_rejects_non_mappings"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 241,
+        "test": "test_transaction_metadata_rejects_invalid_keys"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 249,
+        "test": "test_internal_transaction_create_normalizes_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 303,
+        "test": "test_inbound_transaction_requires_destination_wallet"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 317,
+        "test": "test_inbound_transaction_accepts_destination_wallet"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 331,
+        "test": "test_outbound_transaction_requires_source_wallet"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 345,
+        "test": "test_outbound_transaction_accepts_source_wallet"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 367,
+        "test": "test_internal_transaction_wallet_invariants"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 384,
+        "test": "test_transaction_requires_money_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 399,
+        "test": "test_transaction_rejects_naive_datetime"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 415,
+        "test": "test_transaction_normalizes_datetime_to_utc"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 433,
+        "test": "test_transaction_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 442,
+        "test": "test_pending_transaction_can_be_authorized"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 462,
+        "test": "test_authorized_transaction_can_start_processing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 477,
+        "test": "test_processing_transaction_requires_journal_on_completion"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 498,
+        "test": "test_processing_transaction_can_complete"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 533,
+        "test": "test_completed_transaction_can_be_reversed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 571,
+        "test": "test_pending_transaction_can_fail"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 582,
+        "test": "test_pending_transaction_can_be_cancelled"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 616,
+        "test": "test_invalid_transaction_transitions_fail"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 733,
+        "test": "test_transaction_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 770,
+        "test": "test_transaction_has_no_authoritative_balance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 186,
+        "test": "test_create_transfer"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 326,
+        "test": "test_cross_currency_transfer"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 330,
+        "test": "test_same_currency_transfer"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 377,
+        "test": "test_transfer_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 384,
+        "test": "test_transfer_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 388,
+        "test": "test_transfer_exact_field_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 413,
+        "test": "test_transfer_metadata_normalization"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 435,
+        "test": "test_transfer_rejects_non_money_source_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 445,
+        "test": "test_transfer_rejects_non_money_destination_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 455,
+        "test": "test_transfer_rejects_source_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 470,
+        "test": "test_transfer_rejects_destination_currency_mismatch"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 485,
+        "test": "test_transfer_allows_account_without_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 501,
+        "test": "test_transfer_rejects_identical_endpoint"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 528,
+        "test": "test_transfer_allows_same_party_different_accounts"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 559,
+        "test": "test_transfer_rejects_naive_created_at"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 575,
+        "test": "test_transfer_normalizes_created_at_to_utc"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 628,
+        "test": "test_transfer_rejects_non_positive_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 666,
+        "test": "test_transfer_rejects_non_integer_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 696,
+        "test": "test_transfer_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 794,
+        "test": "test_transfer_contains_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 823,
+        "test": "test_transfer_fields_contain_no_runtime_dependencies"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 843,
+        "test": "test_transfer_aggregate_is_exported_from_domain"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 480,
+        "test": "test_create_transfer_instruction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_lifecycle.py",
+        "line": 798,
+        "test": "test_transfer_lifecycle_is_exported_from_domain"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 323,
+        "test": "test_transfer_fee_construction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 334,
+        "test": "test_transfer_fee_normalizes_description"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 344,
+        "test": "test_transfer_fee_preserves_money_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 354,
+        "test": "test_transfer_fee_zero_is_allowed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 363,
+        "test": "test_transfer_fee_rejects_negative_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 374,
+        "test": "test_transfer_fee_rejects_non_money"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 393,
+        "test": "test_transfer_fee_rejects_non_boolean_refundable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 407,
+        "test": "test_transfer_fee_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 414,
+        "test": "test_transfer_fee_exact_field_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 427,
+        "test": "test_transfer_fee_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 448,
+        "test": "test_transfer_charge_construction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 460,
+        "test": "test_transfer_charge_normalizes_code"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 469,
+        "test": "test_transfer_charge_preserves_money_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 479,
+        "test": "test_transfer_charge_zero_is_allowed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 488,
+        "test": "test_transfer_charge_rejects_negative_amount"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 499,
+        "test": "test_transfer_charge_rejects_blank_code"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 518,
+        "test": "test_transfer_charge_rejects_non_boolean_third_party"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 532,
+        "test": "test_transfer_charge_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 539,
+        "test": "test_transfer_charge_exact_field_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 552,
+        "test": "test_transfer_charge_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 23,
+        "test": "test_transfer_id_normalizes_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 31,
+        "test": "test_transfer_id_of_preserves_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 46,
+        "test": "test_transfer_id_rejects_blank_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 64,
+        "test": "test_transfer_id_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 74,
+        "test": "test_transfer_id_rejects_excessive_length"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 82,
+        "test": "test_transfer_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 89,
+        "test": "test_transfer_id_uses_slots"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 96,
+        "test": "test_transfer_reference_normalizes_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 104,
+        "test": "test_transfer_reference_of_preserves_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 119,
+        "test": "test_transfer_reference_rejects_invalid_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 128,
+        "test": "test_transfer_reference_rejects_excessive_length"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 151,
+        "test": "test_transfer_status_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 158,
+        "test": "test_transfer_status_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 185,
+        "test": "test_transfer_status_rejects_invalid_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 208,
+        "test": "test_transfer_type_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 223,
+        "test": "test_transfer_direction_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 247,
+        "test": "test_transfer_purpose_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 263,
+        "test": "test_transfer_priority_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 279,
+        "test": "test_transfer_enums_reject_unknown_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 788,
+        "test": "test_transfer_primitives_contain_no_runtime_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 824,
+        "test": "test_transfer_account_reference_contains_no_balance_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 842,
+        "test": "test_transfer_aggregate_is_available_in_module"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 846,
+        "test": "test_transfer_primitives_are_exported_from_domain"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 856,
+        "test": "test_transfer_module_contract"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 65,
+        "test": "test_wallet_id_normalizes_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 73,
+        "test": "test_wallet_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 91,
+        "test": "test_wallet_id_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 96,
+        "test": "test_wallet_id_rejects_non_string_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 104,
+        "test": "test_wallet_id_accepts_supported_identifier_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 110,
+        "test": "test_wallet_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 117,
+        "test": "test_wallet_ids_are_orderable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 79,
+        "test": "test_canonical_transaction_ledger_types_have_cross_surface_identity"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 101,
+        "test": "test_transaction_to_wallet_reference_contract_is_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 108,
+        "test": "test_transaction_to_ledger_and_journal_propagation_is_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 124,
+        "test": "test_transaction_and_journal_idempotency_contract_is_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 131,
+        "test": "test_transfer_to_transaction_linkage_is_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 210,
+        "test": "test_transaction_ledger_domain_modules_remain_replay_safe"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 116,
+        "test": "test_canonical_transfer_remittance_settlement_identities"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 144,
+        "test": "test_transfer_and_remittance_ownership_references_are_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 185,
+        "test": "test_transfer_to_remittance_linkage_is_certified"
+      }
+    ],
+    "identity_tenant_references": [
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_aggregate.py",
+        "line": 153,
+        "test": "test_customer_requires_identity_and_tenant_references"
+      }
+    ],
+    "immutable_interaction": [
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 147,
+        "test": "test_snapshot_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 632,
+        "test": "test_snapshot_contains_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 128,
+        "test": "test_history_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 608,
+        "test": "test_history_contains_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 329,
+        "test": "test_snapshot_metadata_update_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_lifecycle.py",
+        "line": 592,
+        "test": "test_history_metadata_update_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 39,
+        "test": "test_balance_snapshot_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 150,
+        "test": "test_ledger_position_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 334,
+        "test": "test_balance_component_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 436,
+        "test": "test_balance_component_has_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 138,
+        "test": "test_reconciliation_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 378,
+        "test": "test_reconciliation_contains_no_mutation_authority"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_aggregate.py",
+        "line": 123,
+        "test": "test_customer_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_aggregate.py",
+        "line": 334,
+        "test": "test_customer_contacts_collection_is_immutable_tuple"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_aggregate.py",
+        "line": 346,
+        "test": "test_customer_addresses_collection_is_immutable_tuple"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 131,
+        "test": "test_customer_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 122,
+        "test": "test_customer_name_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 340,
+        "test": "test_customer_preferences_with_value_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 354,
+        "test": "test_customer_preferences_without_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 368,
+        "test": "test_customer_preferences_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 487,
+        "test": "test_customer_metadata_without_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 501,
+        "test": "test_customer_metadata_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 125,
+        "test": "test_financial_account_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 182,
+        "test": "test_financial_account_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 102,
+        "test": "test_financial_account_name_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 480,
+        "test": "test_financial_account_metadata_without_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 494,
+        "test": "test_financial_account_metadata_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 129,
+        "test": "test_ledger_account_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 363,
+        "test": "test_ledger_account_metadata_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 372,
+        "test": "test_ledger_account_metadata_canonical_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 473,
+        "test": "test_ledger_account_metadata_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 807,
+        "test": "test_ledger_account_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 1069,
+        "test": "test_canonical_dict_outer_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 657,
+        "test": "test_receipt_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1237,
+        "test": "test_serialization_mutation_does_not_affect_aggregate"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_integrity_evidence.py",
+        "line": 60,
+        "test": "test_record_is_frozen_dataclass"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_integrity_evidence.py",
+        "line": 470,
+        "test": "test_record_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 769,
+        "test": "test_receipt_remains_immutable_after_lifecycle_support"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 188,
+        "test": "test_identifier_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 680,
+        "test": "test_metadata_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 843,
+        "test": "test_reference_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 995,
+        "test": "test_primitive_dataclasses_have_no_runtime_fields"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 288,
+        "test": "test_detailed_records_are_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 483,
+        "test": "test_remittance_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 334,
+        "test": "test_instruction_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 367,
+        "test": "test_funding_reference_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 493,
+        "test": "test_recipient_reference_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 688,
+        "test": "test_corridor_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 789,
+        "test": "test_instruction_metadata_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 937,
+        "test": "test_instruction_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 808,
+        "test": "test_lifecycle_results_are_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 268,
+        "test": "test_fee_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 376,
+        "test": "test_charge_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 502,
+        "test": "test_pricing_metadata_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 620,
+        "test": "test_amount_breakdown_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 407,
+        "test": "test_remittance_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 496,
+        "test": "test_remittance_reference_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 730,
+        "test": "test_metadata_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 744,
+        "test": "test_nested_metadata_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 93,
+        "test": "test_transaction_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 203,
+        "test": "test_transaction_metadata_updates_are_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 433,
+        "test": "test_transaction_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 377,
+        "test": "test_transfer_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 248,
+        "test": "test_instruction_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 843,
+        "test": "test_instruction_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_lifecycle.py",
+        "line": 758,
+        "test": "test_lifecycle_aggregate_remains_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 407,
+        "test": "test_transfer_fee_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 532,
+        "test": "test_transfer_charge_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 833,
+        "test": "test_amount_breakdown_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 82,
+        "test": "test_transfer_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 609,
+        "test": "test_metadata_is_defensively_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 744,
+        "test": "test_metadata_canonical_dict_returns_immutable_mapping"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 759,
+        "test": "test_primitives_are_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 110,
+        "test": "test_wallet_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 280,
+        "test": "test_wallet_metadata_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 287,
+        "test": "test_wallet_metadata_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 421,
+        "test": "test_wallet_metadata_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 619,
+        "test": "test_wallet_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 878,
+        "test": "test_wallet_canonical_dict_outer_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 498,
+        "test": "test_immutable_interactions_and_authority_boundaries_are_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 68,
+        "test": "test_authority_entries_are_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 75,
+        "test": "test_authority_mapping_is_immutable"
+      }
+    ],
+    "receipt_references": [
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 229,
+        "test": "test_receipt_is_in_module_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 233,
+        "test": "test_receipt_module_inventory_count"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 235,
+        "test": "test_receipt_module_inventory_is_sorted"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 241,
+        "test": "test_receipt_module_inventory_is_unique"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 247,
+        "test": "test_receipt_aggregate_field_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 254,
+        "test": "test_receipt_aggregate_has_twenty_fields"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 258,
+        "test": "test_factory_creates_draft_receipt"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 657,
+        "test": "test_receipt_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1332,
+        "test": "test_receipt_integrity_evidence_record_is_present"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1344,
+        "test": "test_receipt_verification_result_is_present"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1390,
+        "test": "test_domain_public_receipt_aggregate_records_are_exported"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1402,
+        "test": "test_receipt_aggregate_remains_internal"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1411,
+        "test": "test_receipt_aggregate_has_no_runtime_fields"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1435,
+        "test": "test_receipt_aggregate_has_no_runtime_methods"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_integrity_evidence.py",
+        "line": 441,
+        "test": "test_accepts_receipt_metadata_value_object"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 341,
+        "test": "test_update_metadata_accepts_receipt_metadata"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 738,
+        "test": "test_transition_preserves_receipt_identity"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 769,
+        "test": "test_receipt_remains_immutable_after_lifecycle_support"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 386,
+        "test": "test_terminal_receipt_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 401,
+        "test": "test_non_terminal_receipt_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 416,
+        "test": "test_issued_receipt_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 431,
+        "test": "test_not_issued_receipt_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 937,
+        "test": "test_receipt_integrity_evidence_is_present"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 949,
+        "test": "test_receipt_verification_result_is_present"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 975,
+        "test": "test_domain_public_receipt_records_are_exported"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 965,
+        "test": "test_receipt_integrity_evidence_is_present"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 977,
+        "test": "test_receipt_verification_result_is_present"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 989,
+        "test": "test_remaining_deferred_receipt_symbols_are_absent"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 1000,
+        "test": "test_receipt_lifecycle_methods_are_present"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 95,
+        "test": "test_receipt_aggregate_remains_module_local"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 151,
+        "test": "test_receipt_reference_compatibility_is_certified_without_export_widening"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 133,
+        "test": "test_receipt_aggregate_remains_module_local"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 470,
+        "test": "test_receipt_reference_compatibility_preserves_export_boundary"
+      }
+    ],
+    "serialization_replay": [
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 563,
+        "test": "test_snapshot_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 620,
+        "test": "test_snapshot_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 566,
+        "test": "test_history_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_history.py",
+        "line": 596,
+        "test": "test_history_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_primitives.py",
+        "line": 411,
+        "test": "test_balance_component_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_reconciliation.py",
+        "line": 359,
+        "test": "test_reconciliation_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_aggregate.py",
+        "line": 491,
+        "test": "test_customer_canonical_dict_is_deterministic"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_aggregate.py",
+        "line": 541,
+        "test": "test_customer_canonical_dict_returns_fresh_collections"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 144,
+        "test": "test_customer_id_canonical_dict_is_deterministic"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 163,
+        "test": "test_customer_type_has_stable_serialized_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 242,
+        "test": "test_customer_status_has_stable_serialized_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 318,
+        "test": "test_customer_tier_has_stable_serialized_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 129,
+        "test": "test_customer_name_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 210,
+        "test": "test_customer_contact_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 289,
+        "test": "test_customer_address_canonical_dict_order"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 368,
+        "test": "test_customer_preferences_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_value_objects.py",
+        "line": 501,
+        "test": "test_customer_metadata_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 554,
+        "test": "test_financial_account_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 589,
+        "test": "test_financial_account_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 144,
+        "test": "test_financial_account_id_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 109,
+        "test": "test_financial_account_name_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 240,
+        "test": "test_financial_account_terms_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 379,
+        "test": "test_financial_account_restrictions_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 494,
+        "test": "test_financial_account_metadata_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 1036,
+        "test": "test_canonical_dict_contains_complete_account_state"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 1069,
+        "test": "test_canonical_dict_outer_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_records.py",
+        "line": 501,
+        "test": "test_line_item_serializes_money_records"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 490,
+        "test": "test_remittance_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 547,
+        "test": "test_canonical_dict_returns_fresh_payloads"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 386,
+        "test": "test_funding_reference_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 408,
+        "test": "test_funding_reference_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 514,
+        "test": "test_recipient_reference_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 537,
+        "test": "test_recipient_reference_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 707,
+        "test": "test_corridor_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 963,
+        "test": "test_instruction_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_instruction.py",
+        "line": 1008,
+        "test": "test_instruction_canonical_dict_returns_fresh_payloads"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 287,
+        "test": "test_fee_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 304,
+        "test": "test_fee_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 395,
+        "test": "test_charge_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 410,
+        "test": "test_charge_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 642,
+        "test": "test_amount_breakdown_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_pricing.py",
+        "line": 671,
+        "test": "test_amount_breakdown_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 759,
+        "test": "test_metadata_canonical_dict_returns_mapping"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 733,
+        "test": "test_transaction_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 696,
+        "test": "test_transfer_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 761,
+        "test": "test_canonical_dict_preserves_money_currency"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 777,
+        "test": "test_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 297,
+        "test": "test_funding_reference_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 378,
+        "test": "test_beneficiary_reference_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 872,
+        "test": "test_instruction_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 911,
+        "test": "test_instruction_canonical_dict_preserves_currencies"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_instruction.py",
+        "line": 922,
+        "test": "test_instruction_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 427,
+        "test": "test_transfer_fee_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 552,
+        "test": "test_transfer_charge_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 858,
+        "test": "test_amount_breakdown_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_pricing.py",
+        "line": 884,
+        "test": "test_amount_breakdown_canonical_dict_is_fresh"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 386,
+        "test": "test_party_reference_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 521,
+        "test": "test_account_reference_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 744,
+        "test": "test_metadata_canonical_dict_returns_immutable_mapping"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 287,
+        "test": "test_wallet_metadata_canonical_dict_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 850,
+        "test": "test_wallet_canonical_dict"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 878,
+        "test": "test_wallet_canonical_dict_outer_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 170,
+        "test": "test_serialization_replay_and_event_ordering_contracts_are_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 210,
+        "test": "test_transaction_ledger_domain_modules_remain_replay_safe"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 426,
+        "test": "test_serialization_and_replay_determinism_are_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 547,
+        "test": "test_integration_domain_modules_remain_replay_safe"
+      }
+    ],
+    "status_alignment": [
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 242,
+        "test": "test_customer_status_has_stable_serialized_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 260,
+        "test": "test_customer_status_parse_normalizes_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 267,
+        "test": "test_customer_status_parse_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 284,
+        "test": "test_customer_status_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_identifiers.py",
+        "line": 299,
+        "test": "test_customer_status_rejects_non_string_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 147,
+        "test": "test_activate_rejects_non_pending_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 158,
+        "test": "test_restrict_active_customer"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 192,
+        "test": "test_restrict_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 211,
+        "test": "test_suspend_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 241,
+        "test": "test_suspend_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 260,
+        "test": "test_reinstate_returns_customer_to_active"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 290,
+        "test": "test_reinstate_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 310,
+        "test": "test_close_accepts_every_non_closed_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 333,
+        "test": "test_closed_customer_is_terminal"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 397,
+        "test": "test_closed_account_requires_full_restriction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 407,
+        "test": "test_closed_account_accepts_full_restriction"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 397,
+        "test": "test_financial_account_status_stable_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 437,
+        "test": "test_financial_account_status_parse_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 444,
+        "test": "test_financial_account_status_parse_returns_existing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 461,
+        "test": "test_financial_account_status_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_identifiers.py",
+        "line": 476,
+        "test": "test_financial_account_status_rejects_non_strings"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 163,
+        "test": "test_restrict_active_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 196,
+        "test": "test_restrict_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 215,
+        "test": "test_suspend_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 244,
+        "test": "test_suspend_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 256,
+        "test": "test_mark_dormant_active_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 287,
+        "test": "test_mark_dormant_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 306,
+        "test": "test_reactivate_returns_account_to_active"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 335,
+        "test": "test_reactivate_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 356,
+        "test": "test_close_accepts_every_non_closed_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 382,
+        "test": "test_closed_account_is_terminal"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 275,
+        "test": "test_ledger_account_status_parse_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 282,
+        "test": "test_ledger_account_status_returns_existing_enum"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 291,
+        "test": "test_ledger_account_status_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 299,
+        "test": "test_ledger_account_status_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 307,
+        "test": "test_ledger_account_status_rejects_unknown_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 864,
+        "test": "test_pending_can_be_closed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 873,
+        "test": "test_pending_cannot_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 883,
+        "test": "test_active_can_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 910,
+        "test": "test_suspended_can_be_restricted"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 927,
+        "test": "test_closed_account_has_no_transitions"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 941,
+        "test": "test_same_status_transition_fails"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 1036,
+        "test": "test_canonical_dict_contains_complete_account_state"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 543,
+        "test": "test_direct_construction_supports_issued_state"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 559,
+        "test": "test_direct_construction_supports_delivered_state"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 584,
+        "test": "test_direct_construction_supports_terminal_issued_states"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 607,
+        "test": "test_direct_construction_supports_terminal_non_issued_states"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 657,
+        "test": "test_receipt_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1051,
+        "test": "test_non_issued_status_rejects_issued_at"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1075,
+        "test": "test_issued_status_requires_issued_at"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_aggregate.py",
+        "line": 1087,
+        "test": "test_delivered_status_requires_delivered_at"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_integrity_evidence.py",
+        "line": 60,
+        "test": "test_record_is_frozen_dataclass"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 216,
+        "test": "test_cancel_accepts_pre_issue_states"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 309,
+        "test": "test_update_metadata_accepts_non_terminal_states"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 554,
+        "test": "test_terminal_statuses_reject_further_transitions"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_lifecycle.py",
+        "line": 822,
+        "test": "test_canceled_status_serialization"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 188,
+        "test": "test_identifier_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 386,
+        "test": "test_terminal_receipt_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 401,
+        "test": "test_non_terminal_receipt_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 416,
+        "test": "test_issued_receipt_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 431,
+        "test": "test_not_issued_receipt_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 479,
+        "test": "test_verified_status_is_successful"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 493,
+        "test": "test_non_verified_status_is_not_successful"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 508,
+        "test": "test_verification_status_requires_attention"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 521,
+        "test": "test_verification_status_does_not_require_attention"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 680,
+        "test": "test_metadata_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_receipt_primitives.py",
+        "line": 843,
+        "test": "test_reference_is_frozen"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 418,
+        "test": "test_terminal_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_aggregate.py",
+        "line": 434,
+        "test": "test_non_terminal_status_classification"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 308,
+        "test": "test_fail_from_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 335,
+        "test": "test_cancel_from_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 365,
+        "test": "test_expire_from_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_lifecycle.py",
+        "line": 435,
+        "test": "test_terminal_states_reject_updates"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 39,
+        "test": "test_remittance_status_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_remittance_primitives.py",
+        "line": 46,
+        "test": "test_remittance_status_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 116,
+        "test": "test_all_transaction_statuses_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 151,
+        "test": "test_transaction_type_status_and_direction_reject_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transaction.py",
+        "line": 176,
+        "test": "test_transaction_status_semantics"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 355,
+        "test": "test_terminal_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_aggregate.py",
+        "line": 371,
+        "test": "test_non_terminal_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_lifecycle.py",
+        "line": 398,
+        "test": "test_terminal_states_reject_transitions"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_lifecycle.py",
+        "line": 545,
+        "test": "test_backdated_status_transition_rejected"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 151,
+        "test": "test_transfer_status_parse"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 158,
+        "test": "test_transfer_status_inventory"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_transfer_primitives.py",
+        "line": 185,
+        "test": "test_transfer_status_rejects_invalid_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 194,
+        "test": "test_wallet_status_parse_normalizes_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 201,
+        "test": "test_wallet_status_parse_returns_existing_enum"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 208,
+        "test": "test_wallet_status_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 216,
+        "test": "test_wallet_status_rejects_empty_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 224,
+        "test": "test_wallet_status_rejects_unsupported_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 642,
+        "test": "test_active_wallet_can_transact"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 671,
+        "test": "test_pending_wallet_can_be_closed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 680,
+        "test": "test_pending_wallet_cannot_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 688,
+        "test": "test_active_wallet_can_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 714,
+        "test": "test_suspended_wallet_can_be_restricted"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 731,
+        "test": "test_closed_wallet_has_no_allowed_transitions"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 745,
+        "test": "test_transition_to_same_status_fails"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transaction_ledger_integration_certification.py",
+        "line": 160,
+        "test": "test_lifecycle_status_alignment_is_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_phase1_transfer_remittance_settlement_integration_certification.py",
+        "line": 350,
+        "test": "test_lifecycle_status_and_terminal_invariants_are_certified"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 108,
+        "test": "test_non_authoritative_capability_cannot_mutate_financial_state"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 149,
+        "test": "test_unknown_capability_fails_closed"
+      },
+      {
+        "file": "afritech/tests/novapay/test_wallet_ledger_authority.py",
+        "line": 154,
+        "test": "test_empty_capability_fails_closed"
+      }
+    ],
+    "wallet_ledger_references": [
+      {
+        "file": "afritech/tests/novapay/test_domain_balance_snapshot_aggregate.py",
+        "line": 348,
+        "test": "test_component_ledger_account_must_match_snapshot"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_aggregate.py",
+        "line": 248,
+        "test": "test_ledger_backed_types_require_ledger_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 674,
+        "test": "test_link_ledger_account_returns_new_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 693,
+        "test": "test_link_ledger_account_rejects_no_op"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 80,
+        "test": "test_ledger_account_id_normalizes_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 88,
+        "test": "test_ledger_account_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 106,
+        "test": "test_ledger_account_id_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 113,
+        "test": "test_ledger_account_id_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 121,
+        "test": "test_ledger_account_id_accepts_supported_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 129,
+        "test": "test_ledger_account_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 136,
+        "test": "test_ledger_account_ids_are_orderable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 172,
+        "test": "test_ledger_account_type_parse_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 179,
+        "test": "test_ledger_account_type_parse_returns_existing_enum"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 186,
+        "test": "test_ledger_account_type_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 194,
+        "test": "test_ledger_account_type_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 202,
+        "test": "test_ledger_account_type_rejects_unknown_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 275,
+        "test": "test_ledger_account_status_parse_normalizes"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 282,
+        "test": "test_ledger_account_status_returns_existing_enum"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 291,
+        "test": "test_ledger_account_status_rejects_non_string"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 299,
+        "test": "test_ledger_account_status_rejects_empty_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 307,
+        "test": "test_ledger_account_status_rejects_unknown_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 320,
+        "test": "test_ledger_account_metadata_defaults_empty"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 326,
+        "test": "test_ledger_account_metadata_of_none_is_empty"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 332,
+        "test": "test_ledger_account_metadata_of_returns_existing"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 340,
+        "test": "test_ledger_account_metadata_normalizes_keys"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 354,
+        "test": "test_ledger_account_metadata_defensive_copy"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 363,
+        "test": "test_ledger_account_metadata_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 372,
+        "test": "test_ledger_account_metadata_canonical_mapping_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 381,
+        "test": "test_ledger_account_metadata_get_default"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 390,
+        "test": "test_ledger_account_metadata_with_value_returns_new_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 406,
+        "test": "test_ledger_account_metadata_without_returns_new_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 425,
+        "test": "test_ledger_account_metadata_without_missing_is_safe"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 445,
+        "test": "test_ledger_account_metadata_rejects_non_mapping"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 455,
+        "test": "test_ledger_account_metadata_rejects_non_string_key"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 465,
+        "test": "test_ledger_account_metadata_rejects_empty_key"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 473,
+        "test": "test_ledger_account_metadata_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 807,
+        "test": "test_ledger_account_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 1076,
+        "test": "test_ledger_account_has_no_authoritative_balance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 65,
+        "test": "test_wallet_id_normalizes_surrounding_whitespace"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 73,
+        "test": "test_wallet_id_of_returns_existing_instance"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 91,
+        "test": "test_wallet_id_rejects_invalid_values"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 96,
+        "test": "test_wallet_id_rejects_non_string_value"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 104,
+        "test": "test_wallet_id_accepts_supported_identifier_characters"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 110,
+        "test": "test_wallet_id_is_immutable"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 117,
+        "test": "test_wallet_ids_are_orderable"
+      }
+    ],
+    "wallet_lifecycle": [
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 115,
+        "test": "test_activate_pending_customer"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 147,
+        "test": "test_activate_rejects_non_pending_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 211,
+        "test": "test_suspend_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_customer_lifecycle.py",
+        "line": 241,
+        "test": "test_suspend_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 119,
+        "test": "test_activate_pending_account"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 152,
+        "test": "test_activate_rejects_non_pending"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 215,
+        "test": "test_suspend_allowed_statuses"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 244,
+        "test": "test_suspend_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 306,
+        "test": "test_reactivate_returns_account_to_active"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_lifecycle.py",
+        "line": 335,
+        "test": "test_reactivate_rejects_invalid_status"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_financial_account_value_objects.py",
+        "line": 296,
+        "test": "test_financial_account_restrictions_detect_fully_blocked"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 842,
+        "test": "test_activate_returns_new_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 873,
+        "test": "test_pending_cannot_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 883,
+        "test": "test_active_can_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 897,
+        "test": "test_restricted_can_be_reactivated"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_ledger_account.py",
+        "line": 910,
+        "test": "test_suspended_can_be_restricted"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 651,
+        "test": "test_activate_returns_new_version"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 680,
+        "test": "test_pending_wallet_cannot_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 688,
+        "test": "test_active_wallet_can_be_suspended"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 701,
+        "test": "test_restricted_wallet_can_be_reactivated"
+      },
+      {
+        "file": "afritech/tests/novapay/test_domain_wallet.py",
+        "line": 714,
+        "test": "test_suspended_wallet_can_be_restricted"
+      }
+    ]
+  },
+  "focused_test_file_count": 38,
+  "focused_test_function_count": 1360
+}

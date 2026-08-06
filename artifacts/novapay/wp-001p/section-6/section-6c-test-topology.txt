@@ -1,0 +1,22 @@
+WP-001P SECTION 6C TEST TOPOLOGY
+================================
+
+Authority-boundary certification tests: 12
+Runtime-framework import test: 1
+Replay-safety and side-effect test: 1
+Total pytest functions: 14
+
+test_receipt_public_boundary_remains_canonical
+test_receipt_types_have_no_payment_execution_authority
+test_receipt_types_have_no_wallet_mutation_authority
+test_receipt_types_have_no_ledger_posting_authority
+test_receipt_types_have_no_transfer_or_remittance_authority
+test_receipt_types_have_no_settlement_or_reconciliation_authority
+test_receipt_types_have_no_persistence_authority
+test_receipt_types_have_no_provider_or_network_authority
+test_receipt_types_have_no_delivery_authority
+test_receipt_types_have_no_external_signing_or_verification_authority
+test_receipt_dataclasses_hide_no_runtime_authority_fields
+test_receipt_classes_hide_no_runtime_authority_callables
+test_receipt_module_has_no_runtime_framework_imports
+test_receipt_module_remains_replay_safe_and_side_effect_free

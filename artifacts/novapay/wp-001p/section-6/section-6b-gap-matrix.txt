@@ -1,0 +1,115 @@
+RECEIPT CROSS-DOMAIN INTEGRATION GAP MATRIX
+===========================================
+
+RCG-001 — Transaction Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 47
+Decision: Preserve and certify the existing contract.
+
+RCG-002 — Transfer Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 74
+Decision: Preserve and certify the existing contract.
+
+RCG-003 — Remittance Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 47
+Decision: Preserve and certify the existing contract.
+
+RCG-004 — SettlementBatch Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 9
+Decision: Preserve and certify the existing contract.
+
+RCG-005 — SettlementReconciliation Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 30
+Decision: Preserve and certify the existing contract.
+
+RCG-006 — Customer Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 126
+Decision: Preserve and certify the existing contract.
+
+RCG-007 — Wallet Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 79
+Decision: Preserve and certify the existing contract.
+
+RCG-008 — FinancialAccount Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 116
+Decision: Preserve and certify the existing contract.
+
+RCG-009 — LedgerAccount Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 56
+Decision: Preserve and certify the existing contract.
+
+RCG-010 — Money and currency integration
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 241
+Decision: Preserve and certify the existing contract.
+
+RCG-011 — BalanceSnapshot Receipt references
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 93
+Decision: Preserve and certify the existing contract.
+
+RCG-012 — Receipt monetary-summary consistency
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 3
+Decision: Preserve and certify the existing contract.
+
+RCG-013 — Receipt lifecycle compatibility
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 201
+Decision: Preserve and certify the existing contract.
+
+RCG-014 — Integrity evidence and verification relationship
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 27
+Decision: Preserve and certify the existing contract.
+
+RCG-015 — Deterministic serialization and replay
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 172
+Decision: Preserve and certify the existing contract.
+
+RCG-016 — Module-local Receipt public boundary
+Classification: IMPLEMENTED
+Source evidence: PRESENT
+Test evidence: 47
+Decision: Preserve and certify the existing contract.
+
+RCG-017 — Runtime and authority boundaries
+Classification: PARTIAL
+Source evidence: ABSENT
+Test evidence: 56
+Decision: Add forbidden execution, settlement, persistence, delivery, signing, and verification authority tests.
+
+SUMMARY
+-------
+IMPLEMENTED=16
+PARTIAL=1
+ABSENT=0
+DEFERRED=0
+NOT_REQUIRED=0
+FOCUSED_IMPLEMENTATION_REQUIRED=NO
+FOCUSED_CERTIFICATION_TESTS_REQUIRED=YES
+SECTION_6_DECISION=FOCUSED_CERTIFICATION_TESTS_REQUIRED

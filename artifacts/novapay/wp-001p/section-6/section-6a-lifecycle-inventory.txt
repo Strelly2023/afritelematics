@@ -1,0 +1,18 @@
+Receipt status/type records: 9
+ReceiptAdjustmentType
+ReceiptIntegrityEvidenceType
+ReceiptLineItemType
+ReceiptPartyType
+ReceiptReferenceType
+ReceiptStatus
+ReceiptTaxType
+ReceiptType
+ReceiptVerificationStatus
+
+Receipt lifecycle-related methods: 3
+Receipt.cancel
+Receipt.issue
+Receipt.void
+Receipt lifecycle vocabulary: PRESENT
+External aggregate lifecycle authority: NONE
+Receipt lifecycle compatibility: PASS

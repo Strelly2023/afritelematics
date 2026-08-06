@@ -1,0 +1,8 @@
+Receipt module __all__: 25
+Domain package __all__: 168
+Top-level NovaPay __all__: 190
+Receipt aggregate visibility: MODULE_LOCAL
+ReceiptIntegrityEvidence public identity: PASS
+ReceiptVerificationResult public identity: PASS
+ReceiptPresentationSummary state: DEFERRED
+Canonical Receipt export boundary: PASS

@@ -1,0 +1,76 @@
+{
+  "balance_snapshot_money": {
+    "source_occurrences": {
+      "balance_snapshot": [
+        "Money",
+        "Decimal",
+        "Currency"
+      ],
+      "currency": [
+        "Money",
+        "Currency",
+        "currency_code"
+      ],
+      "exchange_rate_provider": [
+        "Money",
+        "Decimal",
+        "Currency"
+      ],
+      "fx": [
+        "Money",
+        "Decimal",
+        "Currency"
+      ],
+      "money": [
+        "Money",
+        "Decimal",
+        "Currency",
+        "currency_code"
+      ]
+    }
+  },
+  "exchange_rate_direction": {
+    "source_occurrences": {
+      "fx": [
+        "base_currency",
+        "quote_currency"
+      ]
+    }
+  },
+  "provider_source_traceability": {
+    "source_occurrences": {
+      "balance_snapshot": [
+        "provider",
+        "source"
+      ],
+      "currency": [
+        "provider",
+        "source"
+      ],
+      "exchange_rate_provider": [
+        "provider_id",
+        "rate_source",
+        "source_id",
+        "provider",
+        "source"
+      ],
+      "fx": [
+        "provider",
+        "source"
+      ],
+      "money": [
+        "provider"
+      ]
+    }
+  },
+  "quote_expiry": {
+    "source_occurrences": {
+      "fx": [
+        "expires_at",
+        "expiry",
+        "expired",
+        "is_expired"
+      ]
+    }
+  }
+}

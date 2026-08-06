@@ -1,0 +1,4 @@
+Audited production paths: 17
+Relative domain import edges: 52
+Forbidden runtime imports: 0
+Replay-safe domain coupling: PASS

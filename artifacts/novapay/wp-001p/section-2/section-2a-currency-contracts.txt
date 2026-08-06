@@ -1,0 +1,15 @@
+CurrencyCountryCodes fields: ['values']
+CurrencyDefinition fields: ['currency_definition_id', 'currency', 'name', 'symbol', 'currency_type', 'status', 'minor_units', 'rounding_mode', 'country_codes', 'numeric_code', 'fund_code', 'metadata', 'version']
+CurrencyDefinitionId fields: ['value']
+CurrencyMetadata fields: ['values']
+CurrencyName fields: ['value']
+CurrencyRegistry fields: ['currency_registry_id', 'definitions', 'metadata', 'version']
+CurrencyRegistryId fields: ['value']
+CurrencyRoundingMode enum values: 5
+CurrencyStatus enum values: 4
+CurrencySymbol fields: ['value']
+CurrencyType enum values: 5
+Currency-related canonical types: ['CurrencyCountryCodes', 'CurrencyDefinition', 'CurrencyDefinitionId', 'CurrencyMetadata', 'CurrencyName', 'CurrencyRegistry', 'CurrencyRegistryId', 'CurrencyRoundingMode', 'CurrencyStatus', 'CurrencySymbol', 'CurrencyType']
+Currency-code uppercase semantics: INSPECTED
+Currency identity inventory: PASS
+Currency authority boundary: PASS

@@ -1,0 +1,12 @@
+Monetary relative-import edges: 8
+currency -> money: Currency
+fx -> money: Currency, Money
+balance_snapshot -> customer: CustomerId
+balance_snapshot -> financial_account: FinancialAccountId
+balance_snapshot -> journal_entry: JournalEntryId
+balance_snapshot -> ledger_account: LedgerAccountId
+balance_snapshot -> money: Currency, Money
+balance_snapshot -> wallet: WalletId
+
+Monetary self-import edges: NONE
+Monetary reference coupling inventory: PASS

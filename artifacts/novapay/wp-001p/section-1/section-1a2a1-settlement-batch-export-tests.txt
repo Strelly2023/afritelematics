@@ -1,0 +1,15 @@
+..F
+=================================== FAILURES ===================================
+_________________________ test_top_level_public_count __________________________
+
+    def test_top_level_public_count() -> None:
+>       assert len(novapay.__all__) == 188
+E       AssertionError: assert 190 == 188
+E        +  where 190 = len(['AuthorityKind', 'BalanceComponent', 'BalanceComponentType', 'BalanceReconciliation', 'BalanceSnapshot', 'BalanceSnapshotHistory', ...])
+E        +    where ['AuthorityKind', 'BalanceComponent', 'BalanceComponentType', 'BalanceReconciliation', 'BalanceSnapshot', 'BalanceSnapshotHistory', ...] = novapay.__all__
+
+afritech/tests/novapay/test_domain_settlement_batch_exports.py:65: AssertionError
+=========================== short test summary info ============================
+FAILED afritech/tests/novapay/test_domain_settlement_batch_exports.py::test_top_level_public_count
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 2 passed in 0.36s

@@ -1,0 +1,116 @@
+diff --git a/afritech/architecture/anchor_indexer.py b/afritech/architecture/anchor_indexer.py
+index 971a48861..4e7b04991 100644
+--- a/afritech/architecture/anchor_indexer.py
++++ b/afritech/architecture/anchor_indexer.py
+@@ -726,15 +726,16 @@ class AnchorStreamHub:
+         self._stop_requested = True
+         if self._dispatch_task is not None:
+             self._dispatch_task.cancel()
+-            with contextlib.suppress(Exception):
++            with contextlib.suppress(asyncio.CancelledError):
+                 await self._dispatch_task
+         self._dispatch_task = None
+ 
+     async def _dispatch_loop(self) -> None:
+         while not self._stop_requested:
+             try:
+-                event = await asyncio.to_thread(self._queue.get, True, 1.0)
++                event = self._queue.get_nowait()
+             except queue.Empty:
++                await asyncio.sleep(0.1)
+                 continue
+             except asyncio.CancelledError:
+                 break
+@@ -1879,7 +1880,7 @@ class AnchorEventSubscriber:
+         while self._tasks:
+             task = self._tasks.pop()
+             task.cancel()
+-            with contextlib.suppress(Exception):
++            with contextlib.suppress(asyncio.CancelledError):
+                 await task
+         self._started_profiles.clear()
+ 
+diff --git a/afritech/tests/novapay/test_domain_settlement_batch_exports.py b/afritech/tests/novapay/test_domain_settlement_batch_exports.py
+index 68d37ee5f..9b2747091 100644
+--- a/afritech/tests/novapay/test_domain_settlement_batch_exports.py
++++ b/afritech/tests/novapay/test_domain_settlement_batch_exports.py
+@@ -58,11 +58,11 @@ def test_canonical_inventory_contract() -> None:
+ 
+ 
+ def test_domain_public_count() -> None:
+-    assert len(domain.__all__) == 166
++    assert len(domain.__all__) == 168
+ 
+ 
+ def test_top_level_public_count() -> None:
+-    assert len(novapay.__all__) == 188
++    assert len(novapay.__all__) == 190
+ 
+ 
+ def test_domain_exports_every_canonical_symbol() -> None:
+diff --git a/docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md b/docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md
+index 76630b6d0..2f66e7e41 100644
+--- a/docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md
++++ b/docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md
+@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
+ ## Runtime Summary
+ 
+ - Startup module: `afritech.api.app`
+-- Startup-safe closure size: `857`
++- Startup-safe closure size: `858`
+ - Django-bound modules declared in repo: `265`
+ - Runtime-boundary violations: `0`
+ - Direct startup imports from `afritech.api.app`: `107`
+@@ -25,7 +25,7 @@ flowchart LR
+     Dashboard["React Dashboard\ndashboard/src"] --> Edge
+     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
+ 
+-    subgraph FastAPI["Startup-Safe FastAPI Surface (857 modules)"]
++    subgraph FastAPI["Startup-Safe FastAPI Surface (858 modules)"]
+         App --> Api["API Routers\nauth, trace, system, public verify"]
+         App --> Workspace["AfriPro Workspace API"]
+         App --> Governance["Ops Governance API"]
+@@ -261,7 +261,7 @@ flowchart TD
+ - `afritech.monitoring.alerts`
+ - `afritech.monitoring.realtime_anomaly_alerting`
+ 
+-### Other (692)
++### Other (693)
+ 
+ - `afritech`
+ - `afritech.afripay`
+@@ -761,6 +761,7 @@ flowchart TD
+ - `afritech.novapay.domain.journal_entry`
+ - `afritech.novapay.domain.ledger_account`
+ - `afritech.novapay.domain.money`
++- `afritech.novapay.domain.receipt`
+ - `afritech.novapay.domain.remittance`
+ - `afritech.novapay.domain.settlement_batch`
+ - `afritech.novapay.domain.settlement_reconciliation`
+diff --git a/services/administration/app_registry.py b/services/administration/app_registry.py
+index 3bd4e0937..6f7a3d884 100644
+--- a/services/administration/app_registry.py
++++ b/services/administration/app_registry.py
+@@ -2,11 +2,9 @@ from __future__ import annotations
+ 
+ import json
+ from dataclasses import dataclass
+-from pathlib import Path
++from importlib.resources import files
+ from typing import Any, Iterable
+ 
+-_REGISTRY_PATH = Path(__file__).resolve().parents[2] / "contracts" / "app-registry.json"
+-
+ 
+ @dataclass(frozen=True)
+ class AppRegistryItem:
+@@ -37,7 +35,8 @@ class AppRegistryItem:
+ 
+ 
+ def load_app_registry_document() -> dict[str, Any]:
+-    return json.loads(_REGISTRY_PATH.read_text(encoding="utf-8"))
++    resource = files("contracts").joinpath("app-registry.json")
++    return json.loads(resource.read_text(encoding="utf-8"))
+ 
+ 
+ def list_app_registry() -> list[AppRegistryItem]:

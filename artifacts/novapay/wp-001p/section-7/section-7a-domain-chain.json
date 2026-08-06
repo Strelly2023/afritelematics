@@ -1,0 +1,448 @@
+{
+  "chain": [
+    {
+      "dataclass": true,
+      "fields": [
+        "customer_id",
+        "customer_type",
+        "status",
+        "tier",
+        "name",
+        "novaid_identity_id",
+        "tenant_id",
+        "contacts",
+        "addresses",
+        "preferences",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "canonical_dict",
+        "change_tier",
+        "close",
+        "create",
+        "reinstate",
+        "rename",
+        "replace_addresses",
+        "replace_contacts",
+        "restrict",
+        "suspend",
+        "update_metadata",
+        "update_preferences"
+      ],
+      "module": "customer",
+      "position": 1,
+      "stage": "customer",
+      "symbols": [
+        "Customer"
+      ]
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "wallet_id",
+        "owner_id",
+        "wallet_type",
+        "status",
+        "home_currency",
+        "created_at",
+        "updated_at",
+        "tenant_id",
+        "external_reference",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "can_transition_to",
+        "canonical_dict",
+        "close",
+        "create",
+        "restrict",
+        "suspend",
+        "transition_to",
+        "with_metadata"
+      ],
+      "module": "wallet",
+      "position": 2,
+      "stage": "wallet_and_financial_account",
+      "symbols": [
+        "Wallet"
+      ]
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "transaction_id",
+        "transaction_type",
+        "status",
+        "direction",
+        "amount",
+        "created_at",
+        "updated_at",
+        "source_wallet_id",
+        "destination_wallet_id",
+        "journal_entry_id",
+        "description",
+        "external_reference",
+        "idempotency_key",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "can_transition_to",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "fail",
+        "reverse",
+        "start_processing",
+        "with_metadata"
+      ],
+      "module": "transaction",
+      "position": 3,
+      "stage": "transaction",
+      "symbols": [
+        "Transaction"
+      ]
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "account_id",
+        "account_code",
+        "name",
+        "account_type",
+        "normal_balance",
+        "status",
+        "currency",
+        "created_at",
+        "updated_at",
+        "owner_id",
+        "wallet_id",
+        "tenant_id",
+        "parent_account_id",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "activate",
+        "can_transition_to",
+        "canonical_dict",
+        "close",
+        "create",
+        "restrict",
+        "suspend",
+        "transition_to",
+        "with_metadata"
+      ],
+      "module": "ledger_account",
+      "position": 4,
+      "stage": "ledger_and_journal",
+      "symbols": [
+        "LedgerAccount"
+      ]
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "transfer_id",
+        "reference",
+        "status",
+        "transfer_type",
+        "direction",
+        "purpose",
+        "priority",
+        "sender",
+        "beneficiary",
+        "source_account",
+        "destination_account",
+        "source_amount",
+        "destination_amount",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "reverse",
+        "submit",
+        "update_metadata",
+        "update_priority",
+        "update_reference",
+        "validate"
+      ],
+      "module": "transfer",
+      "position": 5,
+      "stage": "transfer",
+      "symbols": [
+        "Transfer"
+      ]
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "remittance_id",
+        "reference",
+        "status",
+        "remittance_type",
+        "direction",
+        "purpose",
+        "priority",
+        "sender",
+        "beneficiary",
+        "source_account",
+        "destination_account",
+        "source_amount",
+        "destination_amount",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "methods": [
+        "authorize",
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "reverse",
+        "submit",
+        "update_metadata",
+        "update_priority",
+        "update_reference",
+        "validate"
+      ],
+      "module": "remittance",
+      "position": 6,
+      "stage": "remittance",
+      "symbols": [
+        "Remittance"
+      ]
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "batch_id",
+        "batch_type",
+        "status",
+        "window",
+        "settlement_currency_code",
+        "gross_amount",
+        "net_amount",
+        "participants",
+        "references",
+        "entry_count",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "complete",
+        "create",
+        "expire",
+        "fail",
+        "mark_processing",
+        "mark_ready",
+        "open",
+        "partially_complete",
+        "reconcile",
+        "update_metadata",
+        "update_window",
+        "validate"
+      ],
+      "module": "settlement_batch",
+      "position": 7,
+      "stage": "settlement_batch",
+      "symbols": [
+        "SettlementBatch"
+      ]
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "reconciliation_id",
+        "reconciliation_type",
+        "status",
+        "settlement_batch_id",
+        "expected_entry_count",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "close",
+        "create",
+        "expire",
+        "mark_exception",
+        "mark_matched",
+        "mark_partially_matched",
+        "mark_unmatched",
+        "open",
+        "require_review",
+        "start_collecting",
+        "start_comparing",
+        "update_metadata"
+      ],
+      "module": "settlement_reconciliation",
+      "position": 8,
+      "stage": "settlement_reconciliation",
+      "symbols": [
+        "SettlementReconciliation"
+      ]
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "receipt_id",
+        "receipt_type",
+        "status",
+        "format",
+        "issuer",
+        "recipient",
+        "currency_code",
+        "line_items",
+        "adjustments",
+        "taxes",
+        "monetary_summary",
+        "references",
+        "integrity_evidence",
+        "issued_at",
+        "delivered_at",
+        "expires_at",
+        "created_at",
+        "updated_at",
+        "version",
+        "metadata"
+      ],
+      "frozen": true,
+      "methods": [
+        "cancel",
+        "canonical_dict",
+        "create",
+        "expire",
+        "issue",
+        "mark_delivered",
+        "prepare",
+        "supersede",
+        "update_metadata",
+        "void"
+      ],
+      "module": "receipt",
+      "position": 9,
+      "stage": "receipt",
+      "symbols": [
+        "Receipt"
+      ]
+    }
+  ],
+  "supplemental": [
+    {
+      "dataclass": true,
+      "fields": [
+        "account_id",
+        "customer_id",
+        "tenant_id",
+        "account_type",
+        "purpose",
+        "status",
+        "currency",
+        "name",
+        "wallet_id",
+        "ledger_account_id",
+        "terms",
+        "restrictions",
+        "metadata",
+        "created_at",
+        "updated_at",
+        "version"
+      ],
+      "frozen": true,
+      "module": "financial_account",
+      "symbol": "FinancialAccount"
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "snapshot_id",
+        "snapshot_type",
+        "status",
+        "currency",
+        "components",
+        "ledger_position",
+        "as_of",
+        "captured_at",
+        "customer_id",
+        "financial_account_id",
+        "wallet_id",
+        "ledger_account_id",
+        "source_journal_entry_id",
+        "source_reference_id",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "module": "balance_snapshot",
+      "symbol": "BalanceSnapshot"
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "entry_id",
+        "entry_type",
+        "status",
+        "lines",
+        "created_at",
+        "updated_at",
+        "description",
+        "reference_id",
+        "idempotency_key",
+        "metadata",
+        "version"
+      ],
+      "frozen": true,
+      "module": "journal_entry",
+      "symbol": "JournalEntry"
+    },
+    {
+      "dataclass": true,
+      "fields": [
+        "amount",
+        "currency"
+      ],
+      "frozen": true,
+      "module": "money",
+      "symbol": "Money"
+    }
+  ]
+}

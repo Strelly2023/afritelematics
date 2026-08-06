@@ -1,0 +1,21 @@
+9d6148433 (HEAD -> feature/product-factory-enterprise-sdlc) feat(novapay): establish receipt domain foundation
+371c9f7d7 feat(novapay): add settlement reconciliation domain foundation
+bd561bb5c feat(novapay): certify WP-001M settlement batch domain
+dcc1e1f84 feat(novapay): add certified remittance domain foundation
+1d2b02d85 feat(novapay): add transfer domain foundation
+acba910db feat(novapay): complete exchange rate provider domain
+0673f1da3 feat(novapay): add immutable balance snapshot domain
+d5138b26b feat(novapay): add canonical currency definitions and registry
+84612b5c3 feat(novapay): add canonical exchange rate and fx quote domain
+0147ed490 feat(novapay): add immutable financial account aggregate
+0c937c605 feat(novapay): introduce canonical customer domain
+5f48bdef6 feat(novapay): introduce canonical wallet ledger and transaction domain
+94f3b0afc feat(novapay): integrate consumer and agent backend reads
+97692d769 feat(novapay): implement transactional financial outbox
+ececaa0e7 feat(novapay): add reconciled monetary migration
+cff31add7 feat(novapay): normalize postgres monetary persistence
+a41cbc84b feat(novapay): add environment-aware backend guard
+e598bc549 Implement NovaRide production-operated platform
+4c9ed1ef5 Implement NovaID and NovaPay pilot surfaces
+d0f9380dc Add NovaTech portal suite and CI acceleration
+af7a9b94a Implement governed NovaPay ecosystem

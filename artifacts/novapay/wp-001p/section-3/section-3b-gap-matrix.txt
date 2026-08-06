@@ -1,0 +1,73 @@
+TRANSACTION AND LEDGER INTEGRATION GAP MATRIX
+=============================================
+
+TLG-001 — Transaction-to-wallet ownership and references
+Classification: IMPLEMENTED
+Test evidence: 69
+Decision: Preserve and certify the existing contract.
+
+TLG-002 — Transaction-to-ledger-account propagation
+Classification: IMPLEMENTED
+Test evidence: 64
+Decision: Preserve and certify the existing contract.
+
+TLG-003 — Journal-entry debit and credit balancing
+Classification: IMPLEMENTED
+Test evidence: 27
+Decision: Preserve and certify the existing contract.
+
+TLG-004 — Transaction and journal idempotency
+Classification: IMPLEMENTED
+Test evidence: 18
+Decision: Preserve and certify the existing contract.
+
+TLG-005 — Transfer-to-transaction linkage
+Classification: IMPLEMENTED
+Test evidence: 3
+Decision: Preserve and certify the existing contract.
+
+TLG-006 — Settlement-batch membership and references
+Classification: IMPLEMENTED
+Test evidence: 3
+Decision: Preserve and certify the existing contract.
+
+TLG-007 — Settlement-reconciliation linkage
+Classification: IMPLEMENTED
+Test evidence: 23
+Decision: Preserve and certify the existing contract.
+
+TLG-008 — Receipt reference compatibility
+Classification: IMPLEMENTED
+Test evidence: 29
+Decision: Preserve and certify the existing contract.
+
+TLG-009 — Lifecycle and status alignment
+Classification: IMPLEMENTED
+Test evidence: 154
+Decision: Preserve and certify the existing contract.
+
+TLG-010 — Deterministic serialization and replay
+Classification: IMPLEMENTED
+Test evidence: 59
+Decision: Preserve and certify the existing contract.
+
+TLG-011 — Event ordering and immutable aggregate interaction
+Classification: IMPLEMENTED
+Test evidence: 42
+Decision: Preserve and certify the existing contract.
+
+TLG-012 — Domain and runtime authority boundaries
+Classification: IMPLEMENTED
+Test evidence: 38
+Decision: Preserve and certify the existing contract.
+
+SUMMARY
+-------
+IMPLEMENTED=12
+PARTIAL=0
+ABSENT=0
+DEFERRED=0
+NOT_REQUIRED=0
+FOCUSED_IMPLEMENTATION_REQUIRED=NO
+FOCUSED_CERTIFICATION_TESTS_REQUIRED=NO
+SECTION_3_DECISION=TEST_ONLY_CERTIFICATION_SUFFICIENT

@@ -1,0 +1,10 @@
+MONETARY POLICY DUPLICATION AUDIT
+=================================
+
+quantize locations: 2
+rounding-symbol locations: 1
+modules with local rounding vocabulary: 1
+
+money: 3 rounding/quantize occurrences
+
+Decimal from float literals: 0

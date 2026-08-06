@@ -1,0 +1,83 @@
+TRANSFER, REMITTANCE, AND SETTLEMENT GAP MATRIX
+================================================
+
+RSG-001 — Transfer and remittance ownership
+Classification: IMPLEMENTED
+Test evidence: 141
+Decision: Preserve and certify the existing contract.
+
+RSG-002 — Sender, beneficiary, customer, and account references
+Classification: IMPLEMENTED
+Test evidence: 258
+Decision: Preserve and certify the existing contract.
+
+RSG-003 — Transfer-to-remittance linkage
+Classification: IMPLEMENTED
+Test evidence: 14
+Decision: Preserve and certify the existing contract.
+
+RSG-004 — Send, receive, fee, and payout reconciliation
+Classification: IMPLEMENTED
+Test evidence: 106
+Decision: Preserve and certify the existing contract.
+
+RSG-005 — FX quote and currency-pair consistency
+Classification: IMPLEMENTED
+Test evidence: 60
+Decision: Preserve and certify the existing contract.
+
+RSG-006 — Settlement-batch membership and uniqueness
+Classification: IMPLEMENTED
+Test evidence: 31
+Decision: Preserve and certify the existing contract.
+
+RSG-007 — Settlement-reconciliation linkage
+Classification: IMPLEMENTED
+Test evidence: 24
+Decision: Preserve and certify the existing contract.
+
+RSG-008 — Lifecycle and status compatibility
+Classification: IMPLEMENTED
+Test evidence: 183
+Decision: Preserve and certify the existing contract.
+
+RSG-009 — Cancellation, failure, completion, and settlement invariants
+Classification: IMPLEMENTED
+Test evidence: 53
+Decision: Preserve and certify the existing contract.
+
+RSG-010 — Idempotency and duplicate prevention
+Classification: IMPLEMENTED
+Test evidence: 25
+Decision: Preserve and certify the existing contract.
+
+RSG-011 — Deterministic serialization and replay
+Classification: IMPLEMENTED
+Test evidence: 87
+Decision: Preserve and certify the existing contract.
+
+RSG-012 — Module-local Receipt reference compatibility
+Classification: IMPLEMENTED
+Test evidence: 35
+Decision: Preserve and certify the existing contract.
+
+RSG-013 — Immutable aggregate interaction
+Classification: IMPLEMENTED
+Test evidence: 102
+Decision: Preserve and certify the existing contract.
+
+RSG-014 — Runtime and authority boundaries
+Classification: IMPLEMENTED
+Test evidence: 40
+Decision: Preserve and certify the existing contract.
+
+SUMMARY
+-------
+IMPLEMENTED=14
+PARTIAL=0
+ABSENT=0
+DEFERRED=0
+NOT_REQUIRED=0
+FOCUSED_IMPLEMENTATION_REQUIRED=NO
+FOCUSED_CERTIFICATION_TESTS_REQUIRED=NO
+SECTION_4_DECISION=TEST_ONLY_CERTIFICATION_SUFFICIENT

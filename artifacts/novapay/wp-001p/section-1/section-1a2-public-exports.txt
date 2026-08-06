@@ -1,0 +1,16 @@
+receipt __all__ count: 25
+receipt ordering: PASS
+receipt uniqueness: PASS
+domain __all__ count: 168
+domain ordering: PASS
+domain uniqueness: PASS
+novapay __all__ count: 190
+novapay ordering: PASS
+novapay uniqueness: PASS
+ReceiptIntegrityEvidence cross-surface identity: PASS
+ReceiptVerificationResult cross-surface identity: PASS
+Receipt aggregate module export: PRESENT
+Receipt aggregate domain export: ABSENT
+Receipt aggregate top-level export: ABSENT
+ReceiptPresentationSummary: DEFERRED
+Canonical public-export inventory: PASS
