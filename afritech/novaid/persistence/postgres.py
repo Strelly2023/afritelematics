@@ -22,6 +22,10 @@ from .identity_codec import (
     identity_from_row,
 )
 from ..domain.models import Identity, RequestContext
+from .device_attestation_repository import (
+    DeviceAttestationRepository,
+    DeviceAttestationSessionRepository,
+)
 
 try:
     import psycopg
@@ -224,6 +228,7 @@ class PostgresIdentityRepository(PostgresRepository):
         expires_at: str,
         pending_mfa_expires_at: str,
         authentication_methods: str,
+        device_reference: str | None = None,
     ) -> None:
         self.connection.execute(
             "INSERT INTO novaid_authentication_sessions(session_id,tenant_id,identity_id,authentication_time,"
@@ -231,7 +236,7 @@ class PostgresIdentityRepository(PostgresRepository):
             "last_seen_at,expires_at,revoked_at,revocation_reason,version,membership_id,authenticated_at,"
             "idle_expires_at,absolute_expires_at,pending_mfa_expires_at,step_up_expires_at,locked_at,expired_at,"
             "compromised_at,network_reference,authentication_methods,security_version,revoked_by,compromise_reason) "
-            "VALUES(%s,%s,%s,%s,%s,%s,NULL,NULL,%s,'PENDING_MFA',%s,%s,%s,NULL,NULL,1,%s,NULL,%s,%s,%s,NULL,NULL,NULL,NULL,NULL,%s,1,NULL,NULL)",
+            "VALUES(%s,%s,%s,%s,%s,%s,%s,NULL,%s,'PENDING_MFA',%s,%s,%s,NULL,NULL,1,%s,NULL,%s,%s,%s,NULL,NULL,NULL,NULL,NULL,%s,1,NULL,NULL)",
             (
                 session_id,
                 tenant_id,
@@ -239,6 +244,7 @@ class PostgresIdentityRepository(PostgresRepository):
                 authentication_time,
                 authentication_strength,
                 credential_id,
+                device_reference,
                 risk_score,
                 created_at,
                 created_at,
@@ -250,6 +256,17 @@ class PostgresIdentityRepository(PostgresRepository):
                 authentication_methods,
             ),
         )
+
+    def revoke_sessions_for_credential(
+        self, tenant_id: str, credential_id: str, *, reason: str, now: str
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='REVOKED',revoked_at=%s,"
+            "revocation_reason=%s,version=version+1 WHERE tenant_id=%s AND credential_id=%s "
+            "AND status NOT IN ('REVOKED','EXPIRED','COMPROMISED')",
+            (now, reason, tenant_id, credential_id),
+        )
+        return result.rowcount
 
     def create_login_challenge(
         self,
@@ -312,7 +329,7 @@ class PostgresIdentityRepository(PostgresRepository):
 
     def get_mfa_challenge_session(self, tenant_id: str, challenge_id: str, session_id: str) -> Any | None:
         return self.connection.execute(
-            "SELECT c.*,s.identity_id,s.status session_status FROM novaid_otp_challenges c "
+            "SELECT c.*,s.identity_id,s.membership_id,s.status session_status FROM novaid_otp_challenges c "
             "JOIN novaid_authentication_sessions s ON CAST(s.session_id AS TEXT)=c.destination_reference "
             "WHERE c.challenge_id=%s AND c.tenant_id=%s AND s.session_id=%s",
             (challenge_id, tenant_id, session_id),
@@ -814,6 +831,8 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
         self.idempotency = PostgresIdempotencyRepository(self.connection)
         self.authentication_locks = PostgresAuthenticationLockRepository(self.connection)
         self.authorization = AuthorizationRepository(self.connection)
+        self.device_attestations = DeviceAttestationRepository(self.connection, postgres=True)
+        self.device_attestation_sessions = DeviceAttestationSessionRepository(self.connection, postgres=True)
 
     def __enter__(self) -> "PostgresNovaIdUnitOfWork":
         if self._connection is not None:

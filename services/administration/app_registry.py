@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from pathlib import Path
+from importlib.resources import files
 from typing import Any, Iterable
-
-_REGISTRY_PATH = Path(__file__).resolve().parents[2] / "contracts" / "app-registry.json"
 
 
 @dataclass(frozen=True)
@@ -37,7 +35,8 @@ class AppRegistryItem:
 
 
 def load_app_registry_document() -> dict[str, Any]:
-    return json.loads(_REGISTRY_PATH.read_text(encoding="utf-8"))
+    resource = files("contracts").joinpath("app-registry.json")
+    return json.loads(resource.read_text(encoding="utf-8"))
 
 
 def list_app_registry() -> list[AppRegistryItem]:

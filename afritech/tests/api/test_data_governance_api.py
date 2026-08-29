@@ -64,7 +64,7 @@ def test_metadata_api_registers_products_entities_and_lineage(tmp_path) -> None:
     headers = auth_headers(role="ADMIN")
 
     product = client.post(
-        "/v1/platform/products",
+        "/v1/novatech/data-governance/products",
         headers=headers,
         json={
             "product_code": "novafleet",

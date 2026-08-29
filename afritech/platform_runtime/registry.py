@@ -21,6 +21,43 @@ from .config import ConfigurationFieldType, PlatformRuntimeSettings, ProductConf
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_BACKEND_REGISTRY_PATH = ROOT / "docs/registry/NOVATECH_BACKEND_REGISTRY.yaml"
 
+PRODUCTION_PRODUCT_MODULE_BINDINGS: dict[str, str] = {
+    "novaride": "afritech.novaride_runtime.services",
+    "novapay": "afritech.core_platform.novapay_runtime",
+    "novacodepro": "afritech.novacodepro.service_main",
+    "novahealth": "afritech.novahealth",
+    "novacommerce": "afritech.novacommerce",
+}
+
+_PRODUCTION_ENVIRONMENTS = frozenset({"production", "prod"})
+
+
+def _is_production_environment(settings: PlatformRuntimeSettings) -> bool:
+    return str(settings.environment).strip().lower() in _PRODUCTION_ENVIRONMENTS
+
+
+def _validate_production_module_authority(
+    product: "BackendProductRegistration",
+    *,
+    settings: PlatformRuntimeSettings,
+) -> None:
+    if not _is_production_environment(settings):
+        return
+
+    product_code = product.product_code.strip().lower()
+    expected_module = PRODUCTION_PRODUCT_MODULE_BINDINGS.get(product_code)
+
+    if expected_module is None:
+        raise RuntimeError(
+            f"production_product_not_allowlisted:{product_code}"
+        )
+
+    if product.module_name != expected_module:
+        raise RuntimeError(
+            "production_product_module_mismatch:"
+            f"{product_code}:{product.module_name}:{expected_module}"
+        )
+
 
 class ProductRegistrationStatus(StrEnum):
     DRAFT = "DRAFT"
@@ -352,6 +389,11 @@ class ProductRuntimeRegistry:
         self.path = path
         self.settings = settings or PlatformRuntimeSettings.from_env()
         self.products = _seed_default_products() if products is None else products
+        for product in self.products.values():
+            _validate_production_module_authority(
+                product,
+                settings=self.settings,
+            )
         self.command_registry = command_registry or CommandRegistry()
         self.query_registry = query_registry or QueryRegistry()
         self.platform_configuration = platform_configuration or {}
@@ -447,6 +489,10 @@ class ProductRuntimeRegistry:
         return product.canonical_dict()
 
     def register_product(self, product: BackendProductRegistration) -> dict[str, Any]:
+        _validate_production_module_authority(
+            product,
+            settings=self.settings,
+        )
         with self._lock:
             key = product.product_code.strip().lower()
             self.products[key] = product

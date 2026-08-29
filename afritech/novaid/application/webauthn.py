@@ -506,6 +506,7 @@ class WebAuthnService:
         return {
             "identity_id": str(row["identity_id"]),
             "credential_id": credential_id,
+            "device_reference": row["device_reference"],
             "authentication_strength": "PHISHING_RESISTANT",
             "user_verified": verified.user_verified,
         }
@@ -539,13 +540,18 @@ class WebAuthnService:
                 identity_id,
                 now.isoformat(),
                 "PHISHING_RESISTANT",
-                None,
+                str(evidence["credential_id"]),
                 0.0,
                 str(context["membership_id"]),
                 created_at=now.isoformat(),
                 expires_at=(now + timedelta(hours=12)).isoformat(),
                 pending_mfa_expires_at=(now + timedelta(minutes=30)).isoformat(),
                 authentication_methods='["WEBAUTHN","PASSKEY"]',
+                device_reference=(
+                    str(evidence["device_reference"])
+                    if evidence.get("device_reference")
+                    else None
+                ),
             )
             if (
                 self.uow.activate_session_and_refresh(
@@ -655,6 +661,13 @@ class WebAuthnService:
                 datetime.now(UTC).isoformat(),
                 actor_identity_id,
             )
+            if target in {"REVOKED", "COMPROMISED", "REPLACED", "DELETED"}:
+                self.uow.revoke_sessions_for_credential(
+                    tenant_id,
+                    credential_id,
+                    reason=f"DEVICE_CREDENTIAL_{target}",
+                    now=datetime.now(UTC).isoformat(),
+                )
         event_type = {
             "SUSPENDED": "WEBAUTHN_CREDENTIAL_SUSPENDED",
             "REVOKED": "WEBAUTHN_CREDENTIAL_REVOKED",

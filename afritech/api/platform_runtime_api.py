@@ -177,7 +177,15 @@ def build_platform_runtime_router(registry: ProductRuntimeRegistry | None = None
         payload: BackendProductRegistrationPayload,
         _: Any = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER")),
     ) -> dict[str, Any]:
-        result = runtime.register_product(_product_from_payload(payload))
+        try:
+            result = runtime.register_product(_product_from_payload(payload))
+        except RuntimeError as exc:
+            detail = str(exc)
+            if detail.startswith(
+                ("production_product_not_allowlisted:", "production_product_module_mismatch:")
+            ):
+                raise HTTPException(status_code=409, detail=detail) from exc
+            raise
         result["platform"] = "NovaTech"
         return result
 

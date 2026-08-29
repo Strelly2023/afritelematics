@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 from ..domain import Identity, SecurityEvent
 from ..persistence import NovaIDUnitOfWork
 from ..security import PasswordHasher
+from ..otp_delivery import OTPDelivery, OTPDeliveryProvider
 
 if TYPE_CHECKING:
     from .lockout import AuthenticationLockoutService
@@ -39,12 +40,40 @@ class DurableAuthenticationService:
         pepper: bytes,
         hasher: PasswordHasher | None = None,
         lockout: "AuthenticationLockoutService | None" = None,
+        otp_delivery: OTPDeliveryProvider | None = None,
+        expose_otp_codes: bool = True,
     ) -> None:
         if len(pepper) < 32:
             raise ValueError("token_pepper_too_short")
         self.uow, self.pepper = uow, pepper
         self.hasher = hasher or PasswordHasher()
         self.lockout = lockout
+        if not expose_otp_codes and otp_delivery is None:
+            raise ValueError("novaid_otp_delivery_provider_required")
+        self.otp_delivery = otp_delivery
+        self.expose_otp_codes = expose_otp_codes
+
+    def _deliver_otp(
+        self,
+        *,
+        tenant_id: str,
+        destination: str,
+        purpose: str,
+        challenge_id: str,
+        code: str,
+        correlation_id: str,
+    ) -> None:
+        if self.otp_delivery is not None:
+            self.otp_delivery.deliver(
+                OTPDelivery(
+                    tenant_id=tenant_id,
+                    destination=destination,
+                    purpose=purpose,
+                    challenge_id=challenge_id,
+                    code=code,
+                    correlation_id=correlation_id,
+                )
+            )
 
     def _hash(self, purpose: str, value: str) -> str:
         return hmac.new(self.pepper, f"{purpose}:{value}".encode(), hashlib.sha256).hexdigest()
@@ -134,12 +163,21 @@ class DurableAuthenticationService:
                 5,
                 correlation_id,
             )
+            self._deliver_otp(
+                tenant_id=tenant_id,
+                destination=normalized,
+                purpose="EMAIL_VERIFICATION",
+                challenge_id=challenge_id,
+                code=otp,
+                correlation_id=correlation_id,
+            )
             response = {
                 "identity_id": identity_id,
                 "membership_id": membership_id,
                 "challenge_id": challenge_id,
-                "verification_code": otp,
             }
+            if self.expose_otp_codes:
+                response["verification_code"] = otp
             self.uow.insert_idempotency_record(
                 tenant_id, idempotency_key, payload_hash, json.dumps(response), now=now.isoformat()
             )
@@ -254,6 +292,14 @@ class DurableAuthenticationService:
                 (now + timedelta(minutes=5)).isoformat(),
                 correlation_id,
             )
+            self._deliver_otp(
+                tenant_id=tenant_id,
+                destination=normalized_email,
+                purpose="LOGIN_MFA",
+                challenge_id=challenge_id,
+                code=otp,
+                correlation_id=correlation_id,
+            )
             self._event(
                 "MFA_CHALLENGE_CREATED",
                 tenant_id,
@@ -262,12 +308,14 @@ class DurableAuthenticationService:
                 correlation_id,
                 request_id,
             )
-            return {
+            response = {
                 "outcome": "MFA_REQUIRED",
                 "session_id": session_id,
                 "challenge_id": challenge_id,
-                "mfa_code": otp,
             }
+            if self.expose_otp_codes:
+                response["mfa_code"] = otp
+            return response
 
     def complete_mfa(
         self,
@@ -278,6 +326,7 @@ class DurableAuthenticationService:
         code: str,
         correlation_id: str,
         request_id: str,
+        device_id: str | None = None,
     ) -> dict[str, str]:
         with self.uow:
             row = self.uow.get_mfa_challenge_session(tenant_id, challenge_id, session_id)
@@ -290,6 +339,20 @@ class DurableAuthenticationService:
                 raise AuthenticationError("OTP_INVALID")
             now = _now()
             self.uow.consume_otp_challenge(challenge_id, now=now.isoformat())
+            if device_id:
+                if self.uow.device_attestation_sessions.mark_pending(
+                    tenant_id, session_id, device_id
+                ) != 1:
+                    raise AuthenticationError("SESSION_STATE_INVALID")
+                identity = self.uow.device_attestation_sessions.identity_security_version(
+                    tenant_id, row["identity_id"]
+                )
+                self._event("DEVICE_ATTESTATION_REQUIRED", tenant_id, row["identity_id"],
+                            row["identity_id"], correlation_id, request_id)
+                return {"session_id": session_id, "identity_id": row["identity_id"],
+                        "membership_id": row["membership_id"],
+                        "security_version": str(identity["security_version"]),
+                        "outcome": "DEVICE_ATTESTATION_REQUIRED"}
             self.uow.activate_session_and_refresh(
                 session_id, now=now.isoformat(), authentication_methods='["PASSWORD","OTP"]'
             )
@@ -330,6 +393,43 @@ class DurableAuthenticationService:
                 request_id,
             )
             return {"session_id": session_id, "refresh_token": f"{token_id}.{refresh}"}
+
+    def activate_device_attested_session(
+        self, *, tenant_id: str, session_id: str, identity_id: str, device_id: str,
+        challenge_id: str, trust_outcome: str, correlation_id: str, request_id: str,
+    ) -> dict[str, str]:
+        if trust_outcome != "ALLOW":
+            raise AuthenticationError("DEVICE_TRUST_DENIED")
+        with self.uow:
+            row = self.uow.device_attestation_sessions.lock(tenant_id, session_id)
+            evidence = self.uow.device_attestations.evidence(tenant_id, challenge_id)
+            if (row is None or evidence is None or row["status"] != "PENDING_DEVICE_ATTESTATION"
+                    or str(row["identity_id"]) != identity_id
+                    or str(row["device_reference"]) != device_id
+                    or evidence["verification_status"] != "VERIFIED"
+                    or str(evidence["subject_id"]) != identity_id
+                    or str(evidence["device_id"]) != device_id):
+                raise AuthenticationError("DEVICE_ATTESTATION_CONTEXT_INVALID")
+            now = _now()
+            if self.uow.device_attestation_sessions.activate(
+                tenant_id, session_id, now.isoformat(),
+                (now + timedelta(minutes=30)).isoformat(),
+            ) != 1:
+                raise AuthenticationError("DEVICE_ATTESTATION_ALREADY_COMPLETED")
+            family_id, token_id, refresh = _id(), _id(), secrets.token_urlsafe(48)
+            self.uow.create_refresh_family(
+                family_id, session_id, identity_id, tenant_id,
+                created_at=now.isoformat(), expires_at=(now + timedelta(days=30)).isoformat(),
+            )
+            self.uow.create_refresh_token(
+                token_id, family_id, session_id, identity_id, tenant_id,
+                self._hash("refresh", refresh), None, issued_at=now.isoformat(),
+                expires_at=(now + timedelta(days=7)).isoformat(),
+            )
+            self._event("DEVICE_ATTESTATION_SESSION_ACTIVATED", tenant_id, identity_id,
+                        identity_id, correlation_id, request_id)
+            return {"session_id": session_id, "membership_id": str(row["membership_id"]),
+                    "refresh_token": f"{token_id}.{refresh}"}
 
     def issue_mfa_challenge(
         self,
@@ -382,6 +482,17 @@ class DurableAuthenticationService:
                 (now + timedelta(minutes=5)).isoformat(),
                 correlation_id,
             )
+            identity = self.uow.get_identity_for_tenant(
+                tenant_id, session["identity_id"]
+            )
+            self._deliver_otp(
+                tenant_id=tenant_id,
+                destination=str(identity["normalized_email"]),
+                purpose="LOGIN_MFA",
+                challenge_id=challenge_id,
+                code=otp,
+                correlation_id=correlation_id,
+            )
             self._event(
                 "MFA_CHALLENGE_RESENT",
                 tenant_id,
@@ -390,7 +501,10 @@ class DurableAuthenticationService:
                 correlation_id,
                 request_id,
             )
-            return {"session_id": session_id, "challenge_id": challenge_id, "mfa_code": otp}
+            response = {"session_id": session_id, "challenge_id": challenge_id}
+            if self.expose_otp_codes:
+                response["mfa_code"] = otp
+            return response
 
     def refresh(
         self, *, tenant_id: str, presented_token: str, correlation_id: str, request_id: str

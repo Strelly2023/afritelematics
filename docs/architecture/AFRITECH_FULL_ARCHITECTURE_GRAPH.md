@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `857`
+- Startup-safe closure size: `900`
 - Django-bound modules declared in repo: `265`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `107`
+- Direct startup imports from `afritech.api.app`: `109`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (857 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (900 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (107)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (109)"]
 ```
 
 ## Repository Architecture Inventory
@@ -261,7 +261,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (692)
+### Other (735)
 
 - `afritech`
 - `afritech.afripay`
@@ -669,6 +669,7 @@ flowchart TD
 - `afritech.novaid.api`
 - `afritech.novaid.application`
 - `afritech.novaid.application.authentication`
+- `afritech.novaid.application.device_attestation`
 - `afritech.novaid.application.lockout`
 - `afritech.novaid.application.passwords`
 - `afritech.novaid.application.recovery`
@@ -677,12 +678,15 @@ flowchart TD
 - `afritech.novaid.audit_replay`
 - `afritech.novaid.config`
 - `afritech.novaid.core`
+- `afritech.novaid.device_attestation_http`
 - `afritech.novaid.domain`
 - `afritech.novaid.domain.authorization`
+- `afritech.novaid.domain.beneficial_ownership`
 - `afritech.novaid.domain.biometric_events`
 - `afritech.novaid.domain.biometric_models`
 - `afritech.novaid.domain.biometric_verification_events`
 - `afritech.novaid.domain.biometric_verification_models`
+- `afritech.novaid.domain.business_representative`
 - `afritech.novaid.domain.document_authenticity_events`
 - `afritech.novaid.domain.document_authenticity_models`
 - `afritech.novaid.domain.document_authenticity_service`
@@ -707,6 +711,7 @@ flowchart TD
 - `afritech.novaid.domain.identity_verification_events`
 - `afritech.novaid.domain.identity_verification_models`
 - `afritech.novaid.domain.identity_verification_service`
+- `afritech.novaid.domain.kyb_party_linkage`
 - `afritech.novaid.domain.liveness_events`
 - `afritech.novaid.domain.liveness_models`
 - `afritech.novaid.domain.liveness_service`
@@ -714,6 +719,7 @@ flowchart TD
 - `afritech.novaid.domain.membership_service`
 - `afritech.novaid.domain.merge_events`
 - `afritech.novaid.domain.models`
+- `afritech.novaid.domain.production_identity`
 - `afritech.novaid.domain.tenant_boundary`
 - `afritech.novaid.domain.tenant_events`
 - `afritech.novaid.domain.tenant_service`
@@ -721,12 +727,15 @@ flowchart TD
 - `afritech.novaid.domain.verification_service`
 - `afritech.novaid.domain.webauthn`
 - `afritech.novaid.observability`
+- `afritech.novaid.otp_delivery`
 - `afritech.novaid.outbox`
 - `afritech.novaid.persistence`
 - `afritech.novaid.persistence.authorization_repository`
 - `afritech.novaid.persistence.biometric_codec`
 - `afritech.novaid.persistence.biometric_sqlite_repository`
+- `afritech.novaid.persistence.device_attestation_repository`
 - `afritech.novaid.persistence.identity_codec`
+- `afritech.novaid.persistence.kyb_party_repository`
 - `afritech.novaid.persistence.migrations`
 - `afritech.novaid.persistence.pool`
 - `afritech.novaid.persistence.postgres`
@@ -761,6 +770,7 @@ flowchart TD
 - `afritech.novapay.domain.journal_entry`
 - `afritech.novapay.domain.ledger_account`
 - `afritech.novapay.domain.money`
+- `afritech.novapay.domain.receipt`
 - `afritech.novapay.domain.remittance`
 - `afritech.novapay.domain.settlement_batch`
 - `afritech.novapay.domain.settlement_reconciliation`
@@ -791,11 +801,41 @@ flowchart TD
 - `afritech.novaride_runtime.events.replay_planner`
 - `afritech.novaride_runtime.events.replay_verifier`
 - `afritech.novaride_runtime.events.schema_registry`
+- `afritech.novaride_runtime.integrations`
+- `afritech.novaride_runtime.integrations.novapay`
 - `afritech.novaride_runtime.models`
 - `afritech.novaride_runtime.operations`
 - `afritech.novaride_runtime.operations_workspace`
 - `afritech.novaride_runtime.persistence`
 - `afritech.novaride_runtime.persistence.memory`
+- `afritech.novaride_runtime.persistence.postgres`
+- `afritech.novaride_runtime.persistence.postgres.async_resilience_connection`
+- `afritech.novaride_runtime.persistence.postgres.base_repository`
+- `afritech.novaride_runtime.persistence.postgres.booking_repository`
+- `afritech.novaride_runtime.persistence.postgres.connection`
+- `afritech.novaride_runtime.persistence.postgres.corporate_repository`
+- `afritech.novaride_runtime.persistence.postgres.driver_repository`
+- `afritech.novaride_runtime.persistence.postgres.event_outbox_repository`
+- `afritech.novaride_runtime.persistence.postgres.event_repository`
+- `afritech.novaride_runtime.persistence.postgres.event_transaction`
+- `afritech.novaride_runtime.persistence.postgres.fleet_repository`
+- `afritech.novaride_runtime.persistence.postgres.idempotency_repository`
+- `afritech.novaride_runtime.persistence.postgres.logistics_repository`
+- `afritech.novaride_runtime.persistence.postgres.operations_workspace_repository`
+- `afritech.novaride_runtime.persistence.postgres.operator_repository`
+- `afritech.novaride_runtime.persistence.postgres.projection_repository`
+- `afritech.novaride_runtime.persistence.postgres.rating_repository`
+- `afritech.novaride_runtime.persistence.postgres.resilience_runtime_repository`
+- `afritech.novaride_runtime.persistence.postgres.rider_repository`
+- `afritech.novaride_runtime.persistence.postgres.runtime_repositories`
+- `afritech.novaride_runtime.persistence.postgres.runtime_session`
+- `afritech.novaride_runtime.persistence.postgres.safety_repository`
+- `afritech.novaride_runtime.persistence.postgres.support_repository`
+- `afritech.novaride_runtime.persistence.postgres.transit_repository`
+- `afritech.novaride_runtime.persistence.postgres.trip_repository`
+- `afritech.novaride_runtime.persistence.postgres.unit_of_work`
+- `afritech.novaride_runtime.read_models`
+- `afritech.novaride_runtime.read_models.projections`
 - `afritech.novaride_runtime.readiness`
 - `afritech.novaride_runtime.replay`
 - `afritech.novaride_runtime.replay.dependencies`
@@ -803,10 +843,13 @@ flowchart TD
 - `afritech.novaride_runtime.replay.lifecycle`
 - `afritech.novaride_runtime.replay.memory_repository`
 - `afritech.novaride_runtime.replay.models`
+- `afritech.novaride_runtime.replay.postgres_event_source`
 - `afritech.novaride_runtime.replay.postgres_repository`
 - `afritech.novaride_runtime.replay.repository`
 - `afritech.novaride_runtime.replay.service`
 - `afritech.novaride_runtime.resilience`
+- `afritech.novaride_runtime.safety`
+- `afritech.novaride_runtime.safety.guardian`
 - `afritech.novaride_runtime.security`
 - `afritech.novaride_runtime.services`
 - `afritech.novaride_runtime.slo`
@@ -1071,6 +1114,8 @@ flowchart TD
 - `afritech.middleware.multi_region_redis`
 - `afritech.middleware.request_logging`
 - `afritech.novacodepro.platform`
+- `afritech.novaid.application.device_attestation`
+- `afritech.novaid.device_attestation_http`
 - `afritech.novaid.runtime`
 - `afritech.novaride_runtime.replay.dependencies`
 - `afritech.observability.opentelemetry`

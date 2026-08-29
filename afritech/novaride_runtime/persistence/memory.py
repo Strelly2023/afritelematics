@@ -11,7 +11,7 @@ from afritech.novaride_runtime.common.clocks import utc_now
 from afritech.novaride_runtime.common.errors import DuplicateCommand
 from afritech.novaride_runtime.common.idempotency import IdempotencyRecord
 from afritech.novaride_runtime.events.envelope import MobilityEvent
-from afritech.novaride_runtime.models import Aggregate, OfflineOperation, ProviderHealthRecord
+from afritech.novaride_runtime.models import Aggregate, OfflineOperation, ProviderHealthRecord, Rating
 
 T = TypeVar("T", bound=Aggregate)
 
@@ -134,7 +134,25 @@ class MemoryIdempotencyRepository:
 
 
 @dataclass(slots=True)
+class MemoryRatingRepository(MemoryRepository[Rating]):
+    def get_by_trip(
+        self,
+        trip_id: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> Rating | None:
+        for item in self.records.values():
+            if item.trip_id != trip_id:
+                continue
+            if tenant_id is not None and item.tenant_id != tenant_id:
+                continue
+            return deepcopy(item)
+        return None
+
+
+@dataclass(slots=True)
 class RuntimeRepositories:
+    ratings: MemoryRatingRepository = field(default_factory=MemoryRatingRepository)
     riders: MemoryRepository = field(default_factory=MemoryRepository)
     drivers: MemoryRepository = field(default_factory=MemoryRepository)
     eligibility: MemoryRepository = field(default_factory=MemoryRepository)
@@ -144,6 +162,7 @@ class RuntimeRepositories:
     bookings: MemoryRepository = field(default_factory=MemoryRepository)
     fare_quotes: MemoryRepository = field(default_factory=MemoryRepository)
     trips: MemoryRepository = field(default_factory=MemoryRepository)
+    support_cases: MemoryRepository = field(default_factory=MemoryRepository)
     emergencies: MemoryRepository = field(default_factory=MemoryRepository)
     incidents: MemoryRepository = field(default_factory=MemoryRepository)
     fleets: MemoryRepository = field(default_factory=MemoryRepository)

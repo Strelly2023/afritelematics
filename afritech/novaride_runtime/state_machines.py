@@ -545,6 +545,12 @@ def transition_rule(source: StrEnum, target: StrEnum, actor_type: ActorType) -> 
         + EMERGENCY_TRANSITIONS
         + INCIDENT_TRANSITIONS
     ):
-        if rule.source == source and rule.target == target and actor_type in rule.actor_types:
+        if (
+            type(rule.source) is type(source)
+            and type(rule.target) is type(target)
+            and rule.source == source
+            and rule.target == target
+            and actor_type in rule.actor_types
+        ):
             return rule
     raise InvalidTransition(f"{source}->{target}:{actor_type}")

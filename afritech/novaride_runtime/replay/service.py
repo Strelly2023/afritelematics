@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Any
+from typing import Any, Protocol
 
 from afritech.novaride_runtime.common.clocks import utc_now
 from afritech.novaride_runtime.common.identifiers import new_id
@@ -24,9 +24,140 @@ class InvalidReplayTransition(RuntimeError):
     pass
 
 
+class ReplayEventSource(Protocol):
+    def by_aggregate(self, aggregate_id: str) -> list[Any]:
+        ...
+
+    def by_correlation(self, correlation_id: str) -> list[Any]:
+        ...
+
+
 class ReplayService:
-    def __init__(self, repository: ReplayPlanRepository) -> None:
+    def __init__(
+        self,
+        repository: ReplayPlanRepository,
+        *,
+        event_source: ReplayEventSource | None = None,
+    ) -> None:
         self.repository = repository
+        self.event_source = event_source
+
+    def _load_authoritative_events(
+        self,
+        *,
+        plan: ReplayPlanRecord,
+    ) -> list[Any]:
+        if self.event_source is None:
+            raise InvalidReplayTransition(
+                "replay_event_source_not_configured"
+            )
+
+        source_reference = (
+            plan.source_reference or ""
+        ).strip()
+
+        if not source_reference:
+            raise InvalidReplayTransition(
+                "replay_source_reference_required"
+            )
+
+        scheme, separator, identifier = (
+            source_reference.partition(":")
+        )
+
+        if (
+            not separator
+            or not scheme.strip()
+            or not identifier.strip()
+        ):
+            raise InvalidReplayTransition(
+                "replay_source_reference_invalid"
+            )
+
+        identifier = identifier.strip()
+
+        if scheme == "aggregate":
+            tenant_reader = getattr(
+                self.event_source,
+                "by_aggregate_for_tenant",
+                None,
+            )
+
+            if tenant_reader is not None:
+                events = tenant_reader(
+                    tenant_id=plan.tenant_id,
+                    aggregate_id=identifier,
+                )
+            else:
+                events = self.event_source.by_aggregate(
+                    identifier
+                )
+        elif scheme == "correlation":
+            tenant_reader = getattr(
+                self.event_source,
+                "by_correlation_for_tenant",
+                None,
+            )
+
+            if tenant_reader is not None:
+                events = tenant_reader(
+                    tenant_id=plan.tenant_id,
+                    correlation_id=identifier,
+                )
+            else:
+                events = self.event_source.by_correlation(
+                    identifier
+                )
+        else:
+            raise InvalidReplayTransition(
+                "replay_source_reference_unsupported"
+            )
+
+        if not events:
+            raise InvalidReplayTransition(
+                "replay_source_events_not_found"
+            )
+
+        return list(events)
+
+    @staticmethod
+    def _canonical_source_reference(payload: Any) -> str:
+        mode = getattr(payload, "mode", None)
+        mode_value = getattr(mode, "value", mode)
+        scope = getattr(payload, "scope", None)
+
+        if not isinstance(scope, dict):
+            raise InvalidReplayTransition(
+                "replay_scope_invalid"
+            )
+
+        if mode_value == "correlation_id":
+            identifier = str(
+                scope.get("correlation_id", "")
+            ).strip()
+
+            if not identifier:
+                raise InvalidReplayTransition(
+                    "replay_correlation_id_required"
+                )
+
+            return f"correlation:{identifier}"
+
+        if mode_value == "aggregate":
+            identifier = str(
+                scope.get("aggregate_id", "")
+            ).strip()
+
+            if not identifier:
+                raise InvalidReplayTransition(
+                    "replay_aggregate_id_required"
+                )
+
+            return f"aggregate:{identifier}"
+
+        raise InvalidReplayTransition(
+            "replay_source_mode_unsupported"
+        )
 
     async def create_plan(
         self,
@@ -48,7 +179,7 @@ class ReplayService:
                 "scenario_type",
                 payload.mode.value if hasattr(payload, "mode") else "runtime",
             ),
-            source_reference=getattr(payload, "source_reference", None),
+            source_reference=self._canonical_source_reference(payload),
             target_environment=getattr(payload, "target_environment", "production"),
             status="READY_FOR_EXECUTION",
             risk_level=getattr(payload, "risk_level", "medium"),
@@ -79,8 +210,13 @@ class ReplayService:
     ) -> ReplayResultRecord:
         if not validate_only:
             ensure_replay_transition(plan.status, "EXECUTING")
-        events: list[Any] = []
-        verification = verify_replay(replay_id=plan.id, events=events)
+        events = self._load_authoritative_events(
+            plan=plan,
+        )
+        verification = verify_replay(
+            replay_id=plan.id,
+            events=events,
+        )
         result_payload = verification.as_dict()
         result_payload["state"] = "MATCHED" if verification.matched else "DIVERGED"
         result_payload["validate_only"] = validate_only

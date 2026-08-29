@@ -726,15 +726,16 @@ class AnchorStreamHub:
         self._stop_requested = True
         if self._dispatch_task is not None:
             self._dispatch_task.cancel()
-            with contextlib.suppress(Exception):
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._dispatch_task
         self._dispatch_task = None
 
     async def _dispatch_loop(self) -> None:
         while not self._stop_requested:
             try:
-                event = await asyncio.to_thread(self._queue.get, True, 1.0)
+                event = self._queue.get_nowait()
             except queue.Empty:
+                await asyncio.sleep(0.1)
                 continue
             except asyncio.CancelledError:
                 break
@@ -1879,7 +1880,7 @@ class AnchorEventSubscriber:
         while self._tasks:
             task = self._tasks.pop()
             task.cancel()
-            with contextlib.suppress(Exception):
+            with contextlib.suppress(asyncio.CancelledError):
                 await task
         self._started_profiles.clear()
 

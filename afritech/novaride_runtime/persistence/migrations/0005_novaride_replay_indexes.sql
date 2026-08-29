@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS novaride_replay_plans (
+CREATE TABLE IF NOT EXISTS novaride_event_replay_plans (
     replay_id TEXT PRIMARY KEY,
     tenant_id TEXT NOT NULL,
     region_code TEXT,
@@ -23,4 +23,4 @@ CREATE INDEX IF NOT EXISTS idx_mobility_events_tenant_region_time
 ON mobility_events (tenant_id, region_code, occurred_at);
 
 CREATE INDEX IF NOT EXISTS idx_novaride_replay_scope
-ON novaride_replay_plans USING gin (scope);
+ON novaride_event_replay_plans USING gin (scope);

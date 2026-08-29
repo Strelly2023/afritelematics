@@ -11,7 +11,7 @@ from typing import Any
 
 DEFAULT_DB_PATH = Path(__file__).resolve().parents[1] / "pilot_state.sqlite3"
 POSTGRES_SCHEMA_PATH = (
-    Path(__file__).resolve().parents[2] / "scripts" / "sql" / "afriride_postgres_schema_v1.sql"
+    Path(__file__).resolve().with_name("afriride_postgres_schema_v1.sql")
 )
 
 

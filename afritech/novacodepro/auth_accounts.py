@@ -7,6 +7,14 @@ AUTH_PASSWORD = "NovaCodePro123!"
 
 NOVACODEPRO_ACCOUNTS: list[dict[str, Any]] = [
     {
+        "first_name": "NovaRide",
+        "last_name": "Pilot Driver",
+        "username": "novaride.driver",
+        "email": "driver@novaride.test",
+        "password": "test123",
+        "role": "DRIVER",
+    },
+    {
         "first_name": "Djuma",
         "last_name": "Platform Administrator",
         "username": "djuma.platformadmin",
@@ -203,4 +211,3 @@ ACCOUNT_INDEX[SUPER_TEST_ACCOUNT["username"].strip().lower()] = SUPER_TEST_ACCOU
 def find_account(identifier: str) -> dict[str, Any] | None:
     key = identifier.strip().lower()
     return ACCOUNT_INDEX.get(key)
-

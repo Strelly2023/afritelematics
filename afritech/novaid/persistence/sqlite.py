@@ -18,6 +18,10 @@ from uuid import uuid4
 from ..domain.models import Identity, RequestContext, SecurityEvent
 from .biometric_sqlite_repository import BiometricSQLiteRepositoryMixin
 from .authorization_repository import AuthorizationRepository
+from .device_attestation_repository import (
+    DeviceAttestationRepository,
+    DeviceAttestationSessionRepository,
+)
 from .identity_codec import (
     encode_addresses,
     encode_contact_points,
@@ -178,6 +182,15 @@ CREATE TABLE IF NOT EXISTS novaid_attestation_records(
  attestation_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, credential_id TEXT NOT NULL,
  format TEXT NOT NULL, attestation_type TEXT NOT NULL, trust_path_metadata TEXT NOT NULL,
  verified_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS novaid_device_attestation_challenges(
+ challenge_id TEXT PRIMARY KEY,tenant_id TEXT NOT NULL,subject_id TEXT NOT NULL,
+ device_id TEXT NOT NULL,provider TEXT NOT NULL,nonce_hash TEXT NOT NULL UNIQUE,
+ request_id TEXT NOT NULL,correlation_id TEXT NOT NULL,issued_at TEXT NOT NULL,
+ expires_at TEXT NOT NULL,consumed_at TEXT,verified_at TEXT,
+ verification_status TEXT NOT NULL DEFAULT 'UNVERIFIED',verdicts TEXT NOT NULL DEFAULT '[]',
+ status TEXT NOT NULL,UNIQUE(tenant_id,request_id));
+CREATE INDEX IF NOT EXISTS idx_novaid_device_attestation_scope
+ ON novaid_device_attestation_challenges(tenant_id,subject_id,device_id,status,expires_at);
 CREATE TABLE IF NOT EXISTS novaid_authenticator_status_history(
  transition_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, credential_id TEXT NOT NULL,
  previous_status TEXT NOT NULL, new_status TEXT NOT NULL, reason_code TEXT NOT NULL,
@@ -742,6 +755,8 @@ class NovaIDUnitOfWork(
         self.authentication_locks = self
         self.sessions = self
         self.authorization = AuthorizationRepository(self.connection)
+        self.device_attestations = DeviceAttestationRepository(self.connection, postgres=False)
+        self.device_attestation_sessions = DeviceAttestationSessionRepository(self.connection, postgres=False)
 
     def __enter__(self) -> "NovaIDUnitOfWork":
         self.connection.execute("BEGIN IMMEDIATE")
@@ -1876,6 +1891,7 @@ class NovaIDUnitOfWork(
         expires_at: str,
         pending_mfa_expires_at: str,
         authentication_methods: str,
+        device_reference: str | None = None,
     ) -> None:
         self.connection.execute(
             "INSERT INTO novaid_authentication_sessions(session_id,tenant_id,identity_id,"
@@ -1892,7 +1908,7 @@ class NovaIDUnitOfWork(
                 authentication_time,
                 authentication_strength,
                 credential_id,
-                None,
+                device_reference,
                 None,
                 risk_score,
                 created_at,
@@ -1907,6 +1923,17 @@ class NovaIDUnitOfWork(
                 authentication_methods,
             ),
         )
+
+    def revoke_sessions_for_credential(
+        self, tenant_id: str, credential_id: str, *, reason: str, now: str
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='REVOKED',revoked_at=?,"
+            "revocation_reason=?,version=version+1 WHERE tenant_id=? AND credential_id=? "
+            "AND status NOT IN ('REVOKED','EXPIRED','COMPROMISED')",
+            (now, reason, tenant_id, credential_id),
+        )
+        return result.rowcount
 
     def create_login_challenge(
         self,
@@ -1979,7 +2006,7 @@ class NovaIDUnitOfWork(
         self, tenant_id: str, challenge_id: str, session_id: str
     ) -> sqlite3.Row | None:
         return self.connection.execute(
-            "SELECT c.*,s.identity_id,s.status session_status FROM novaid_otp_challenges c "
+            "SELECT c.*,s.identity_id,s.membership_id,s.status session_status FROM novaid_otp_challenges c "
             "JOIN novaid_authentication_sessions s ON CAST(s.session_id AS TEXT)=c.destination_reference "
             "WHERE c.challenge_id=? AND c.tenant_id=? AND s.session_id=?",
             (challenge_id, tenant_id, session_id),

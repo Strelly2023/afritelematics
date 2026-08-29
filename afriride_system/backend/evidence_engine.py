@@ -66,7 +66,7 @@ class EvidenceEngine:
             replay_hash=replay.replay_hash,
             verification_status=verification_status,
             receipt_id=f"receipt-{ride_id}",
-            generated_at=_now_iso(),
+            generated_at=events[-1].normalized_timestamp,
             replay=replay,
         )
 

@@ -44,7 +44,7 @@ from afritech.api.ops_governance_api import build_ops_governance_router
 from afritech.api.architecture_proof_api import build_architecture_proof_router
 from afritech.api.afriride_mobile_release_api import build_afriride_mobile_release_router
 from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
-from afritech.api.novaride_runtime_api import build_novaride_runtime_router
+from afritech.api.novaride_runtime_api import build_novaride_runtime_router, get_novaride_runtime
 from afritech.api.novaride_operations_api import build_novaride_operations_router
 from afritech.api.phase0_api import build_phase0_router
 from afritech.api.phase1_api import build_phase1_router
@@ -136,7 +136,11 @@ from afritech.partner_verification import PartnerVerificationStore
 from afritech.standards_dependency import StandardsDependencyStore
 from afritech.trust_network import TrustRegistryStore
 from afritech.observability.opentelemetry import configure_fastapi_observability
-from afritech.novaride_runtime.replay.dependencies import build_default_replay_repository
+from afritech.novaride_runtime.replay.dependencies import (
+    build_default_replay_repository,
+    build_production_replay_event_source,
+    build_production_replay_repository,
+)
 from afritech.platform_runtime import build_default_product_runtime_registry
 from afritech.platform_runtime.activation import ProductActivationService
 from afritech.platform_runtime.deployment_verifier import DeploymentVerifier
@@ -214,7 +218,29 @@ adaptive_sla_controller = AdaptiveSLAController(
 )
 app.state.adaptive_sla_controller = adaptive_sla_controller
 app.state.autonomous_control_plane = autonomous_control_plane
-app.state.novaride_replay_repository = build_default_replay_repository()
+_novaride_replay_environment = os.environ.get(
+    "NOVARIDE_ENVIRONMENT",
+    os.environ.get(
+        "AFRITECH_ENV",
+        "development",
+    ),
+).strip().lower()
+
+if _novaride_replay_environment in {
+    "production",
+    "prod",
+}:
+    app.state.novaride_replay_repository = (
+        build_production_replay_repository()
+    )
+    app.state.novaride_replay_event_source = (
+        build_production_replay_event_source()
+    )
+else:
+    app.state.novaride_replay_repository = (
+        build_default_replay_repository()
+    )
+
 app.state.platform_runtime_registry = build_default_product_runtime_registry()
 app.state.api_platform_endpoint_registry = EndpointRegistry()
 app.state.platform_runtime_route_registry = RouteRegistry()
@@ -442,7 +468,11 @@ app.include_router(build_architecture_proof_router())
 
 # ✅ NovaRide mobile release readiness API
 app.include_router(build_afriride_mobile_release_router())
-app.include_router(build_afriride_next_gen_mobile_router())
+app.include_router(
+    build_afriride_next_gen_mobile_router(
+        novaride_runtime_dependency=get_novaride_runtime,
+    )
+)
 app.include_router(build_novaride_runtime_router())
 app.include_router(build_novaride_operations_router())
 
@@ -475,7 +505,47 @@ app.include_router(
 )
 app.include_router(build_novapay_ecosystem_router())
 app.include_router(build_novaid_router())
+_novaid_c24_runtime_router = None
+_novaid_c24_runtime_builder = build_default_durable_router
+
+def build_default_durable_router(*args, **kwargs):
+    global _novaid_c24_runtime_router
+    router = _novaid_c24_runtime_builder(*args, **kwargs)
+    _novaid_c24_runtime_router = router
+    return router
+
 app.include_router(build_default_durable_router())
+
+# C24 device-attestation HTTP boundary.
+# Uses the exact router instance mounted above; no second runtime build.
+from afritech.novaid.application.device_attestation import (
+    DeviceAttestationAuthority,
+    ProductionAttestationVerifier,
+)
+from afritech.novaid.device_attestation_http import (
+    build_device_attestation_router,
+)
+
+if _novaid_c24_runtime_router is None:
+    raise RuntimeError("novaid_c24_runtime_router_not_captured")
+
+app.include_router(
+    build_device_attestation_router(
+        DeviceAttestationAuthority(
+            _novaid_c24_runtime_router.novaid_c24_uow_provider,
+            ProductionAttestationVerifier(),
+        ),
+        authenticate=(
+            _novaid_c24_runtime_router.
+            novaid_provisional_attestation_claims
+        ),
+        activate=(
+            _novaid_c24_runtime_router.
+            novaid_device_attestation_activate
+        ),
+    )
+)
+
 app.include_router(build_novaid_audit_replay_router())
 app.include_router(build_novacodepro_platform_router())
 app.include_router(build_ai_auto_generator_router(get_novacodepro_platform()))
@@ -610,7 +680,7 @@ def _configuration_valid() -> bool:
     ).strip().lower()
     if not environment:
         return False
-    if environment not in {"public_pilot", "controlled_pilot", "internal_qa", "private_development", "production"}:
+    if environment not in {"public_pilot", "controlled_pilot", "internal_qa", "private_development", "staging", "production"}:
         return False
     return True
 

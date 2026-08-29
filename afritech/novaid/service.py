@@ -434,32 +434,71 @@ class NovaIDEcosystem:
         )
 
     def run_kyb(
-        self,
-        *,
-        subject_id: str,
-        organization_id: str,
-        risk_score: Decimal | int | str,
-        checks: tuple[str, ...],
-        status: str = "verified",
-    ) -> dict[str, Any]:
-        payload = {
-            "subject_id": subject_id,
-            "checks": list(checks),
-            "risk_score": _money(risk_score),
-            "status": status,
-            "reviewed_at": _now(),
-        }
-        identity = self.identity(subject_id)
-        base_payload = identity.payload if identity else {}
-        return _record(
-            self.repository.upsert(
-                "novaid_identities",
-                record_id=subject_id,
-                organization_id=organization_id,
-                status="verified" if status == "verified" else "pending",
-                payload={**base_payload, "kyb": payload},
+            self,
+            *,
+            subject_id: str,
+            organization_id: str,
+            risk_score: Decimal | int | str,
+            checks: tuple[str, ...],
+            status: str = "verified",
+            legal_entity_id: str | None = None,
+            beneficial_owners: tuple[object, ...] = (),
+            business_representatives: tuple[object, ...] = (),
+        ) -> dict[str, Any]:
+            structured_parties = bool(
+                beneficial_owners
+                or business_representatives
+                or legal_entity_id is not None
             )
-        )
+
+            linkage_payload: dict[str, object] | None = None
+
+            if structured_parties:
+                from afritech.novaid.domain.kyb_party_linkage import (
+                    link_kyb_parties,
+                )
+
+                normalized_status = str(status).strip().lower()
+
+                linkage = link_kyb_parties(
+                    organization_id=organization_id,
+                    legal_entity_id=(
+                        ""
+                        if legal_entity_id is None
+                        else legal_entity_id
+                    ),
+                    checks=checks,
+                    beneficial_owners=beneficial_owners,
+                    business_representatives=business_representatives,
+                    require_verified=(
+                        normalized_status == "verified"
+                    ),
+                )
+
+                linkage_payload = linkage.as_payload()
+
+            payload = {
+                "subject_id": subject_id,
+                "checks": list(checks),
+                "risk_score": _money(risk_score),
+                "status": status,
+                "reviewed_at": _now(),
+            }
+
+            if linkage_payload is not None:
+                payload["party_linkage"] = linkage_payload
+
+            identity = self.identity(subject_id)
+            base_payload = identity.payload if identity else {}
+            return _record(
+                self.repository.upsert(
+                    "novaid_identities",
+                    record_id=subject_id,
+                    organization_id=organization_id,
+                    status="verified" if status == "verified" else "pending",
+                    payload={**base_payload, "kyb": payload},
+                )
+            )
 
     def provision_employee(
         self,

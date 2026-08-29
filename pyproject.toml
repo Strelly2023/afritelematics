@@ -18,6 +18,7 @@ description = "AfriTech constitutional execution and replay verification system"
 requires-python = ">=3.10"
 
 dependencies = [
+    "confluent-kafka[oauthbearer-aws]==2.15.0",
     "django",
     "djangorestframework",
     "fastapi",
@@ -92,6 +93,7 @@ afritech = [
     "**/*.sql",
 ]
 contracts = ["*.json"]
+afriride_system = ["**/*.sql"]
 
 
 # =============================================================================

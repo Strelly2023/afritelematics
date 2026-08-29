@@ -312,7 +312,6 @@ def build_data_governance_router(
         }
 
     @router.post("/v1/novatech/data-governance/products")
-    @router.post("/v1/platform/products")
     async def register_product(
         payload: ProductRegistrationRequest,
         claims = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER")),

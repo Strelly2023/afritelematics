@@ -60,8 +60,20 @@ from afritech.novaride_runtime.models import (
     TransitLeg,
     Trip,
     TripState,
+    Rating,
+    SupportCase,
+)
+from afritech.novaride_runtime.integrations.novapay import (
+    NovaPayProductionAdapter,
+    NovaPayProductionProvider,
 )
 from afritech.novaride_runtime.persistence.memory import RuntimeRepositories
+from afritech.novaride_runtime.safety.guardian import (
+    GuardianAction,
+    GuardianDecision,
+    GuardianMonitor,
+    TripSafetyObservation,
+)
 
 
 def _json(value: Any) -> Any:
@@ -225,6 +237,8 @@ class BookingService:
         command_hash = payload_hash({"intent": _json(intent), "quote_id": quote_id})
         existing = self.repositories.idempotency.get(context.tenant_id, idempotency_key)
         if existing:
+            if existing.command_hash != command_hash:
+                raise DuplicateCommand("idempotency_key_payload_mismatch")
             booking_id = existing.result["booking_id"]
             booking = self.repositories.bookings.get(booking_id)
             if booking is None:
@@ -264,6 +278,129 @@ class BookingService:
             aggregate_version=booking.aggregate_version,
             payload={"booking_id": booking.id},
         )
+        return booking
+
+    def cancel_booking(
+        self,
+        context: RuntimeContext,
+        *,
+        booking_id: str,
+        idempotency_key: str,
+    ) -> Booking:
+        from afritech.novaride_runtime.common.errors import InvalidTransition
+        from afritech.novaride_runtime.state_machines import transition_rule
+
+        command_hash = payload_hash(
+            {
+                "action": "cancel_booking",
+                "booking_id": booking_id,
+            }
+        )
+
+        existing = self.repositories.idempotency.get(
+            context.tenant_id,
+            idempotency_key,
+        )
+
+        if existing:
+            if existing.command_hash != command_hash:
+                raise DuplicateCommand(
+                    "idempotency_key_payload_mismatch"
+                )
+
+            existing_booking_id = existing.result.get(
+                "booking_id"
+            )
+
+            if existing_booking_id != booking_id:
+                raise DuplicateCommand(
+                    "idempotency_key_payload_mismatch"
+                )
+
+            booking = self.repositories.bookings.get(
+                booking_id
+            )
+
+            if booking is None:
+                raise DuplicateCommand(
+                    "idempotent_booking_missing"
+                )
+
+            return booking
+
+        booking = self.repositories.bookings.get(
+            booking_id
+        )
+
+        if booking is None:
+            raise ValueError(
+                "booking_not_found"
+            )
+
+        if (
+            booking.tenant_id
+            != context.tenant_id
+            or booking.organization_id
+            != context.organization_id
+            or booking.region_code
+            != context.region_code
+        ):
+            raise AuthorityDenied(
+                "booking_authority_mismatch"
+            )
+
+        if (
+            context.actor_type
+            == ActorType.RIDER
+            and booking.rider_id
+            != context.actor_id
+        ):
+            raise AuthorityDenied(
+                "booking_rider_mismatch"
+            )
+
+        try:
+            transition_rule(
+                booking.state,
+                BookingState.CANCELLED,
+                context.actor_type,
+            )
+        except InvalidTransition as exc:
+            raise ValueError(
+                "booking_not_cancelable"
+            ) from exc
+
+        booking.state = BookingState.CANCELLED
+        booking.touch()
+
+        self.repositories.bookings.save(
+            booking
+        )
+
+        self.repositories.idempotency.put(
+            IdempotencyRecord(
+                context.tenant_id,
+                idempotency_key,
+                command_hash,
+                {
+                    "booking_id": booking.id,
+                    "state": booking.state.value,
+                },
+            )
+        )
+
+        self.events.emit(
+            context,
+            event_type="BookingCancelled",
+            aggregate_id=booking.id,
+            aggregate_type="Booking",
+            aggregate_version=booking.aggregate_version,
+            payload={
+                "booking_id": booking.id,
+                "rider_id": booking.rider_id,
+            },
+        )
+
         return booking
 
 
@@ -457,6 +594,8 @@ class DispatchService:
         offer = self.repositories.offers.get(offer_id)
         if offer is None:
             raise ValueError("offer_not_found")
+        if context.actor_type != ActorType.DRIVER or offer.driver_id != context.actor_id:
+            raise ValueError("driver_offer_ownership_mismatch")
         if offer.state == OfferState.ACCEPTED:
             trip = self.repositories.trips.get(offer.trip_id)
             if trip is None:
@@ -575,6 +714,8 @@ class SafetyService:
         )
         existing = self.repositories.idempotency.get(context.tenant_id, idempotency_key)
         if existing:
+            if existing.command_hash != command_hash:
+                raise DuplicateCommand("idempotency_key_payload_mismatch")
             emergency = self.repositories.emergencies.get(existing.result["emergency_id"])
             if emergency is None:
                 raise DuplicateCommand("idempotent_emergency_missing")
@@ -625,6 +766,85 @@ class SafetyService:
         )
         return emergency
 
+
+@dataclass(slots=True)
+class GuardianRuntimeService:
+    """Bind deterministic Guardian decisions to trip, audit and SOS authority."""
+
+    repositories: RuntimeRepositories
+    events: EventFabric
+    safety: SafetyService
+
+    def evaluate(
+        self,
+        context: RuntimeContext,
+        observation: TripSafetyObservation,
+    ) -> GuardianDecision:
+        if observation.tenant_id != context.tenant_id:
+            raise AuthorityDenied("guardian_tenant_mismatch")
+        trip = self.repositories.trips.get(observation.trip_id)
+        if trip is None or trip.tenant_id != context.tenant_id:
+            raise AuthorityDenied("guardian_trip_not_accessible")
+
+        repository = _GuardianIdempotencyRepository(self.repositories)
+        decision = GuardianMonitor(repository).evaluate(observation)
+        self.events.emit(
+            context,
+            event_type="GuardianDecisionRecorded",
+            aggregate_id=trip.id,
+            aggregate_type="Trip",
+            aggregate_version=trip.aggregate_version,
+            payload={"action": decision.action, "reasons": decision.reasons},
+            causation_id=observation.observation_id,
+        )
+        if decision.action is GuardianAction.ESCALATE:
+            self.safety.activate_emergency(
+                context,
+                source_id=context.actor_id,
+                trip_id=trip.id,
+                idempotency_key=f"guardian-emergency:{observation.observation_id}",
+            )
+        return decision
+
+
+@dataclass(slots=True)
+class _GuardianIdempotencyRepository:
+    repositories: RuntimeRepositories
+
+    @staticmethod
+    def _key(observation_id: str) -> str:
+        return f"guardian-decision:{observation_id}"
+
+    def find(self, *, tenant_id: str, observation_id: str) -> GuardianDecision | None:
+        record = self.repositories.idempotency.get(tenant_id, self._key(observation_id))
+        if record is None:
+            return None
+        result = record.result
+        return GuardianDecision(
+            observation_id=observation_id,
+            tenant_id=tenant_id,
+            trip_id=str(result["trip_id"]),
+            action=GuardianAction(str(result["action"])),
+            reasons=tuple(result["reasons"]),
+            observed_at=result["observed_at"],
+            recorded_at=result["recorded_at"],
+        )
+
+    def save(self, decision: GuardianDecision) -> None:
+        self.repositories.idempotency.put(
+            IdempotencyRecord(
+                decision.tenant_id,
+                self._key(decision.observation_id),
+                payload_hash({"trip_id": decision.trip_id}),
+                {
+                    "trip_id": decision.trip_id,
+                    "action": decision.action.value,
+                    "reasons": list(decision.reasons),
+                    "observed_at": decision.observed_at,
+                    "recorded_at": decision.recorded_at,
+                },
+            )
+        )
 
 @dataclass(slots=True)
 class OperatorService:
@@ -1391,6 +1611,288 @@ class ResilienceService:
 
 
 @dataclass(slots=True)
+class RatingService:
+    repositories: RuntimeRepositories
+    events: EventFabric
+
+    def submit_rating(
+        self,
+        context: RuntimeContext,
+        *,
+        trip_id: str,
+        score: int,
+        comment: str | None,
+        idempotency_key: str,
+    ) -> Rating:
+        if context.actor_type != ActorType.RIDER:
+            raise AuthorityDenied(
+                "rider_authority_required"
+            )
+
+        rider_id = str(
+            context.actor_id
+        ).strip()
+
+        if not rider_id:
+            raise AuthorityDenied(
+                "authenticated_rider_required"
+            )
+
+        if not str(idempotency_key).strip():
+            raise ValueError(
+                "idempotency_key_required"
+            )
+
+        if isinstance(score, bool) or not isinstance(
+            score,
+            int,
+        ):
+            raise ValueError(
+                "rating_score_invalid"
+            )
+
+        if not 1 <= score <= 5:
+            raise ValueError(
+                "rating_score_invalid"
+            )
+
+        trip = self.repositories.trips.get(
+            trip_id
+        )
+
+        if trip is None:
+            raise ValueError(
+                "trip_not_found"
+            )
+
+        if trip.tenant_id != context.tenant_id:
+            raise AuthorityDenied(
+                "trip_tenant_mismatch"
+            )
+
+        if (
+            trip.organization_id
+            != context.organization_id
+        ):
+            raise AuthorityDenied(
+                "trip_organization_mismatch"
+            )
+
+        if trip.region_code != context.region_code:
+            raise AuthorityDenied(
+                "trip_region_mismatch"
+            )
+
+        if trip.rider_id != rider_id:
+            raise AuthorityDenied(
+                "trip_rider_mismatch"
+            )
+
+        if trip.lifecycle_state != TripState.COMPLETED:
+            raise ValueError(
+                "trip_not_completed"
+            )
+
+        driver_id = str(
+            trip.driver_id or ""
+        ).strip()
+
+        if not driver_id:
+            raise ValueError(
+                "authoritative_driver_required"
+            )
+
+        normalized_comment = (
+            str(comment).strip()
+            if comment is not None
+            and str(comment).strip()
+            else None
+        )
+
+        if (
+            normalized_comment is not None
+            and len(normalized_comment) > 2000
+        ):
+            raise ValueError(
+                "rating_comment_too_long"
+            )
+
+        command_hash = payload_hash(
+            {
+                "trip_id": trip.id,
+                "rider_id": rider_id,
+                "driver_id": driver_id,
+                "score": score,
+                "comment": normalized_comment,
+            }
+        )
+
+        existing = (
+            self.repositories.idempotency.get(
+                context.tenant_id,
+                idempotency_key,
+            )
+        )
+
+        if existing is not None:
+            if (
+                existing.command_hash
+                != command_hash
+            ):
+                raise DuplicateCommand(
+                    "idempotency_key_payload_mismatch"
+                )
+
+            rating_id = existing.result.get(
+                "rating_id"
+            )
+
+            if not rating_id:
+                raise DuplicateCommand(
+                    "idempotent_rating_result_invalid"
+                )
+
+            replay = (
+                self.repositories.ratings.get(
+                    rating_id
+                )
+            )
+
+            if replay is None:
+                raise DuplicateCommand(
+                    "idempotent_rating_missing"
+                )
+
+            return replay
+
+        prior = (
+            self.repositories.ratings.get_by_trip(
+                trip.id,
+                tenant_id=context.tenant_id,
+            )
+        )
+
+        if prior is not None:
+            raise DuplicateCommand(
+                "trip_already_rated"
+            )
+
+        rating = Rating(
+            id=new_id("rating"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            trip_id=trip.id,
+            score=score,
+            comment=normalized_comment,
+        )
+
+        self.repositories.ratings.save(
+            rating
+        )
+
+        self.repositories.idempotency.put(
+            IdempotencyRecord(
+                context.tenant_id,
+                idempotency_key,
+                command_hash,
+                {
+                    "rating_id": rating.id,
+                },
+            )
+        )
+
+        self.events.emit(
+            context,
+            event_type="TripRatingSubmitted",
+            aggregate_id=rating.id,
+            aggregate_type="Rating",
+            aggregate_version=rating.aggregate_version,
+            payload={
+                "rating": rating,
+                "trip_id": trip.id,
+                "rider_id": rider_id,
+                "driver_id": driver_id,
+                "score": rating.score,
+            },
+        )
+
+        return rating
+
+
+@dataclass(slots=True)
+class SupportService:
+    repositories: RuntimeRepositories
+    events: EventFabric
+
+    def create_trip_case(
+        self,
+        context: RuntimeContext,
+        *,
+        trip_id: str,
+        case_type: str,
+        description: str,
+        idempotency_key: str,
+    ) -> SupportCase:
+        if context.actor_type not in {ActorType.RIDER, ActorType.DRIVER}:
+            raise AuthorityDenied("rider_or_driver_authority_required")
+        if not idempotency_key.strip():
+            raise ValueError("idempotency_key_required")
+        trip = self.repositories.trips.get(trip_id)
+        if trip is None:
+            raise ValueError("trip_not_found")
+        expected_actor = trip.rider_id if context.actor_type == ActorType.RIDER else trip.driver_id
+        if expected_actor != context.actor_id:
+            raise AuthorityDenied("trip_actor_mismatch")
+        normalized_type = case_type.strip().upper()
+        allowed = {
+            ActorType.RIDER: {"LOST_PROPERTY"},
+            ActorType.DRIVER: {"FOUND_PROPERTY", "RIDER_NO_SHOW", "RIDER_FEEDBACK"},
+        }[context.actor_type]
+        if normalized_type not in allowed:
+            raise AuthorityDenied("support_case_type_not_allowed")
+        command_hash = payload_hash({
+            "trip_id": trip_id,
+            "case_type": normalized_type,
+            "description": description.strip(),
+            "actor_id": context.actor_id,
+        })
+        existing = self.repositories.idempotency.get(context.tenant_id, idempotency_key)
+        if existing:
+            if existing.command_hash != command_hash:
+                raise DuplicateCommand("idempotency_key_payload_mismatch")
+            replay = self.repositories.support_cases.get(existing.result.get("case_id", ""))
+            if replay is None:
+                raise DuplicateCommand("idempotent_support_case_missing")
+            return replay
+        case = SupportCase(
+            id=new_id("support_case"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            subject_id=trip_id,
+            case_type=normalized_type,
+            actor_type=context.actor_type,
+            actor_id=context.actor_id,
+            trip_id=trip_id,
+            description=description.strip(),
+        )
+        self.repositories.support_cases.save(case)
+        self.repositories.idempotency.put(IdempotencyRecord(
+            context.tenant_id, idempotency_key, command_hash, {"case_id": case.id}
+        ))
+        self.events.emit(
+            context,
+            event_type="SupportCaseCreated",
+            aggregate_id=case.id,
+            aggregate_type="SupportCase",
+            aggregate_version=case.aggregate_version,
+            payload={"case": case, "trip_id": trip_id, "case_type": normalized_type},
+        )
+        return case
+
+
+@dataclass(slots=True)
 class ReadModelService:
     repositories: RuntimeRepositories
 
@@ -1438,12 +1940,15 @@ class NovaRideRuntime:
     repositories: RuntimeRepositories
     policy: PolicyService
     events: EventFabric
-    novapay: NovaPayAdapter
+    novapay: NovaPayAdapter | NovaPayProductionAdapter
     booking: BookingService
     driver: DriverService
     dispatch: DispatchService
     trip: TripService
+    rating: RatingService
+    support: SupportService
     safety: SafetyService
+    guardian: GuardianRuntimeService
     operator: OperatorService
     fleet: FleetService
     logistics: LogisticsService
@@ -1467,37 +1972,130 @@ class NovaRideRuntime:
         }
 
 
-def create_runtime() -> NovaRideRuntime:
-    repositories = RuntimeRepositories()
+def create_runtime_with_dependencies(
+    repositories: RuntimeRepositories,
+    *,
+    events: EventFabric | None = None,
+    novapay_production_provider: NovaPayProductionProvider | None = None,
+    real_payments_enabled: bool = False,
+) -> NovaRideRuntime:
+    """Construct NovaRideRuntime from explicit repository/event dependencies.
+
+    This factory preserves the canonical NovaRide service topology while
+    allowing a caller to supply a transaction-scoped repository bundle.
+
+    It deliberately does not open PostgreSQL connections, own transactions,
+    choose tenants, read runtime settings, or activate production adapters.
+    """
+
     policy = PolicyService()
-    events = EventFabric(repositories)
-    novapay = NovaPayAdapter(policy)
+    policy.real_payments_enabled = bool(
+        real_payments_enabled
+    )
+
+    if events is None:
+        events = EventFabric(
+            repositories
+        )
+
+    if policy.real_payments_enabled:
+        if novapay_production_provider is None:
+            raise RuntimeError(
+                "novapay_production_provider_required"
+            )
+
+        novapay = NovaPayProductionAdapter(
+            novapay_production_provider,
+            real_payments_enabled=True,
+        )
+    else:
+        novapay = NovaPayAdapter(
+            policy
+        )
+
+    safety = SafetyService(
+        repositories,
+        events,
+        policy,
+    )
     return NovaRideRuntime(
         repositories=repositories,
         policy=policy,
         events=events,
         novapay=novapay,
-        booking=BookingService(repositories, events, policy),
-        driver=DriverService(repositories, events, policy),
-        dispatch=DispatchService(repositories, events),
-        trip=TripService(repositories, events, novapay),
-        safety=SafetyService(repositories, events, policy),
-        operator=OperatorService(repositories, events, policy),
-        fleet=FleetService(repositories, events),
-        logistics=LogisticsService(repositories, events),
-        corporate=CorporateMobilityService(repositories, events),
-        transit=TransitJourneyService(repositories, events),
-        intelligence=DispatchIntelligenceService(events, policy),
-        resilience=ResilienceService(repositories, events),
-        read_models=ReadModelService(repositories),
+        booking=BookingService(
+            repositories,
+            events,
+            policy,
+        ),
+        driver=DriverService(
+            repositories,
+            events,
+            policy,
+        ),
+        dispatch=DispatchService(
+            repositories,
+            events,
+        ),
+        trip=TripService(
+            repositories,
+            events,
+            novapay,
+        ),
+        rating=RatingService(
+            repositories,
+            events,
+        ),
+        support=SupportService(
+            repositories,
+            events,
+        ),
+        safety=safety,
+        guardian=GuardianRuntimeService(
+            repositories,
+            events,
+            safety,
+        ),
+        operator=OperatorService(
+            repositories,
+            events,
+            policy,
+        ),
+        fleet=FleetService(
+            repositories,
+            events,
+        ),
+        logistics=LogisticsService(
+            repositories,
+            events,
+        ),
+        corporate=CorporateMobilityService(
+            repositories,
+            events,
+        ),
+        transit=TransitJourneyService(
+            repositories,
+            events,
+        ),
+        intelligence=DispatchIntelligenceService(
+            events,
+            policy,
+        ),
+        resilience=ResilienceService(
+            repositories,
+            events,
+        ),
+        read_models=ReadModelService(
+            repositories
+        ),
     )
 
 
-__all__ = [
-    "NovaRideRuntime",
-    "create_runtime",
-    "RuntimeContext",
-    "ActorType",
-    "AddressRef",
-    "GeoPoint",
-]
+def create_runtime() -> NovaRideRuntime:
+    """Construct the canonical memory-backed NovaRide runtime."""
+
+    repositories = RuntimeRepositories()
+
+    return create_runtime_with_dependencies(
+        repositories,
+    )

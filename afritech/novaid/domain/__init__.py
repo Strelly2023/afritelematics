@@ -236,6 +236,15 @@ from .authorization import (
     PermissionEffect,
     Role,
 )
+from .production_identity import (
+    FederatedStaffIdentity,
+    MachineCredential,
+    MachineCredentialStatus,
+    PrivilegedAccessGrant,
+    PrivilegedAccessStatus,
+    ProductionActorType,
+    actor_role_bindings,
+)
 from .membership_events import (
     MembershipLifecycleEvent,
     membership_lifecycle_event,
@@ -306,6 +315,13 @@ __all__ = [
     "IdentityVerificationResult",
     "IdentityVerificationService",
     "IdentityType",
+    "FederatedStaffIdentity",
+    "MachineCredential",
+    "MachineCredentialStatus",
+    "PrivilegedAccessGrant",
+    "PrivilegedAccessStatus",
+    "ProductionActorType",
+    "actor_role_bindings",
     "IdentifierType",
     "LegalName",
     "NameType",
@@ -347,7 +363,8 @@ __all__ = [
     "lifecycle_event",
     "VERIFICATION_TRANSITIONS",
     "verification_event",
-    "utcnow",    "BIOMETRIC_ENROLLMENT_TRANSITIONS",
+    "utcnow",
+    "BIOMETRIC_ENROLLMENT_TRANSITIONS",
     "BiometricConsent",
     "BiometricConsentStatus",
     "BiometricEnrollment",
@@ -454,5 +471,29 @@ __all__ = [
     "IdentityVerificationPolicy",
     "IdentityVerificationRecord",
     "IdentityVerificationStage",
-
+    "BeneficialOwner",
+    "BeneficialOwnerControlBasis",
+    "BeneficialOwnerVerificationStatus",
+    "BusinessRepresentative",
+    "BusinessRepresentativeRole",
+    "BusinessRepresentativeVerificationStatus",
+    "KYBPartyLinkage",
+    "link_kyb_parties",
 ]
+
+from .beneficial_ownership import (
+    BeneficialOwner,
+    BeneficialOwnerControlBasis,
+    BeneficialOwnerVerificationStatus,
+)
+
+from .business_representative import (
+    BusinessRepresentative,
+    BusinessRepresentativeRole,
+    BusinessRepresentativeVerificationStatus,
+)
+
+from .kyb_party_linkage import (
+    KYBPartyLinkage,
+    link_kyb_parties,
+)

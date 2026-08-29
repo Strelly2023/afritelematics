@@ -4,10 +4,15 @@ from __future__ import annotations
 
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
 from pydantic import BaseModel, Field
 
-from afritech.novaride_runtime.config import create_runtime_from_environment
+from afritech.novaride_runtime.config import (
+    NovaRideRuntimeSettings,
+    RuntimeEnvironment,
+    create_postgres_runtime_bridge_from_settings,
+    create_runtime_from_environment,
+)
 from afritech.novaride_runtime.common.geography import AddressRef, GeoPoint
 from afritech.novaride_runtime.common.money import Money
 from afritech.novaride_runtime.models import ActorType, BookingIntent, CircuitBreakerState, RuntimeContext, TripState
@@ -20,13 +25,9 @@ from afritech.novaride_runtime.sync_security import DeviceRegistry
 from afritech.novaride_runtime.events.replay_planner import ReplayMode
 from afritech.novaride_runtime.replay import (
     InvalidReplayTransition,
-    ReplayPlanRepository,
-    ReplayPlanRecord,
     ReplayService,
-    get_replay_plan_repository,
     get_replay_service,
 )
-from afritech.novaride_runtime.replay.hashing import replay_plan_hash
 from afritech.novaride_runtime.security import (
     NovaRideRuntimeContext,
     require_driver_ownership_or_operations,
@@ -36,6 +37,47 @@ from afritech.novaride_runtime.security import (
 
 
 _RUNTIME = create_runtime_from_environment()
+
+
+def get_novaride_runtime():
+    """Return the process-authoritative NovaRide runtime instance.
+
+    Composition adapters must reuse this provider rather than constructing
+    another runtime, repository bundle, pool, or Unit of Work.
+    """
+    return _RUNTIME
+
+
+def _execute_runtime_operation(
+    *,
+    tenant_id: str,
+    operation: Any,
+) -> Any:
+    """Execute one NovaRide command on its authoritative runtime.
+
+    Production commands use the tenant-scoped PostgreSQL operated-runtime
+    bridge. Non-production environments preserve the existing in-memory
+    runtime contract.
+    """
+
+    settings = NovaRideRuntimeSettings.from_env()
+
+    if (
+        settings.environment
+        is RuntimeEnvironment.PRODUCTION
+    ):
+        bridge = (
+            create_postgres_runtime_bridge_from_settings(
+                settings
+            )
+        )
+
+        return bridge.execute(
+            tenant_id=tenant_id,
+            operation=operation,
+        )
+
+    return operation(_RUNTIME)
 _OPERATIONS = OperationsLayerService(_RUNTIME)
 _DEVICE_REGISTRY = DeviceRegistry({"device_123": "test-device-secret"})
 RuntimeReadContext = Annotated[
@@ -44,6 +86,24 @@ RuntimeReadContext = Annotated[
         require_permissions(
             "novaride.runtime.read",
             allowed_roles={
+                "PLATFORM_OWNER",
+                "PLATFORM_ADMIN",
+                "OPERATIONS_TEAM",
+                "QA_ENGINEER",
+                "SECURITY_ENGINEER",
+                "AUDIT_TEAM",
+            },
+        )
+    ),
+]
+
+DriverRideQueueContext = Annotated[
+    NovaRideRuntimeContext,
+    Depends(
+        require_permissions(
+            "novaride.runtime.read",
+            allowed_roles={
+                "DRIVER",
                 "PLATFORM_OWNER",
                 "PLATFORM_ADMIN",
                 "OPERATIONS_TEAM",
@@ -120,7 +180,12 @@ DriverShiftContext = Annotated[
     Depends(
         require_permissions(
             "novaride.driver.shift.manage",
-            allowed_roles={"PLATFORM_ADMIN", "OPERATIONS_TEAM", "INCIDENT_RESPONSE_TEAM"},
+            allowed_roles={
+                "DRIVER",
+                "PLATFORM_ADMIN",
+                "OPERATIONS_TEAM",
+                "INCIDENT_RESPONSE_TEAM",
+            },
         )
     ),
 ]
@@ -130,7 +195,12 @@ DriverAvailabilityContext = Annotated[
     Depends(
         require_permissions(
             "novaride.driver.availability.manage",
-            allowed_roles={"PLATFORM_ADMIN", "OPERATIONS_TEAM", "INCIDENT_RESPONSE_TEAM"},
+            allowed_roles={
+                "DRIVER",
+                "PLATFORM_ADMIN",
+                "OPERATIONS_TEAM",
+                "INCIDENT_RESPONSE_TEAM",
+            },
         )
     ),
 ]
@@ -770,14 +840,29 @@ def build_novaride_runtime_router() -> APIRouter:
     def driver_shift_start(context: DriverShiftContext) -> dict[str, Any]:
         ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
         require_driver_ownership_or_operations(context=context, driver_identity_id=context.subject_id)
-        return _json(_RUNTIME.driver.start_shift(ctx, context.subject_id))
+        return _json(
+            _execute_runtime_operation(
+                tenant_id=ctx.tenant_id,
+                operation=lambda runtime: runtime.driver.start_shift(
+                    ctx,
+                    context.subject_id,
+                ),
+            )
+        )
 
     @router.put("/driver/{driver_id}/availability")
     @router.put("/novaride/runtime/driver/{driver_id}/availability")
     def driver_availability(context: DriverAvailabilityContext, driver_id: str, location_fresh: bool = True) -> dict[str, Any]:
         require_driver_ownership_or_operations(context=context, driver_identity_id=driver_id)
         ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        availability = _RUNTIME.driver.set_available(ctx, driver_id, location_fresh=location_fresh)
+        availability = _execute_runtime_operation(
+            tenant_id=ctx.tenant_id,
+            operation=lambda runtime: runtime.driver.set_available(
+                ctx,
+                driver_id,
+                location_fresh=location_fresh,
+            ),
+        )
         return {
             "driver_id": availability.driver_id,
             "requested_state": availability.requested_state.value,
@@ -794,64 +879,178 @@ def build_novaride_runtime_router() -> APIRouter:
         }
 
     @router.get("/driver/{driver_id}/ride-queue")
-    def driver_ride_queue(driver_id: str, context: RuntimeReadContext) -> dict[str, Any]:
-        return {"offers": _RUNTIME.read_models.driver_queue(context.tenant_id, driver_id)}
+    def driver_ride_queue(driver_id: str, context: DriverRideQueueContext) -> dict[str, Any]:
+        require_driver_ownership_or_operations(
+            context=context,
+            driver_identity_id=driver_id,
+        )
+        return {
+            "offers": _execute_runtime_operation(
+                tenant_id=context.tenant_id,
+                operation=lambda runtime: runtime.read_models.driver_queue(
+                    context.tenant_id,
+                    driver_id,
+                ),
+            )
+        }
 
     @router.post("/rider/fares/quote")
     def rider_fare_quote(payload: FareQuoteRequest, context: RuntimeReadContext) -> dict[str, Any]:
         ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="RIDER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        return _json(_RUNTIME.booking.create_quote(ctx, service_type=payload.service_type, currency=payload.currency))
+        return _json(
+            _execute_runtime_operation(
+                tenant_id=ctx.tenant_id,
+                operation=lambda runtime: (
+                    runtime.booking.create_quote(
+                        ctx,
+                        service_type=payload.service_type,
+                        currency=payload.currency,
+                    )
+                ),
+            )
+        )
 
     @router.post("/rider/bookings")
     def rider_booking(payload: BookingRequest, context: RuntimeReadContext, idempotency_key: str = Header(..., alias="Idempotency-Key")) -> dict[str, Any]:
         ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="RIDER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
         intent = BookingIntent(context.subject_id, payload.pickup.to_ref(), payload.destination.to_ref(), payload.service_type, payload.payment_preference)
-        return _json(_RUNTIME.booking.create_booking(ctx, intent, quote_id=payload.quote_id, idempotency_key=idempotency_key))
+        return _json(
+            _execute_runtime_operation(
+                tenant_id=ctx.tenant_id,
+                operation=lambda runtime: runtime.booking.create_booking(
+                    ctx,
+                    intent,
+                    quote_id=payload.quote_id,
+                    idempotency_key=idempotency_key,
+                ),
+            )
+        )
 
     @router.post("/novaride/runtime/dispatch/{booking_id}")
     def runtime_dispatch(booking_id: str, context: DispatchContext) -> dict[str, Any]:
         ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="OPERATOR", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        return _json(_RUNTIME.dispatch.start_dispatch(ctx, booking_id))
+        return _json(
+            _execute_runtime_operation(
+                tenant_id=ctx.tenant_id,
+                operation=lambda runtime: runtime.dispatch.start_dispatch(
+                    ctx,
+                    booking_id,
+                ),
+            )
+        )
 
     @router.post("/driver/offers/{offer_id}/accept")
     def driver_offer_accept(offer_id: str, context: DriverShiftContext) -> dict[str, Any]:
         ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        return _json(_RUNTIME.dispatch.accept_offer(ctx, offer_id))
+        return _json(
+            _execute_runtime_operation(
+                tenant_id=ctx.tenant_id,
+                operation=lambda runtime: runtime.dispatch.accept_offer(
+                    ctx,
+                    offer_id,
+                ),
+            )
+        )
 
     @router.post("/driver/trips/{trip_id}/arrive")
     def driver_trip_arrive(trip_id: str, context: DriverShiftContext) -> dict[str, Any]:
-        ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        return _json(_RUNTIME.trip.transition(ctx, trip_id, TripState.DRIVER_ARRIVED))
+            ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
+            return _json(
+                _execute_runtime_operation(
+                    tenant_id=ctx.tenant_id,
+                    operation=lambda runtime: runtime.trip.transition(
+                        ctx,
+                        trip_id,
+                        TripState.DRIVER_ARRIVED,
+                    ),
+                )
+            )
 
     @router.post("/driver/trips/{trip_id}/verify-passenger")
     def driver_trip_verify(trip_id: str, context: DriverShiftContext) -> dict[str, Any]:
-        ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        return _json(_RUNTIME.trip.transition(ctx, trip_id, TripState.PICKUP_VERIFIED))
+            ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
+            return _json(
+                _execute_runtime_operation(
+                    tenant_id=ctx.tenant_id,
+                    operation=lambda runtime: runtime.trip.transition(
+                        ctx,
+                        trip_id,
+                        TripState.PICKUP_VERIFIED,
+                    ),
+                )
+            )
 
     @router.post("/driver/trips/{trip_id}/start")
     def driver_trip_start(trip_id: str, context: DriverShiftContext) -> dict[str, Any]:
-        ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        return _json(_RUNTIME.trip.transition(ctx, trip_id, TripState.IN_PROGRESS))
+            ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
+            return _json(
+                _execute_runtime_operation(
+                    tenant_id=ctx.tenant_id,
+                    operation=lambda runtime: runtime.trip.transition(
+                        ctx,
+                        trip_id,
+                        TripState.IN_PROGRESS,
+                    ),
+                )
+            )
 
     @router.post("/driver/trips/{trip_id}/complete")
     def driver_trip_complete(trip_id: str, context: DriverShiftContext) -> dict[str, Any]:
-        ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        trip = _RUNTIME.repositories.trips.get(trip_id)
-        if trip and trip.lifecycle_state == TripState.IN_PROGRESS:
-            _RUNTIME.trip.transition(ctx, trip_id, TripState.COMPLETING)
-        return _json(_RUNTIME.trip.transition(ctx, trip_id, TripState.COMPLETED))
+            ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
+
+            def complete(runtime: Any) -> Any:
+                trip = runtime.repositories.trips.get(trip_id)
+                if trip and trip.lifecycle_state == TripState.IN_PROGRESS:
+                    runtime.trip.transition(
+                        ctx,
+                        trip_id,
+                        TripState.COMPLETING,
+                    )
+                return runtime.trip.transition(
+                    ctx,
+                    trip_id,
+                    TripState.COMPLETED,
+                )
+
+            return _json(
+                _execute_runtime_operation(
+                    tenant_id=ctx.tenant_id,
+                    operation=complete,
+                )
+            )
 
     @router.post("/driver/trips/{trip_id}/location")
     def driver_trip_location(trip_id: str, lat: float, lng: float, context: DriverShiftContext) -> dict[str, Any]:
-        ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        _RUNTIME.trip.location(ctx, trip_id, GeoPoint(lat, lng))
-        return {"status": "RECORDED"}
+            ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="DRIVER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
+
+            def record_location(runtime: Any) -> None:
+                runtime.trip.location(
+                    ctx,
+                    trip_id,
+                    GeoPoint(lat, lng),
+                )
+
+            _execute_runtime_operation(
+                tenant_id=ctx.tenant_id,
+                operation=record_location,
+            )
+            return {"status": "RECORDED"}
 
     @router.post("/driver/emergency")
     @router.post("/rider/trips/{trip_id}/emergency")
     def emergency(context: RuntimeReadContext, payload: EmergencyRequest, trip_id: str | None = None, idempotency_key: str = Header(..., alias="Idempotency-Key")) -> dict[str, Any]:
-        ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="RIDER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
-        return _json(_RUNTIME.safety.activate_emergency(ctx, source_id=context.subject_id, trip_id=trip_id or payload.trip_id, idempotency_key=idempotency_key))
+            ctx = _context(x_tenant_id=context.tenant_id, x_organization_id=context.organization_id, x_region_code=context.region, x_actor_type="RIDER", x_actor_id=context.subject_id, x_correlation_id="corr_api")
+            return _json(
+                _execute_runtime_operation(
+                    tenant_id=ctx.tenant_id,
+                    operation=lambda runtime: runtime.safety.activate_emergency(
+                        ctx,
+                        source_id=context.subject_id,
+                        trip_id=trip_id or payload.trip_id,
+                        idempotency_key=idempotency_key,
+                    ),
+                )
+            )
 
     @router.get("/operator/command-center")
     def operator_command_center(context: RuntimeReadContext) -> dict[str, Any]:
@@ -920,4 +1119,4 @@ def build_novaride_runtime_router() -> APIRouter:
     return router
 
 
-__all__ = ["build_novaride_runtime_router"]
+__all__ = ["build_novaride_runtime_router", "get_novaride_runtime"]
