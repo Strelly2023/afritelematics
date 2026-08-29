@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from importlib import import_module
 from math import asin, cos, radians, sin, sqrt
-from typing import Any, Callable
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Header
 from pydantic import BaseModel, Field

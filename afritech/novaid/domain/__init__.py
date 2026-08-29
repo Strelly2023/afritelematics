@@ -363,7 +363,8 @@ __all__ = [
     "lifecycle_event",
     "VERIFICATION_TRANSITIONS",
     "verification_event",
-    "utcnow",    "BIOMETRIC_ENROLLMENT_TRANSITIONS",
+    "utcnow",
+    "BIOMETRIC_ENROLLMENT_TRANSITIONS",
     "BiometricConsent",
     "BiometricConsentStatus",
     "BiometricEnrollment",
@@ -470,7 +471,14 @@ __all__ = [
     "IdentityVerificationPolicy",
     "IdentityVerificationRecord",
     "IdentityVerificationStage",
-
+    "BeneficialOwner",
+    "BeneficialOwnerControlBasis",
+    "BeneficialOwnerVerificationStatus",
+    "BusinessRepresentative",
+    "BusinessRepresentativeRole",
+    "BusinessRepresentativeVerificationStatus",
+    "KYBPartyLinkage",
+    "link_kyb_parties",
 ]
 
 from .beneficial_ownership import (
