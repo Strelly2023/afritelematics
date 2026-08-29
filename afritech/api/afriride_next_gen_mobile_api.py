@@ -5,10 +5,18 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from importlib import import_module
 from math import asin, cos, radians, sin, sqrt
-from typing import Any
+from typing import Any, Callable
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Header
 from pydantic import BaseModel, Field
+
+from afritech.novaride_runtime.models import (
+    ActorType,
+    BookingIntent,
+    RuntimeContext,
+)
+from afritech.novaride_runtime.common.geography import AddressRef
+from afritech.novaride_runtime.common.errors import AuthorityDenied, DuplicateCommand
 
 from afritech.afriprogramming.control_plane import get_control_plane
 from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
@@ -117,8 +125,65 @@ class MobilePushRegistrationRequest(BaseModel):
     platform: str = Field(pattern="^(ios|android)$")
 
 
+class RiderFareQuoteRequest(BaseModel):
+    service_type: str = Field(min_length=1, max_length=64)
+    currency: str = Field(default="AUD", min_length=3, max_length=3)
+
+
+class RiderRatingRequest(BaseModel):
+    trip_id: str = Field(
+        min_length=1,
+        max_length=128,
+    )
+    score: int = Field(
+        ge=1,
+        le=5,
+    )
+    comment: str | None = Field(
+        default=None,
+        max_length=2000,
+    )
+
+
+class RiderBookingRequest(BaseModel):
+    quote_id: str = Field(min_length=1, max_length=128)
+    pickup: str = Field(min_length=1, max_length=512)
+    dropoff: str = Field(min_length=1, max_length=512)
+    service_type: str = Field(min_length=1, max_length=64)
+    payment_preference: str | None = Field(default=None, max_length=128)
+    rider_id: str | None = Field(default=None, max_length=128)
+
+
+class RiderEmergencyRequest(BaseModel):
+    trip_id: str | None = Field(default=None, min_length=1, max_length=128)
+
+
+class TripSupportCaseRequest(BaseModel):
+    description: str = Field(default="", max_length=2000)
+
+
 _DRIVER_LOCATIONS: dict[str, DriverLocationRequest] = {}
+_DRIVER_SHIFTS: dict[str, dict[str, Any]] = {}
 _RIDE_PICKUP_LOCATIONS: dict[str, tuple[float, float]] = {}
+_RIDE_QUOTED_TOTALS: dict[str, str] = {}
+
+
+def _driver_shift_payload(driver_id: str) -> dict[str, Any]:
+    shift = _DRIVER_SHIFTS.get(driver_id)
+    if shift is None:
+        return {"driver_id": driver_id, "shift_id": None, "status": "off_duty", "started_at": None, "ended_at": None}
+    return dict(shift)
+
+
+def _driver_has_fresh_location(driver_id: str) -> bool:
+    location = _DRIVER_LOCATIONS.get(driver_id)
+    if location is None or location.is_mocked or not location.device_trusted:
+        return False
+    observed_at = location.timestamp
+    if observed_at.tzinfo is None:
+        observed_at = observed_at.replace(tzinfo=UTC)
+    age = datetime.now(UTC) - observed_at
+    return timedelta(seconds=-30) <= age <= timedelta(minutes=2)
 
 
 def _driver_organization_id(driver_id: str) -> str | None:
@@ -152,10 +217,13 @@ def _require_driver_self_or_roles(
     raise HTTPException(status_code=403, detail="insufficient_role")
 
 
-def require_driver_self_or_roles(*allowed_roles: str):
+def require_driver_self_or_roles(
+    *allowed_roles: str,
+    claims_dependency=get_current_claims,
+):
     def dependency(
         driver_id: str,
-        claims: JWTClaims = Depends(get_current_claims),
+        claims: JWTClaims = Depends(claims_dependency),
     ) -> JWTClaims:
         return _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=allowed_roles or ("OPERATOR", "FLEET_OWNER"))
 
@@ -2590,8 +2658,28 @@ def _novaride_global_expansion_payload() -> dict[str, Any]:
     }
 
 
-def build_afriride_next_gen_mobile_router() -> APIRouter:
+def build_afriride_next_gen_mobile_router(
+    *,
+    claims_dependency=get_current_claims,
+    novaride_runtime_dependency=None,
+) -> APIRouter:
     router = APIRouter(prefix="/v1", tags=["afriride-next-gen-mobile"])
+
+    def require_rider_customer_claims(
+        claims: JWTClaims = Depends(claims_dependency),
+    ) -> JWTClaims:
+        if str(claims.role).strip().upper() != "CUSTOMER":
+            raise HTTPException(
+                status_code=403,
+                detail="customer_role_required",
+            )
+        return claims
+
+    # Canonical NovaRide runtime composition seam.
+    def canonical_novaride_runtime():
+        if novaride_runtime_dependency is None:
+            raise RuntimeError("novaride_runtime_dependency_required")
+        return novaride_runtime_dependency()
 
     @router.get("/novaride/ecosystem")
     def novaride_ecosystem() -> dict[str, Any]:
@@ -2974,19 +3062,458 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             assigned_driver_id=assigned_driver_id,
         )
 
+
+    def _rider_runtime_context(
+        claims: JWTClaims,
+        *,
+        correlation_id: str,
+    ) -> RuntimeContext:
+        tenant_id = claims.tenant_id
+        organization_id = claims.organization_id
+        if not tenant_id:
+            raise HTTPException(status_code=400, detail="tenant_context_required")
+        if not organization_id:
+            raise HTTPException(status_code=400, detail="organization_context_required")
+        normalized_region = str(claims.region or "").strip().upper()
+        region_code = (
+            normalized_region
+            if normalized_region in {"AU", "US", "CA", "UK", "EU", "IN", "KE", "TZ", "UG", "RW", "BI", "DRC", "NG", "GH", "ZM", "ZA"}
+            else "AU" if "AUSTRALIA" in normalized_region else normalized_region[:2]
+        )
+        return RuntimeContext(
+            tenant_id=tenant_id,
+            organization_id=organization_id,
+            region_code=region_code,
+            actor_type=ActorType.RIDER,
+            actor_id=str(claims.sub).strip(),
+            correlation_id=correlation_id,
+        )
+
+    def _driver_runtime_context(claims: JWTClaims, *, correlation_id: str) -> RuntimeContext:
+        rider_context = _rider_runtime_context(claims, correlation_id=correlation_id)
+        return RuntimeContext(
+            tenant_id=rider_context.tenant_id,
+            organization_id=rider_context.organization_id,
+            region_code=rider_context.region_code,
+            actor_type=ActorType.DRIVER,
+            actor_id=str(claims.sub).strip(),
+            correlation_id=correlation_id,
+        )
+
+    @router.post("/rider/fares/quote")
+    def create_rider_fare_quote(
+        payload: RiderFareQuoteRequest,
+        claims: JWTClaims = Depends(require_rider_customer_claims),
+    ) -> dict[str, Any]:
+        rider_id = str(claims.sub).strip()
+        if not rider_id:
+            raise HTTPException(status_code=401, detail="authenticated_rider_required")
+        runtime = canonical_novaride_runtime()
+        context = _rider_runtime_context(claims, correlation_id=f"quote:{rider_id}")
+        quote = runtime.booking.create_quote(
+            context,
+            service_type=payload.service_type,
+            currency=payload.currency.upper(),
+        )
+        return {
+            "quote_id": quote.id,
+            "service_type": quote.service_type,
+            "currency": quote.estimated_total.currency,
+            "estimated_total": str(quote.estimated_total.amount),
+            "components": {
+                "base_fare": str(quote.base_fare.amount),
+                "distance_fare": str(quote.distance_fare.amount),
+                "time_fare": str(quote.time_fare.amount),
+                "taxes": str(quote.taxes.amount),
+                "tolls": str(quote.tolls.amount),
+                "local_fees": str(quote.local_fees.amount),
+                "surge": str(quote.surge.amount),
+                "discounts": str(quote.discounts.amount),
+            },
+            "pricing_policy_version": quote.pricing_policy_version,
+        }
+
+    @router.post("/rider/ratings")
+    def submit_rider_rating(
+        payload: RiderRatingRequest,
+        claims: JWTClaims = Depends(
+            require_rider_customer_claims
+        ),
+        idempotency_key: str = Header(
+            ...,
+            alias="Idempotency-Key",
+        ),
+    ) -> dict[str, Any]:
+        rider_id = str(
+            claims.sub
+        ).strip()
+
+        if not rider_id:
+            raise HTTPException(
+                status_code=401,
+                detail="authenticated_rider_required",
+            )
+
+        if not idempotency_key.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="idempotency_key_required",
+            )
+
+        runtime = canonical_novaride_runtime()
+
+        context = _rider_runtime_context(
+            claims,
+            correlation_id=idempotency_key,
+        )
+
+        try:
+            rating = runtime.rating.submit_rating(
+                context,
+                trip_id=payload.trip_id,
+                score=payload.score,
+                comment=payload.comment,
+                idempotency_key=idempotency_key,
+            )
+
+        except DuplicateCommand as exc:
+            raise HTTPException(
+                status_code=409,
+                detail=str(exc),
+            ) from exc
+
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail=str(exc),
+            ) from exc
+
+        except Exception as exc:
+            if (
+                exc.__class__.__name__
+                == "AuthorityDenied"
+            ):
+                raise HTTPException(
+                    status_code=403,
+                    detail=str(exc),
+                ) from exc
+            raise
+
+        return {
+            "rating_id": rating.id,
+            "trip_id": rating.trip_id,
+            "score": rating.score,
+            "comment": rating.comment,
+        }
+
+
+    @router.post("/rider/bookings")
+    def create_rider_booking(
+        payload: RiderBookingRequest,
+        claims: JWTClaims = Depends(require_rider_customer_claims),
+        idempotency_key: str = Header(..., alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        rider_id = str(claims.sub).strip()
+        if not rider_id:
+            raise HTTPException(status_code=401, detail="authenticated_rider_required")
+        if payload.rider_id and payload.rider_id.strip() != rider_id:
+            raise HTTPException(status_code=403, detail="rider_identity_mismatch")
+        if not idempotency_key.strip():
+            raise HTTPException(status_code=400, detail="idempotency_key_required")
+        runtime = canonical_novaride_runtime()
+        context = _rider_runtime_context(claims, correlation_id=idempotency_key)
+        quote = runtime.repositories.fare_quotes.get(payload.quote_id)
+        if quote is None:
+            raise HTTPException(status_code=400, detail="canonical_quote_required")
+        if quote.tenant_id != context.tenant_id or quote.organization_id != context.organization_id:
+            raise HTTPException(status_code=403, detail="quote_authority_mismatch")
+        if quote.region_code != context.region_code:
+            raise HTTPException(status_code=403, detail="quote_region_mismatch")
+        if quote.service_type != payload.service_type:
+            raise HTTPException(status_code=400, detail="quote_service_type_mismatch")
+        intent = BookingIntent(
+            rider_id=rider_id,
+            pickup=AddressRef(payload.pickup),
+            destination=AddressRef(payload.dropoff),
+            service_type=payload.service_type,
+            payment_preference=payload.payment_preference or "NovaPay Wallet",
+        )
+        try:
+            booking = runtime.booking.create_booking(
+                context,
+                intent,
+                quote_id=payload.quote_id,
+                idempotency_key=idempotency_key,
+            )
+        except DuplicateCommand as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        gateway = get_gateway()
+        ride = gateway.dispatcher.rides.get(booking.id)
+        if ride is None:
+            ride = gateway.passenger.request_ride(
+                {
+                    "passenger_id": rider_id,
+                    "pickup": payload.pickup,
+                    "destination": payload.dropoff,
+                    "ride_id": booking.id,
+                }
+            )
+        ride_id = ride["ride_id"] if isinstance(ride, dict) else ride.ride_id
+        _RIDE_QUOTED_TOTALS[ride_id] = (
+            f"{quote.estimated_total.currency} {quote.estimated_total.amount}"
+        )
+        mobility_hub.publish(
+            "DISPATCH_REQUESTED",
+            targets={f"actor:{rider_id}", "role:driver", f"ride:{ride_id}"},
+            data={"ride_id": ride_id, "booking_id": booking.id, "status": "requested"},
+        )
+        return {
+            "booking_id": booking.id,
+            "ride_id": ride_id,
+            "fare_quote_id": booking.fare_quote_id,
+            "rider_id": booking.rider_id,
+            "service_type": booking.service_type,
+            "state": booking.state.value,
+        }
+
+    @router.post(
+        "/rider/bookings/{booking_id}/cancel"
+    )
+    def cancel_rider_booking(
+        booking_id: str,
+        claims: JWTClaims = Depends(
+            require_rider_customer_claims
+        ),
+        idempotency_key: str = Header(
+            ...,
+            alias="Idempotency-Key",
+        ),
+    ) -> dict[str, Any]:
+        rider_id = str(
+            claims.sub
+        ).strip()
+
+        if not rider_id:
+            raise HTTPException(
+                status_code=401,
+                detail="authenticated_rider_required",
+            )
+
+        if not idempotency_key.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="idempotency_key_required",
+            )
+
+        runtime = canonical_novaride_runtime()
+
+        context = _rider_runtime_context(
+            claims,
+            correlation_id=idempotency_key,
+        )
+
+        gateway = get_gateway()
+
+        legacy_ride = (
+            gateway.dispatcher.rides.get(
+                booking_id
+            )
+        )
+
+        if legacy_ride is not None:
+            legacy_passenger_id = (
+                legacy_ride.get("passenger_id")
+                if isinstance(
+                    legacy_ride,
+                    dict,
+                )
+                else legacy_ride.passenger_id
+            )
+
+            legacy_status = (
+                legacy_ride.get("status")
+                if isinstance(
+                    legacy_ride,
+                    dict,
+                )
+                else legacy_ride.status
+            )
+
+            if legacy_passenger_id != rider_id:
+                raise HTTPException(
+                    status_code=403,
+                    detail="rider_identity_mismatch",
+                )
+
+            if legacy_status in {
+                "IN_TRIP",
+                "COMPLETED",
+            }:
+                raise HTTPException(
+                    status_code=409,
+                    detail="ride_not_cancelable",
+                )
+
+        try:
+            booking = (
+                runtime.booking.cancel_booking(
+                    context,
+                    booking_id=booking_id,
+                    idempotency_key=idempotency_key,
+                )
+            )
+
+        except DuplicateCommand as exc:
+            raise HTTPException(
+                status_code=409,
+                detail=str(exc),
+            ) from exc
+
+        except AuthorityDenied as exc:
+            raise HTTPException(
+                status_code=403,
+                detail=str(exc),
+            ) from exc
+
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail=str(exc),
+            ) from exc
+
+        if legacy_ride is not None:
+            legacy_status = (
+                legacy_ride.get("status")
+                if isinstance(
+                    legacy_ride,
+                    dict,
+                )
+                else legacy_ride.status
+            )
+
+            if legacy_status != "CANCELED":
+                try:
+                    gateway.dispatcher.cancel_ride(
+                        passenger_id=rider_id,
+                        ride_id=booking.id,
+                    )
+                except Exception as exc:
+                    raise HTTPException(
+                        status_code=409,
+                        detail=(
+                            "legacy_cancel_mirror_failed:"
+                            + str(exc)
+                        ),
+                    ) from exc
+
+        mobility_hub.publish(
+            "RIDE_STATE_UPDATED",
+            targets={
+                f"actor:{rider_id}",
+                f"ride:{booking.id}",
+                "role:driver",
+                "role:operator",
+            },
+            data={
+                "ride_id": booking.id,
+                "booking_id": booking.id,
+                "status": "cancelled",
+                "state": booking.state.value,
+            },
+        )
+
+        return {
+            "booking_id": booking.id,
+            "ride_id": booking.id,
+            "rider_id": booking.rider_id,
+            "state": booking.state.value,
+            "status": "cancelled",
+        }
+
+    @router.post("/rider/emergency")
+    def activate_rider_emergency(
+        payload: RiderEmergencyRequest,
+        claims: JWTClaims = Depends(require_rider_customer_claims),
+        idempotency_key: str = Header(..., alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        rider_id = str(claims.sub).strip()
+        if not rider_id:
+            raise HTTPException(status_code=401, detail="authenticated_rider_required")
+        if not idempotency_key.strip():
+            raise HTTPException(status_code=400, detail="idempotency_key_required")
+
+        runtime = canonical_novaride_runtime()
+        context = _rider_runtime_context(claims, correlation_id=idempotency_key)
+        try:
+            emergency = runtime.safety.activate_emergency(
+                context,
+                source_id=rider_id,
+                trip_id=payload.trip_id,
+                idempotency_key=idempotency_key,
+            )
+        except DuplicateCommand as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+        return {
+            "emergency_id": emergency.id,
+            "state": emergency.state.value,
+            "evidence_locked": emergency.evidence_locked,
+            "visible_reference": emergency.visible_reference,
+            "trip_id": emergency.trip_id,
+        }
+
+    @router.post("/rider/trips/{trip_id}/lost-property", status_code=201)
+    def rider_lost_property(
+        trip_id: str,
+        payload: TripSupportCaseRequest,
+        claims: JWTClaims = Depends(require_rider_customer_claims),
+        idempotency_key: str = Header(..., alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        try:
+            case = canonical_novaride_runtime().support.create_trip_case(
+                _rider_runtime_context(claims, correlation_id=idempotency_key),
+                trip_id=trip_id,
+                case_type="LOST_PROPERTY",
+                description=payload.description,
+                idempotency_key=idempotency_key,
+            )
+        except DuplicateCommand as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except AuthorityDenied as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return {"case_id": case.id, "trip_id": case.trip_id, "case_type": case.case_type, "status": case.status}
+
     @router.post("/rider/rides")
     def request_ride(
         payload: dict[str, Any],
+        claims: JWTClaims = Depends(require_rider_customer_claims),
         gateway=Depends(get_gateway),
         trace_log=Depends(get_trace_log),
         idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
     ) -> dict[str, Any]:
-        rider_id = str(payload.get("rider_id", "")).strip()
+        authenticated_rider_id = str(claims.sub).strip()
+        supplied_rider_id = str(payload.get("rider_id", "")).strip()
+
+        if not authenticated_rider_id:
+            raise HTTPException(
+                status_code=401,
+                detail="authenticated_rider_required",
+            )
+
+        if supplied_rider_id and supplied_rider_id != authenticated_rider_id:
+            raise HTTPException(
+                status_code=403,
+                detail="rider_identity_mismatch",
+            )
+
+        rider_id = authenticated_rider_id
         pickup = str(payload.get("pickup", "")).strip()
         dropoff = str(payload.get("dropoff", "")).strip()
         ride_type = str(payload.get("ride_type", "Economy")).strip() or "Economy"
         ride_id = str(payload.get("ride_id", "")).strip() or None
-        if not rider_id or not pickup or not dropoff:
+        if not pickup or not dropoff:
             raise HTTPException(status_code=400, detail="missing_ride_fields")
         if idempotency_key is not None:
             _ = idempotency_key
@@ -3068,7 +3595,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             "receipt_id": receipt.receipt_id,
             "status": "completed",
             "distance_text": f"{max(4, len(ride.pickup) + len(ride.destination))}.0 km",
-            "total_text": _fare_total(ride.pickup, ride.destination, "Economy"),
+            "total_text": _ride_fare_total(ride),
             "started_at": "2026-06-21T09:12:00Z",
             "completed_at": "2026-06-21T09:45:00Z",
             "trust_score": 92,
@@ -3239,7 +3766,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     def update_driver_location(
         driver_id: str,
         payload: DriverLocationRequest,
-        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
         gateway=Depends(get_gateway),
     ) -> dict[str, Any]:
         if payload.driver_id != driver_id:
@@ -3250,7 +3777,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.post("/drivers/location")
     def update_driver_location_compat(
         payload: DriverLocationRequest,
-        claims: JWTClaims = Depends(get_current_claims),
+        claims: JWTClaims = Depends(claims_dependency),
         gateway=Depends(get_gateway),
     ) -> dict[str, Any]:
         _require_driver_self_or_roles(payload.driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
@@ -3273,23 +3800,69 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.get("/driver/{driver_id}/availability")
     def driver_availability_get(
         driver_id: str,
-        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
         gateway=Depends(get_gateway),
     ) -> dict[str, Any]:
         _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         return _driver_availability_payload(driver_id, gateway)
+
+    @router.get("/driver/{driver_id}/shift")
+    def driver_shift_get(
+        driver_id: str,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
+        return _driver_shift_payload(driver_id)
+
+    @router.post("/driver/{driver_id}/shift/start")
+    def driver_shift_start(
+        driver_id: str,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
+        current = _DRIVER_SHIFTS.get(driver_id)
+        if current and current["status"] == "active":
+            return dict(current)
+        started_at = datetime.now(UTC)
+        shift = {
+            "driver_id": driver_id,
+            "shift_id": f"shift-{driver_id}-{int(started_at.timestamp())}",
+            "status": "active",
+            "started_at": started_at.isoformat(),
+            "ended_at": None,
+        }
+        _DRIVER_SHIFTS[driver_id] = shift
+        return dict(shift)
+
+    @router.post("/driver/{driver_id}/shift/end")
+    def driver_shift_end(
+        driver_id: str,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
+        gateway=Depends(get_gateway),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
+        current = _DRIVER_SHIFTS.get(driver_id)
+        if current is None or current["status"] != "active":
+            return _driver_shift_payload(driver_id)
+        gateway.driver.status({"driver_id": driver_id, "online": False})
+        current.update(status="ended", ended_at=datetime.now(UTC).isoformat())
+        return dict(current)
 
     @router.put("/driver/{driver_id}/availability")
     @router.post("/driver/{driver_id}/availability")
     def update_driver_availability(
         driver_id: str,
         payload: dict[str, Any],
-        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
         gateway=Depends(get_gateway),
     ) -> dict[str, Any]:
         _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         status = str(payload.get("status", "offline")).strip().lower()
         online = status == "available"
+        if online and _driver_shift_payload(driver_id)["status"] != "active":
+            raise HTTPException(status_code=409, detail="active_shift_required")
+        if online and not _driver_has_fresh_location(driver_id):
+            raise HTTPException(status_code=409, detail="fresh_trusted_location_required")
         gateway.driver.status({"driver_id": driver_id, "online": online})
         response = _driver_availability_payload(driver_id, gateway)
         mobility_hub.publish(
@@ -3302,7 +3875,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.get("/driver/{driver_id}/ride-queue")
     def driver_ride_queue(
         driver_id: str,
-        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
         gateway=Depends(get_gateway),
     ) -> dict[str, Any]:
         _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
@@ -3365,13 +3938,11 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         trace_log=Depends(get_trace_log),
     ) -> dict[str, Any]:
         ride = _require_ride(gateway, ride_id)
-        gateway.dispatcher.cancel_ride(
-            passenger_id=ride["passenger_id"],
-            ride_id=ride_id,
-        )
         driver_id = str(payload.get("driver_id", ""))
         if not driver_id:
             raise HTTPException(status_code=400, detail="driver_id_required")
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
+        gateway.dispatcher.cancel_ride(passenger_id=ride["passenger_id"], ride_id=ride_id)
         _log_trace_event(
             trace_log,
             ride_id=ride_id,
@@ -3481,15 +4052,70 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         )
         return response
 
+    def _create_driver_trip_case(
+        *,
+        trip_id: str,
+        payload: TripSupportCaseRequest,
+        claims: JWTClaims,
+        idempotency_key: str,
+        case_type: str,
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(str(claims.sub), claims=claims, allowed_roles=())
+        try:
+            case = canonical_novaride_runtime().support.create_trip_case(
+                _driver_runtime_context(claims, correlation_id=idempotency_key),
+                trip_id=trip_id,
+                case_type=case_type,
+                description=payload.description,
+                idempotency_key=idempotency_key,
+            )
+        except DuplicateCommand as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except AuthorityDenied as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return {"case_id": case.id, "trip_id": case.trip_id, "case_type": case.case_type, "status": case.status}
+
+    @router.post("/driver/trips/{trip_id}/no-show", status_code=201)
+    def driver_rider_no_show(
+        trip_id: str,
+        payload: TripSupportCaseRequest,
+        claims: JWTClaims = Depends(claims_dependency),
+        idempotency_key: str = Header(..., alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        return _create_driver_trip_case(trip_id=trip_id, payload=payload, claims=claims, idempotency_key=idempotency_key, case_type="RIDER_NO_SHOW")
+
+    @router.post("/driver/trips/{trip_id}/rider-feedback", status_code=201)
+    def driver_rider_feedback(
+        trip_id: str,
+        payload: TripSupportCaseRequest,
+        claims: JWTClaims = Depends(claims_dependency),
+        idempotency_key: str = Header(..., alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        return _create_driver_trip_case(trip_id=trip_id, payload=payload, claims=claims, idempotency_key=idempotency_key, case_type="RIDER_FEEDBACK")
+
+    @router.post("/driver/trips/{trip_id}/lost-property", status_code=201)
+    def driver_found_property(
+        trip_id: str,
+        payload: TripSupportCaseRequest,
+        claims: JWTClaims = Depends(claims_dependency),
+        idempotency_key: str = Header(..., alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        return _create_driver_trip_case(trip_id=trip_id, payload=payload, claims=claims, idempotency_key=idempotency_key, case_type="FOUND_PROPERTY")
+
     @router.get("/driver/{driver_id}/earnings")
     def driver_earnings(
         driver_id: str,
-        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
         gateway=Depends(get_gateway),
     ) -> dict[str, Any]:
         _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         completed = gateway.dispatcher.ride_repository.completed_for_driver(driver_id)
-        total = float(len(completed) * 10)
+        total = sum(
+            float(_ride_fare_total(ride).removeprefix("AUD "))
+            for ride in completed
+        )
         return {
             "driver_id": driver_id,
             "period_label": "This week",
@@ -3504,7 +4130,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.get("/driver/{driver_id}/replay-history")
     def driver_replay_history(
         driver_id: str,
-        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER", claims_dependency=claims_dependency)),
         gateway=Depends(get_gateway),
         trace_log=Depends(get_trace_log),
     ) -> dict[str, Any]:
@@ -3848,7 +4474,9 @@ def _driver_availability_payload(driver_id: str, gateway) -> dict[str, Any]:
     return {
         "driver_id": driver_id,
         "status": "available" if driver and driver.online else "offline",
-        "updated_at": "2026-06-21T09:00:01Z",
+        "updated_at": datetime.now(UTC).isoformat(),
+        "shift": _driver_shift_payload(driver_id),
+        "location_fresh": _driver_has_fresh_location(driver_id),
         "trust_score": 94 if completed else 90,
         "verified_rides": completed,
         "replay_consistency_pct": 100,
@@ -3866,7 +4494,7 @@ def _driver_ride_queue_payload(driver_id: str, gateway) -> dict[str, Any]:
             "rider_name": ride.passenger_id or "Rider",
             "rider_trust_score": 91,
             "status": "pending",
-            "quoted_total_text": _fare_total(ride.pickup, ride.destination, "Economy"),
+            "quoted_total_text": _ride_fare_total(ride),
             "eta_text": "15 min",
         }
         for ride in rides
@@ -3910,6 +4538,13 @@ def _fare_total(pickup: str, dropoff: str, ride_type: str) -> str:
     airport = 6.0 if ride_type.lower() == "airport" else 0.0
     total = round(base + premium + airport, 2)
     return f"AUD {total:.2f}"
+
+
+def _ride_fare_total(ride: Any) -> str:
+    return _RIDE_QUOTED_TOTALS.get(
+        ride.ride_id,
+        _fare_total(ride.pickup, ride.destination, "Economy"),
+    )
 
 
 def _driver_trust_trend(gateway) -> list[dict[str, Any]]:

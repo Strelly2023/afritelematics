@@ -346,7 +346,14 @@ def build_auth_router(
         token = jwt_service.create_token(
             identity.user_id, identity.role, tenant_id=identity.tenant_id
         )
-        return {"token": token, "token_type": "bearer", "expires_in": str(jwt_service.ttl_seconds)}
+        return {
+            "token": token,
+            "token_type": "bearer",
+            "expires_in": str(jwt_service.ttl_seconds),
+            "user_id": identity.user_id,
+            "role": identity.role,
+            "tenant_id": identity.tenant_id,
+        }
 
     return router
 

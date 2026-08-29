@@ -22,6 +22,7 @@ from .persistence.migrations import verify_migration_revisions
 from .persistence.pool import NovaIDPostgresPool
 from .revocation import ProcessLocalRevocationStore, RedisRevocationStore
 from .tokens import AccessTokenService
+from .otp_delivery import HTTPSOTPDeliveryProvider, OTPDeliveryProvider
 from .observability import NovaIDMetrics, NovaIDTracer
 from .outbox import RevocationOutbox
 from .revocation_delivery import RevocationConsumer, RevocationPublisher
@@ -57,9 +58,38 @@ def validate_runtime_environment(stage: str, backend: str) -> None:
         "NOVAID_REDIS_URL"
     ):
         raise RuntimeError("required_novaid_redis_url_missing")
+    endpoint = os.getenv("NOVAID_OTP_PROVIDER_ENDPOINT", "")
+    if not endpoint:
+        raise RuntimeError("missing_novaid_otp_provider_endpoint")
+    if not endpoint.startswith("https://"):
+        raise RuntimeError("novaid_otp_provider_requires_https")
+    if not os.getenv("NOVAID_OTP_PROVIDER_API_KEY", ""):
+        raise RuntimeError("missing_novaid_otp_provider_api_key")
+    try:
+        timeout = float(os.getenv("NOVAID_OTP_PROVIDER_TIMEOUT", "5"))
+    except ValueError as exc:
+        raise RuntimeError("invalid_novaid_otp_provider_timeout") from exc
+    if timeout <= 0:
+        raise RuntimeError("invalid_novaid_otp_provider_timeout")
+    rp_id = os.getenv("NOVAID_WEBAUTHN_RP_ID", "").strip().lower()
+    if not rp_id or rp_id in {"localhost", "127.0.0.1"}:
+        raise RuntimeError("missing_production_novaid_webauthn_rp_id")
+    if "://" in rp_id or "/" in rp_id or "*" in rp_id:
+        raise RuntimeError("invalid_production_novaid_webauthn_rp_id")
+    origins = tuple(
+        item.strip()
+        for item in os.getenv("NOVAID_WEBAUTHN_ORIGINS", "").split(",")
+        if item.strip()
+    )
+    if not origins:
+        raise RuntimeError("missing_production_novaid_webauthn_origins")
+    if any(not origin.startswith("https://") or "*" in origin for origin in origins):
+        raise RuntimeError("insecure_production_novaid_webauthn_origin")
+    if os.getenv("NOVAID_WEBAUTHN_REQUIRE_UV", "true").lower() != "true":
+        raise RuntimeError("production_novaid_webauthn_user_verification_required")
 
 
-def build_default_durable_router():
+def build_default_durable_router(*, otp_delivery: OTPDeliveryProvider | None = None):
     stage = os.getenv("AFRITECH_ENV", "development").lower()
     backend = os.getenv("NOVAID_PERSISTENCE_BACKEND", "sqlite").lower()
     validate_runtime_environment(stage, backend)
@@ -86,6 +116,11 @@ def build_default_durable_router():
     else:
         path = Path(os.getenv("NOVAID_DURABLE_DB_PATH", "/tmp/novaid-durable.sqlite3"))
         uow = NovaIDUnitOfWork(path)
+    def c24_uow_provider():
+        if pool is not None:
+            return PostgresNovaIdUnitOfWork(pool=pool)
+        return NovaIDUnitOfWork(path)
+
     pepper = os.getenv("NOVAID_TOKEN_PEPPER", "development-only-novaid-pepper-0001").encode()
     signing_keys, active_signing_key_id = _load_signing_keyring(
         require_rotation=stage in {"production", "prod"}
@@ -115,7 +150,20 @@ def build_default_durable_router():
     )
     outbox = RevocationOutbox(uow)
     lockout = AuthenticationLockoutService(uow, pepper=pepper)
-    authentication = DurableAuthenticationService(uow, pepper=pepper, lockout=lockout)
+    production = stage in {"production", "prod"}
+    if production and otp_delivery is None:
+        otp_delivery = HTTPSOTPDeliveryProvider(
+            os.environ["NOVAID_OTP_PROVIDER_ENDPOINT"],
+            os.environ["NOVAID_OTP_PROVIDER_API_KEY"],
+            timeout_seconds=float(os.getenv("NOVAID_OTP_PROVIDER_TIMEOUT", "5")),
+        )
+    authentication = DurableAuthenticationService(
+        uow,
+        pepper=pepper,
+        lockout=lockout,
+        otp_delivery=otp_delivery,
+        expose_otp_codes=not production,
+    )
     passwords = PasswordLifecycleService(uow, revocations, pepper=pepper, outbox=outbox)
     sessions = SessionAdministrationService(
         uow, revocations, outbox=outbox, metrics=metrics, tracer=tracer
@@ -129,6 +177,23 @@ def build_default_durable_router():
         audience=config.jwt_audience or "novaid-development-clients",
         lifetime_seconds=config.access_token_seconds,
     )
+    from afritech.novaid.provisional_attestation_tokens import (
+        ProvisionalAttestationTokenService,
+    )
+
+    provisional_tokens = ProvisionalAttestationTokenService(
+        c24_uow_provider,
+        signing_keys=signing_keys,
+        active_key_id=active_signing_key_id,
+        issuer=config.jwt_issuer or "novaid-development",
+        lifetime_seconds=int(
+            os.getenv(
+                "NOVAID_DEVICE_ATTESTATION_BOOTSTRAP_SECONDS",
+                "180",
+            )
+        ),
+    )
+
     distributed_outbox = WebAuthnOutboxRepository(uow)
     webauthn_service = WebAuthnService(
         uow,
@@ -172,6 +237,105 @@ def build_default_durable_router():
         recovery_codes=recovery_codes,
         account_recovery=account_recovery,
         webauthn_policies=webauthn_policies,
+        provisional_tokens=provisional_tokens,
+    )
+    setattr(
+        router,
+        "novaid_provisional_attestation_claims",
+        lambda authorization, tenant_id: provisional_tokens.validate(
+            authorization[7:] if authorization.startswith("Bearer ") else "",
+            expected_tenant=tenant_id,
+        ),
+    )
+    setattr(router, "novaid_c24_uow_provider", c24_uow_provider)
+
+    from afritech.novaid.application.security_events import (
+        SecurityEventAuthority,
+    )
+    from afritech.novaid.application.novatrust_identity_risk import (
+        NovaTrustIdentityRiskAuthority,
+    )
+    from afritech.novaid.application.device_attestation import (
+        PersistedDeviceTrustSignalResolver,
+    )
+
+    security_events = SecurityEventAuthority(uow)
+
+    setattr(
+        router,
+        "novaid_security_events",
+        security_events,
+    )
+
+    novatrust_identity_risk = NovaTrustIdentityRiskAuthority(
+        signal_resolver=PersistedDeviceTrustSignalResolver(
+            c24_uow_provider
+        ),
+        security_events=security_events,
+        freshness_seconds=int(
+            os.getenv(
+                "NOVATRUST_IDENTITY_RISK_TTL_SECONDS",
+                "300",
+            )
+        ),
+    )
+
+    setattr(
+        router,
+        "novaid_novatrust_identity_risk",
+        novatrust_identity_risk,
+    )
+
+    def _activate_device_attestation(result, claims):
+        from datetime import UTC, datetime
+        from afritech.novaid.application.novatrust_identity_risk import (
+            NovaTrustIdentityRiskRequest,
+            NovaTrustOutcome,
+        )
+
+        request = NovaTrustIdentityRiskRequest(
+            tenant_id=result.tenant_id,
+            organization_id=result.tenant_id,
+            subject_id=result.subject_id,
+            session_id=str(claims["session_id"]),
+            provider_id=result.provider,
+            authentication_strength="PASSWORD_OTP",
+            correlation_id=result.correlation_id,
+            request_id=result.request_id,
+            evaluated_at=datetime.now(UTC),
+            device_id=result.device_id,
+        )
+
+        decision = novatrust_identity_risk.evaluate(request)
+
+        if decision.outcome is not NovaTrustOutcome.ALLOW:
+            raise RuntimeError(
+                "NOVATRUST_DEVICE_ACTIVATION_DENIED"
+            )
+
+        activated = authentication.activate_device_attested_session(
+            tenant_id=result.tenant_id,
+            session_id=str(claims["session_id"]),
+            identity_id=result.subject_id,
+            device_id=result.device_id,
+            challenge_id=result.challenge_id,
+            trust_outcome=decision.outcome.value,
+            correlation_id=result.correlation_id,
+            request_id=result.request_id,
+        )
+
+        activated["access_token"] = tokens.issue(
+            result.tenant_id,
+            activated["session_id"],
+            activated["membership_id"],
+        )
+
+        return activated
+
+    setattr(
+        router,
+        "novaid_device_attestation_activate",
+        _activate_device_attestation,
     )
     setattr(router, "novaid_postgres_pool", pool)
     setattr(router, "novaid_outbox", outbox)

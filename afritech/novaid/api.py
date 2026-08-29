@@ -38,6 +38,7 @@ class MfaRequest(BaseModel):
     session_id: str
     challenge_id: str
     code: str = Field(pattern=r"^[0-9]{6}$")
+    device_id: str | None = Field(default=None, min_length=1, max_length=512)
 
 
 class MfaChallengeRequest(BaseModel):
@@ -131,6 +132,7 @@ def build_durable_authentication_router(
     recovery_codes: RecoveryCodeService | None = None,
     account_recovery: AccountRecoveryService | None = None,
     webauthn_policies: TenantWebAuthnPolicyService | None = None,
+    provisional_tokens=None,
 ) -> APIRouter:
     router = APIRouter(prefix="/v1/novaid", tags=["novaid-authentication"])
 
@@ -253,8 +255,18 @@ def build_durable_authentication_router(
             code=payload.code,
             correlation_id=x_correlation_id,
             request_id=x_request_id,
+            device_id=payload.device_id,
         )
-        if tokens:
+        if payload.device_id and provisional_tokens:
+            result["provisional_token"] = provisional_tokens.issue(
+                tenant_id=x_tenant_id,
+                subject_id=result.pop("identity_id"),
+                session_id=payload.session_id,
+                membership_id=result.pop("membership_id"),
+                device_id=payload.device_id,
+                security_version=int(result.pop("security_version")),
+            )
+        elif tokens:
             row = service.uow.connection.execute(
                 "SELECT m.membership_id FROM novaid_authentication_sessions s "
                 "JOIN novaid_tenant_memberships m ON m.identity_id=s.identity_id AND m.tenant_id=s.tenant_id "

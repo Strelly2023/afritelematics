@@ -15,6 +15,8 @@ spec:
         app: novaride-outbox-publisher
     spec:
       serviceAccountName: novaride-runtime
+      nodeSelector:
+        kubernetes.io/arch: amd64
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
@@ -49,6 +51,8 @@ spec:
         app: novaride-provider-probes
     spec:
       serviceAccountName: novaride-runtime
+      nodeSelector:
+        kubernetes.io/arch: amd64
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
@@ -83,6 +87,8 @@ spec:
         app: novaride-mobile-sync-worker
     spec:
       serviceAccountName: novaride-runtime
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: worker
           image: novaride-api:2026.2
@@ -110,6 +116,8 @@ spec:
         app: novaride-reconciliation-worker
     spec:
       serviceAccountName: novaride-runtime
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: worker
           image: novaride-api:2026.2
@@ -137,6 +145,8 @@ spec:
         app: novaride-resilience-evaluator
     spec:
       serviceAccountName: novaride-runtime
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: worker
           image: novaride-api:2026.2

@@ -17,7 +17,6 @@ from afritech.novaride_runtime.events.envelope import MobilityEvent
 from afritech.novaride_runtime.events.hashing import canonical_hash
 from afritech.novaride_runtime.models import (
     ActorType,
-    BookingState,
     DriverAvailability,
     DriverAvailabilityState,
     DriverOffer,
@@ -30,7 +29,7 @@ from afritech.novaride_runtime.models import (
     Trip,
     TripState,
 )
-from afritech.novaride_runtime.services import NovaRideRuntime, _json
+from afritech.novaride_runtime.services import NovaRideRuntime
 
 
 class IncidentState(StrEnum):
@@ -352,8 +351,14 @@ def _timeline_entry(
 
 
 class OperationsWorkspaceService:
-    def __init__(self, runtime: NovaRideRuntime) -> None:
+    def __init__(
+        self,
+        runtime: NovaRideRuntime,
+        *,
+        support_record_repository: Any | None = None,
+    ) -> None:
         self.runtime = runtime
+        self._support_record_repository = support_record_repository
         self.incidents: dict[str, OperationalIncident] = {}
         self.safety_cases: dict[str, SafetyCase] = {}
         self.support_cases: dict[str, SupportCase] = {}
@@ -863,7 +868,7 @@ class OperationsWorkspaceService:
     def create_support_case(self, context, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
         idempotency_key = str(payload.pop("idempotency_key", "")).strip()
         payload_hash = canonical_hash(payload)
-        existing = self._idempotency_record_id("support_case", context.tenant_id, idempotency_key, payload_hash)
+        existing = self._support_idempotency_record_id("support_case", context.tenant_id, idempotency_key, payload_hash)
         if existing:
             case = self._require_support_case(context.tenant_id, existing)
             if case:
@@ -899,7 +904,15 @@ class OperationsWorkspaceService:
         )
         self.support_cases[case.case_id] = case
         self._register_idempotency("support_case", context.tenant_id, idempotency_key, record_id=case.case_id, payload_hash=payload_hash)
-        self._create_evidence(support_case=case, request_meta=request_meta)
+        self._persist_support_idempotency(
+            case=case,
+            operation="support_case",
+            key=idempotency_key,
+            payload_hash=payload_hash,
+        )
+        evidence = self._create_evidence(support_case=case, request_meta=request_meta)
+        self._persist_support_evidence(evidence)
+        self._persist_support_case(case)
         return self._support_payload(case)
 
     def get_support_case(self, context, case_id: str) -> dict[str, Any]:
@@ -922,7 +935,9 @@ class OperationsWorkspaceService:
             message="Support case updated",
             payload={"patch": payload},
         )
-        self._create_evidence(support_case=case, request_meta=request_meta)
+        evidence = self._create_evidence(support_case=case, request_meta=request_meta)
+        self._persist_support_evidence(evidence)
+        self._persist_support_case(case)
         return self._support_payload(case)
 
     def assign_support_case(self, context, case_id: str, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
@@ -940,7 +955,9 @@ class OperationsWorkspaceService:
             message="Support case assigned",
             payload={"assigned_to": case.assigned_to},
         )
-        self._create_evidence(support_case=case, request_meta=request_meta)
+        evidence = self._create_evidence(support_case=case, request_meta=request_meta)
+        self._persist_support_evidence(evidence)
+        self._persist_support_case(case)
         return self._support_payload(case)
 
     def escalate_support_case(self, context, case_id: str, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
@@ -957,7 +974,9 @@ class OperationsWorkspaceService:
             message="Support case escalated",
             payload={"reason": str(payload.get("reason", ""))},
         )
-        self._create_evidence(support_case=case, request_meta=request_meta)
+        evidence = self._create_evidence(support_case=case, request_meta=request_meta)
+        self._persist_support_evidence(evidence)
+        self._persist_support_case(case)
         return self._support_payload(case)
 
     def resolve_support_case(self, context, case_id: str, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
@@ -974,16 +993,87 @@ class OperationsWorkspaceService:
             message="Support case resolved",
             payload={"resolution": str(payload.get("resolution", ""))},
         )
-        self._create_evidence(support_case=case, request_meta=request_meta)
+        evidence = self._create_evidence(support_case=case, request_meta=request_meta)
+        self._persist_support_evidence(evidence)
+        self._persist_support_case(case)
         return self._support_payload(case)
 
     def support_case_timeline(self, context, case_id: str) -> list[dict[str, Any]]:
         case = self._require_support_case(context.tenant_id, case_id)
         return [_serialise(item) for item in case.timeline]
 
-    def support_case_evidence(self, context, case_id: str) -> list[dict[str, Any]]:
-        case = self._require_support_case(context.tenant_id, case_id)
-        return [self._evidence_payload(record) for record in self.evidence.values() if record.subject_type == "support_case" and record.subject_id == case.case_id]
+    def support_case_evidence(
+        self,
+        context,
+        case_id: str,
+    ) -> list[dict[str, Any]]:
+        case = self._require_support_case(
+            context.tenant_id,
+            case_id,
+        )
+
+        repository = (
+            self._support_record_repository
+        )
+
+        if repository is not None:
+            records = repository.list(
+                tenant_id=context.tenant_id,
+                record_type="support_evidence",
+                region_id=case.region_id,
+                limit=1000,
+            )
+
+            for durable_record in records:
+                payload = dict(
+                    durable_record.payload
+                )
+
+                if (
+                    str(
+                        payload.get(
+                            "subject_type",
+                            "",
+                        )
+                    )
+                    != "support_case"
+                ):
+                    continue
+
+                if (
+                    str(
+                        payload.get(
+                            "subject_id",
+                            "",
+                        )
+                    )
+                    != case.case_id
+                ):
+                    continue
+
+                evidence = (
+                    self._support_evidence_from_record(
+                        durable_record
+                    )
+                )
+
+                self.evidence[
+                    evidence.evidence_id
+                ] = evidence
+
+        return [
+            self._evidence_payload(record)
+            for record
+            in self.evidence.values()
+            if (
+                record.tenant_id
+                == context.tenant_id
+                and record.subject_type
+                == "support_case"
+                and record.subject_id
+                == case.case_id
+            )
+        ]
 
     def create_refund(self, context, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
         amount = Decimal(str(payload.get("amount", "0")))
@@ -1293,6 +1383,9 @@ class OperationsWorkspaceService:
             "preserve_trip_evidence",
             "freeze_driver_account",
             "freeze_rider_account",
+            "update_pricing_policy",
+            "send_governed_notification",
+            "record_shift_handover",
         }:
             raise ValueError("action_type_not_allowed")
         action = OperationalAction(
@@ -1556,11 +1649,459 @@ class OperationsWorkspaceService:
             raise KeyError("safety_case_not_found")
         return case
 
-    def _get_support_case(self, tenant_id: str, case_id: str) -> SupportCase | None:
-        item = self.support_cases.get(case_id)
-        if item is not None and item.tenant_id == tenant_id:
+    def _persist_support_evidence(
+        self,
+        evidence: EvidenceRecord,
+    ) -> None:
+        repository = (
+            self._support_record_repository
+        )
+
+        if repository is None:
+            return
+
+        repository.save_values(
+            record_id=evidence.evidence_id,
+            tenant_id=evidence.tenant_id,
+            region_id=evidence.region_id,
+            record_type="support_evidence",
+            record_key=evidence.evidence_id,
+            state=evidence.verification_status,
+            payload=_serialise(
+                asdict(evidence)
+            ),
+            created_at=evidence.created_at,
+            updated_at=evidence.created_at,
+        )
+
+    def _support_evidence_from_record(
+        self,
+        record: Any,
+    ) -> EvidenceRecord:
+        payload = dict(
+            record.payload
+        )
+
+        timeline = [
+            TimelineEntry(
+                id=str(
+                    item["id"]
+                ),
+                event_type=str(
+                    item["event_type"]
+                ),
+                occurred_at=datetime.fromisoformat(
+                    str(
+                        item["occurred_at"]
+                    )
+                ),
+                actor_id=str(
+                    item["actor_id"]
+                ),
+                request_id=str(
+                    item["request_id"]
+                ),
+                trace_id=str(
+                    item["trace_id"]
+                ),
+                correlation_id=str(
+                    item["correlation_id"]
+                ),
+                message=str(
+                    item["message"]
+                ),
+                payload=dict(
+                    item.get(
+                        "payload"
+                    )
+                    or {}
+                ),
+            )
+            for item
+            in payload.get(
+                "timeline",
+                [],
+            )
+        ]
+
+        return EvidenceRecord(
+            evidence_id=str(
+                payload["evidence_id"]
+            ),
+            evidence_type=str(
+                payload["evidence_type"]
+            ),
+            subject_type=str(
+                payload["subject_type"]
+            ),
+            subject_id=str(
+                payload["subject_id"]
+            ),
+            tenant_id=str(
+                payload["tenant_id"]
+            ),
+            region_id=str(
+                payload["region_id"]
+            ),
+            actor_id=str(
+                payload["actor_id"]
+            ),
+            correlation_id=str(
+                payload["correlation_id"]
+            ),
+            integrity_status=str(
+                payload["integrity_status"]
+            ),
+            created_at=datetime.fromisoformat(
+                str(
+                    payload["created_at"]
+                )
+            ),
+            source_records=[
+                str(value)
+                for value
+                in payload.get(
+                    "source_records",
+                    [],
+                )
+            ],
+            timeline=timeline,
+            verification_status=str(
+                payload.get(
+                    "verification_status",
+                    "pending",
+                )
+            ),
+            redacted=bool(
+                payload.get(
+                    "redacted",
+                    True,
+                )
+            ),
+        )
+
+    def _support_idempotency_record_id(
+        self,
+        operation: str,
+        tenant_id: str,
+        key: str,
+        payload_hash: str,
+    ) -> str | None:
+        existing = self._idempotency_record_id(
+            operation,
+            tenant_id,
+            key,
+            payload_hash,
+        )
+
+        if existing is not None or not key:
+            return existing
+
+        repository = (
+            self._support_record_repository
+        )
+
+        if repository is None:
+            return None
+
+        record = repository.get(
+            tenant_id=tenant_id,
+            record_type="support_idempotency",
+            record_key=f"{operation}:{key}",
+        )
+
+        if record is None:
+            return None
+
+        payload = dict(
+            record.payload
+        )
+
+        durable_hash = str(
+            payload.get(
+                "payload_hash",
+                "",
+            )
+        )
+
+        if durable_hash != payload_hash:
+            raise ValueError(
+                "idempotency_conflict"
+            )
+
+        record_id = str(
+            payload.get(
+                "record_id",
+                "",
+            )
+        )
+
+        self._idempotency_index[
+            (
+                operation,
+                tenant_id,
+                key,
+            )
+        ] = {
+            "record_id": record_id,
+            "payload_hash": durable_hash,
+        }
+
+        return record_id or None
+
+    def _persist_support_idempotency(
+        self,
+        *,
+        case: SupportCase,
+        operation: str,
+        key: str,
+        payload_hash: str,
+    ) -> None:
+        if not key:
+            return
+
+        repository = (
+            self._support_record_repository
+        )
+
+        if repository is None:
+            return
+
+        repository.save_values(
+            record_id=(
+                f"idempotency:"
+                f"{operation}:"
+                f"{case.case_id}"
+            ),
+            tenant_id=case.tenant_id,
+            region_id=case.region_id,
+            record_type="support_idempotency",
+            record_key=f"{operation}:{key}",
+            state="registered",
+            payload={
+                "operation": operation,
+                "key": key,
+                "record_id": case.case_id,
+                "payload_hash": payload_hash,
+            },
+            created_at=case.created_at,
+            updated_at=case.updated_at,
+        )
+
+    def _persist_support_case(
+        self,
+        case: SupportCase,
+    ) -> None:
+        repository = (
+            self._support_record_repository
+        )
+
+        if repository is None:
+            return
+
+        repository.save_values(
+            record_id=case.case_id,
+            tenant_id=case.tenant_id,
+            region_id=case.region_id,
+            record_type="support_case",
+            record_key=case.case_id,
+            state=case.status.value,
+            payload=_serialise(
+                asdict(case)
+            ),
+            created_at=case.created_at,
+            updated_at=case.updated_at,
+        )
+
+    def _support_case_from_record(
+        self,
+        record: Any,
+    ) -> SupportCase:
+        payload = dict(
+            record.payload
+        )
+
+        timeline = [
+            TimelineEntry(
+                id=str(
+                    item["id"]
+                ),
+                event_type=str(
+                    item["event_type"]
+                ),
+                occurred_at=datetime.fromisoformat(
+                    str(
+                        item["occurred_at"]
+                    )
+                ),
+                actor_id=str(
+                    item["actor_id"]
+                ),
+                request_id=str(
+                    item["request_id"]
+                ),
+                trace_id=str(
+                    item["trace_id"]
+                ),
+                correlation_id=str(
+                    item["correlation_id"]
+                ),
+                message=str(
+                    item["message"]
+                ),
+                payload=dict(
+                    item.get(
+                        "payload"
+                    )
+                    or {}
+                ),
+            )
+            for item
+            in payload.get(
+                "timeline",
+                [],
+            )
+        ]
+
+        return SupportCase(
+            case_id=str(
+                payload["case_id"]
+            ),
+            tenant_id=str(
+                payload["tenant_id"]
+            ),
+            region_id=str(
+                payload["region_id"]
+            ),
+            case_type=str(
+                payload["case_type"]
+            ),
+            status=SupportCaseState(
+                str(
+                    payload["status"]
+                )
+            ),
+            trip_id=payload.get(
+                "trip_id"
+            ),
+            rider_id=payload.get(
+                "rider_id"
+            ),
+            driver_id=payload.get(
+                "driver_id"
+            ),
+            payment_id=payload.get(
+                "payment_id"
+            ),
+            receipt_id=payload.get(
+                "receipt_id"
+            ),
+            phone=payload.get(
+                "phone"
+            ),
+            email=payload.get(
+                "email"
+            ),
+            assigned_to=payload.get(
+                "assigned_to"
+            ),
+            created_by=str(
+                payload.get(
+                    "created_by",
+                    "",
+                )
+            ),
+            updated_by=str(
+                payload.get(
+                    "updated_by",
+                    "",
+                )
+            ),
+            request_id=str(
+                payload.get(
+                    "request_id",
+                    "",
+                )
+            ),
+            trace_id=str(
+                payload.get(
+                    "trace_id",
+                    "",
+                )
+            ),
+            correlation_id=str(
+                payload.get(
+                    "correlation_id",
+                    "",
+                )
+            ),
+            created_at=datetime.fromisoformat(
+                str(
+                    payload[
+                        "created_at"
+                    ]
+                )
+            ),
+            updated_at=datetime.fromisoformat(
+                str(
+                    payload[
+                        "updated_at"
+                    ]
+                )
+            ),
+            timeline=timeline,
+            evidence_refs=[
+                str(value)
+                for value
+                in payload.get(
+                    "evidence_refs",
+                    [],
+                )
+            ],
+        )
+
+    def _get_support_case(
+        self,
+        tenant_id: str,
+        case_id: str,
+    ) -> SupportCase | None:
+        item = self.support_cases.get(
+            case_id
+        )
+
+        if (
+            item is not None
+            and item.tenant_id == tenant_id
+        ):
             return item
-        return None
+
+        repository = (
+            self._support_record_repository
+        )
+
+        if repository is None:
+            return None
+
+        record = repository.get(
+            tenant_id=tenant_id,
+            record_type="support_case",
+            record_key=case_id,
+        )
+
+        if record is None:
+            return None
+
+        case = (
+            self._support_case_from_record(
+                record
+            )
+        )
+
+        self.support_cases[
+            case.case_id
+        ] = case
+
+        return case
 
     def _require_support_case(self, tenant_id: str, case_id: str) -> SupportCase:
         case = self._get_support_case(tenant_id, case_id)
@@ -1737,8 +2278,39 @@ class OperationsWorkspaceService:
                 items.append(derived)
         return sorted(items, key=lambda item: item.updated_at, reverse=True)
 
-    def _all_support_cases(self, tenant_id: str) -> list[SupportCase]:
-        return sorted([case for case in self.support_cases.values() if case.tenant_id == tenant_id], key=lambda item: item.updated_at, reverse=True)
+    def _all_support_cases(
+        self,
+        tenant_id: str,
+    ) -> list[SupportCase]:
+        repository = (
+            self._support_record_repository
+        )
+
+        if repository is not None:
+            for record in repository.list(
+                tenant_id=tenant_id,
+                record_type="support_case",
+            ):
+                case = (
+                    self._support_case_from_record(
+                        record
+                    )
+                )
+
+                self.support_cases[
+                    case.case_id
+                ] = case
+
+        return sorted(
+            [
+                case
+                for case
+                in self.support_cases.values()
+                if case.tenant_id == tenant_id
+            ],
+            key=lambda item: item.updated_at,
+            reverse=True,
+        )
 
     def _all_refunds(self, tenant_id: str) -> list[RefundRequest]:
         return sorted([refund for refund in self.refunds.values() if refund.tenant_id == tenant_id], key=lambda item: item.updated_at, reverse=True)

@@ -57,6 +57,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 COPY --chmod=0755 deploy/staging/api-entrypoint.sh /usr/local/bin/afritech-api-entrypoint
 COPY --from=wheelhouse /wheelhouse /wheelhouse
+COPY docs /app/docs
 COPY --chown=10001:10001 docs/registry/NOVARIDE_EVENT_REGISTRY.yaml /app/resources/NOVARIDE_EVENT_REGISTRY.yaml
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     python -m pip install \

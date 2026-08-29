@@ -239,12 +239,25 @@ class AfriRideCommandDispatcher:
                 status="CANCELED",
                 events=(*ride.events, "ride_canceled"),
             )
-            self.ride_repository.save(updated)
-            self.event_repository.append(
-                ride_id,
-                "ride_canceled",
-                updated.snapshot(),
-            )
+            if (
+                self.ride_repository.storage
+                is not self.event_repository.storage
+            ):
+                raise RuntimeError(
+                    "legacy_cancel_storage_authority_mismatch"
+                )
+
+            with self.ride_repository.storage.connect() as connection:
+                self.ride_repository.save_on(
+                    connection,
+                    updated,
+                )
+                self.event_repository.append_on(
+                    connection,
+                    ride_id,
+                    "ride_canceled",
+                    updated.snapshot(),
+                )
             return updated.snapshot()
 
     def ride_status(self, ride_id: str) -> dict[str, Any]:

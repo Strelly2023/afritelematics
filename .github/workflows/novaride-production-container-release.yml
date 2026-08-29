@@ -1,0 +1,428 @@
+name: NovaRide Production Container Publication
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: novaride-production-container-publication
+  cancel-in-progress: false
+
+jobs:
+  publish-production-container:
+    name: Publish canonical NovaRide API container
+    runs-on: ubuntu-latest
+
+    # Environment protection is the human/governance approval boundary.
+    # AWS identity is obtained only through GitHub OIDC.
+    environment: novaride-production-container-publication
+
+    env:
+      NOVARIDE_IMAGE_NAME: novaride-api
+      NOVARIDE_RELEASE_TAG: "2026.2"
+      NOVARIDE_PLATFORM: linux/amd64
+
+      # These are intentionally runtime-bound GitHub configuration.
+      # Their existence/value is NOT proven by this source contract.
+      AWS_REGION: ${{ vars.NOVARIDE_AWS_REGION }}
+      AWS_ROLE_ARN: ${{ vars.NOVARIDE_ECR_PUBLISH_ROLE_ARN }}
+      AWS_ACCOUNT_ID: ${{ vars.NOVARIDE_AWS_ACCOUNT_ID }}
+
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail closed on missing runtime authority bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -n "${AWS_REGION:-}" || {
+            echo "NOVARIDE_AWS_REGION is not bound"
+            exit 20
+          }
+
+          test -n "${AWS_ROLE_ARN:-}" || {
+            echo "NOVARIDE_ECR_PUBLISH_ROLE_ARN is not bound"
+            exit 21
+          }
+
+          test -n "${AWS_ACCOUNT_ID:-}" || {
+            echo "NOVARIDE_AWS_ACCOUNT_ID is not bound"
+            exit 22
+          }
+
+          case "$AWS_ACCOUNT_ID" in
+            *[!0-9]*|"")
+              echo "AWS account ID is not canonical"
+              exit 23
+              ;;
+          esac
+
+          test "${#AWS_ACCOUNT_ID}" -eq 12 || {
+            echo "AWS account ID is not canonical"
+            exit 24
+          }
+
+          test "$NOVARIDE_IMAGE_NAME" = "novaride-api"
+          test "$NOVARIDE_RELEASE_TAG" = "2026.2"
+          test "$NOVARIDE_PLATFORM" = "linux/amd64"
+
+      - name: Configure AWS identity through GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Authenticate Docker to canonical ECR registry
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Derive canonical ECR authority
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          EXPECTED_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          OBSERVED_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+
+          test "$OBSERVED_REGISTRY" = "$EXPECTED_REGISTRY" || {
+            echo "ECR registry identity mismatch"
+            exit 30
+          }
+
+          REPOSITORY_URI="${EXPECTED_REGISTRY}/${NOVARIDE_IMAGE_NAME}"
+
+          echo "NOVARIDE_ECR_REGISTRY=$EXPECTED_REGISTRY" >> "$GITHUB_ENV"
+          echo "NOVARIDE_ECR_REPOSITORY_URI=$REPOSITORY_URI" >> "$GITHUB_ENV"
+          echo "NOVARIDE_ECR_MUTABLE_REFERENCE=${REPOSITORY_URI}:${NOVARIDE_RELEASE_TAG}" >> "$GITHUB_ENV"
+
+      - name: Validate canonical registry authority contract
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 scripts/novaride/production_registry_authority.py \
+            --account-id "$AWS_ACCOUNT_ID" \
+            --region "$AWS_REGION" \
+            --repository "$NOVARIDE_IMAGE_NAME" \
+            --platform "$NOVARIDE_PLATFORM" \
+            --release-tag "$NOVARIDE_RELEASE_TAG"
+
+      - name: Verify canonical ECR repository exists
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          aws ecr describe-repositories \
+            --region "$AWS_REGION" \
+            --repository-names "$NOVARIDE_IMAGE_NAME" \
+            --query 'repositories[0].repositoryUri' \
+            --output text > /tmp/novaride-repository-uri.txt
+
+          OBSERVED_URI="$(cat /tmp/novaride-repository-uri.txt)"
+
+          test "$OBSERVED_URI" = "$NOVARIDE_ECR_REPOSITORY_URI" || {
+            echo "Canonical ECR repository is absent or mismatched"
+            exit 40
+          }
+
+      - name: Fail closed if release tag already exists
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          set +e
+          EXISTING_DIGEST="$(
+            aws ecr describe-images \
+              --region "$AWS_REGION" \
+              --repository-name "$NOVARIDE_IMAGE_NAME" \
+              --image-ids imageTag="$NOVARIDE_RELEASE_TAG" \
+              --query 'imageDetails[0].imageDigest' \
+              --output text \
+              2>/tmp/novaride-existing-tag-error.txt
+          )"
+          RC=$?
+          set -e
+
+          if [ "$RC" -eq 0 ]; then
+            echo "Release tag already exists; overwrite is forbidden"
+            echo "EXISTING_REMOTE_DIGEST=$EXISTING_DIGEST"
+            exit 41
+          fi
+
+          if grep -q 'ImageNotFoundException' \
+            /tmp/novaride-existing-tag-error.txt
+          then
+            echo "RELEASE_TAG_PRECONDITION=ABSENT"
+          else
+            echo "Unable to prove release-tag absence"
+            exit 42
+          fi
+
+      - name: Materialize exact pinned production base
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PINNED_BASE="$(
+            python3 scripts/novaride/build_production_container.py \
+              --print-pinned-base-image
+          )"
+
+          case "$PINNED_BASE" in
+            *@sha256:????????????????????????????????????????????????????????????????)
+              ;;
+            *)
+              echo "Pinned production base is not digest-bound"
+              exit 43
+              ;;
+          esac
+
+          docker pull --platform "$NOVARIDE_PLATFORM" "$PINNED_BASE"
+
+          docker image inspect \
+            --platform "$NOVARIDE_PLATFORM" \
+            "$PINNED_BASE" \
+            >/tmp/novaride-pinned-base.json
+
+          BASE_PLATFORM="$(
+            python3 - <<'PYBASE'
+          import json
+
+          payload = json.load(
+              open("/tmp/novaride-pinned-base.json")
+          )
+          image = payload[0]
+
+          print(
+              f"{image.get('Os')}/"
+              f"{image.get('Architecture')}"
+          )
+          PYBASE
+          )"
+
+          test "$BASE_PLATFORM" = "$NOVARIDE_PLATFORM" || {
+            echo "Pinned production base platform mismatch"
+            exit 44
+          }
+
+          echo "NOVARIDE_PINNED_BASE_IMAGE=$PINNED_BASE" >> "$GITHUB_ENV"
+
+      - name: Build canonical production image
+        shell: bash
+        env:
+          NOVARIDE_PRODUCTION_IMAGE_BUILD_ALLOW_EXECUTE: "YES"
+          NOVARIDE_PRODUCTION_IMAGE_BUILD_ALLOW_NETWORK: "YES"
+        run: |
+          set -euo pipefail
+
+          EVIDENCE_DIR="$RUNNER_TEMP/novaride-production-build-evidence"
+          mkdir -p "$EVIDENCE_DIR"
+
+          python3 scripts/novaride/build_production_container.py \
+            --execute \
+            --output-dir "$EVIDENCE_DIR"
+
+          BUILD_EVIDENCE="$EVIDENCE_DIR/build-evidence.json"
+          SBOM="$EVIDENCE_DIR/sbom.json"
+
+          test -s "$BUILD_EVIDENCE" || {
+            echo "Build evidence is missing"
+            exit 45
+          }
+
+          test -s "$SBOM" || {
+            echo "Build SBOM is missing"
+            exit 46
+          }
+
+          SBOM_SHA="$(
+            python3 - "$BUILD_EVIDENCE" <<'PYBUILD'
+          import json
+          import re
+          import sys
+
+          payload = json.load(open(sys.argv[1]))
+          digest = payload.get("sbom_sha256")
+
+          if not isinstance(digest, str):
+              raise SystemExit("missing SBOM digest")
+
+          if not re.fullmatch(r"[0-9a-f]{64}", digest):
+              raise SystemExit("invalid SBOM digest")
+
+          print(digest)
+          PYBUILD
+          )"
+
+          ACTUAL_SBOM_SHA="$(
+            shasum -a 256 "$SBOM" | awk '{print $1}'
+          )"
+
+          test "$ACTUAL_SBOM_SHA" = "$SBOM_SHA" || {
+            echo "Build SBOM digest mismatch"
+            exit 47
+          }
+
+          echo "NOVARIDE_BUILD_EVIDENCE_DIR=$EVIDENCE_DIR" >> "$GITHUB_ENV"
+          echo "NOVARIDE_BUILD_SBOM=$SBOM" >> "$GITHUB_ENV"
+          echo "NOVARIDE_BUILD_SBOM_SHA256=$SBOM_SHA" >> "$GITHUB_ENV"
+
+      - name: Bind local artifact to canonical ECR reference
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          docker image inspect \
+            "${NOVARIDE_IMAGE_NAME}:${NOVARIDE_RELEASE_TAG}" \
+            >/tmp/novaride-local-image.json
+
+          LOCAL_PLATFORM="$(
+            python3 - <<'PY'
+          import json
+          payload = json.load(open("/tmp/novaride-local-image.json"))
+          image = payload[0]
+          print(f"{image.get('Os')}/{image.get('Architecture')}")
+          PY
+          )"
+
+          test "$LOCAL_PLATFORM" = "$NOVARIDE_PLATFORM" || {
+            echo "Local image platform mismatch"
+            exit 50
+          }
+
+          LOCAL_REVISION="$(
+            python3 - <<'PY'
+          import json
+          payload = json.load(open("/tmp/novaride-local-image.json"))
+          labels = payload[0].get("Config", {}).get("Labels") or {}
+          print(labels.get("org.opencontainers.image.revision", ""))
+          PY
+          )"
+
+          test "$LOCAL_REVISION" = "$GITHUB_SHA" || {
+            echo "Local OCI revision does not match GitHub source commit"
+            exit 51
+          }
+
+          docker tag \
+            "${NOVARIDE_IMAGE_NAME}:${NOVARIDE_RELEASE_TAG}" \
+            "$NOVARIDE_ECR_MUTABLE_REFERENCE"
+
+      - name: Publish exactly one canonical release tag
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          docker push "$NOVARIDE_ECR_MUTABLE_REFERENCE"
+
+      - name: Read authoritative remote digest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          REMOTE_DIGEST="$(
+            aws ecr describe-images \
+              --region "$AWS_REGION" \
+              --repository-name "$NOVARIDE_IMAGE_NAME" \
+              --image-ids imageTag="$NOVARIDE_RELEASE_TAG" \
+              --query 'imageDetails[0].imageDigest' \
+              --output text
+          )"
+
+          case "$REMOTE_DIGEST" in
+            sha256:????????????????????????????????????????????????????????????????)
+              ;;
+            *)
+              echo "Remote digest is not canonical sha256"
+              exit 60
+              ;;
+          esac
+
+          IMMUTABLE_REFERENCE="${NOVARIDE_ECR_REPOSITORY_URI}@${REMOTE_DIGEST}"
+
+          echo "NOVARIDE_REMOTE_DIGEST=$REMOTE_DIGEST" >> "$GITHUB_ENV"
+          echo "NOVARIDE_IMMUTABLE_REFERENCE=$IMMUTABLE_REFERENCE" >> "$GITHUB_ENV"
+
+      - name: Verify immutable release reference
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 scripts/novaride/verify_container_release.py \
+            "$NOVARIDE_IMMUTABLE_REFERENCE" \
+            --repo . \
+            --expected-commit "$GITHUB_SHA" \
+            --expected-digest "$NOVARIDE_REMOTE_DIGEST" \
+            --expected-platform "$NOVARIDE_PLATFORM" \
+            --sbom "$NOVARIDE_BUILD_SBOM" \
+            --sbom-sha256 "$NOVARIDE_BUILD_SBOM_SHA256"
+
+      - name: Emit bounded publication receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RECEIPT="$RUNNER_TEMP/novaride-ecr-publication-receipt.json"
+
+          python3 - "$RECEIPT" <<'PY'
+          import json
+          import os
+          import re
+          import sys
+          
+          path = sys.argv[1]
+          
+          digest = os.environ["NOVARIDE_REMOTE_DIGEST"]
+          immutable = os.environ["NOVARIDE_IMMUTABLE_REFERENCE"]
+          commit = os.environ["GITHUB_SHA"]
+          
+          if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
+              raise SystemExit("invalid remote digest")
+          
+          if not re.fullmatch(r"[0-9a-f]{40}", commit):
+              raise SystemExit("invalid source commit")
+          
+          payload = {
+              "schema_version": "1.0",
+              "product": "novaride",
+              "artifact": "novaride-api",
+              "provider": "aws_ecr",
+              "repository_uri": os.environ[
+                  "NOVARIDE_ECR_REPOSITORY_URI"
+              ],
+              "release_tag": "2026.2",
+              "platform": "linux/amd64",
+              "source_commit": commit,
+              "remote_registry_digest": digest,
+              "immutable_reference": immutable,
+              "registry_publication_proven": True,
+              "remote_digest_proven": True,
+          
+              # Publication does NOT authorize deployment.
+              "kubernetes_digest_binding_proven": False,
+          }
+          
+          with open(path, "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          
+          print(path)
+          PY
+
+          echo "NOVARIDE_PUBLICATION_RECEIPT=$RECEIPT" >> "$GITHUB_ENV"
+
+      - name: Upload publication evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: novaride-production-container-publication-evidence
+          path: |
+            ${{ env.NOVARIDE_BUILD_EVIDENCE_DIR }}
+            ${{ env.NOVARIDE_PUBLICATION_RECEIPT }}
+          if-no-files-found: error

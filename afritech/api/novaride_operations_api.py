@@ -169,6 +169,22 @@ class ActionPayload(BaseModel):
     approval_reference: str | None = None
 
 
+class PricingPayload(BaseModel):
+    policy_id: str = Field(min_length=1)
+    reason: str = Field(min_length=1)
+    approval_reference: str | None = None
+
+
+class NotificationPayload(BaseModel):
+    audience: str = Field(min_length=1)
+    message: str = Field(min_length=1, max_length=2000)
+
+
+class HandoverPayload(BaseModel):
+    incoming_operator_id: str = Field(min_length=1)
+    summary: str = Field(min_length=1, max_length=4000)
+
+
 def build_novaride_operations_router(workspace: OperationsWorkspaceService | None = None) -> APIRouter:
     workspace = workspace or _WORKSPACE
     router = APIRouter(
@@ -321,7 +337,8 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
     @router.post("/safety/cases/{case_id}/timeline")
     def append_safety_timeline(case_id: str, payload: dict[str, Any], request: Request, context: ManageContext) -> dict[str, Any]:
         try:
-            case = workspace.safety_cases[case_id]
+            authorized_case = workspace.get_safety_case(context, case_id)
+            case = workspace.safety_cases[authorized_case["case_id"]]
             workspace._store_timeline(
                 case,
                 event_type=str(payload.get("event_type", "case_note")),
@@ -601,6 +618,46 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
     @router.get("/actions")
     def list_actions(context: ReadContext, limit: int = 100) -> dict[str, Any]:
         return {"items": workspace.list_actions(context, limit=limit), "generated_at": workspace.overview(context)["generated_at"]}
+
+    def _workflow_items(context: ReadContext, action_type: str, limit: int) -> dict[str, Any]:
+        items = [item for item in workspace.list_actions(context, limit=1000) if item["action_type"] == action_type]
+        return {"items": items[:limit], "generated_at": workspace.overview(context)["generated_at"]}
+
+    @router.get("/pricing")
+    def list_pricing_changes(context: ReadContext, limit: int = 100) -> dict[str, Any]:
+        return _workflow_items(context, "update_pricing_policy", limit)
+
+    @router.post("/pricing", status_code=201)
+    def request_pricing_change(payload: PricingPayload, request: Request, context: ManageContext, idempotency_key: str = Header(default="", alias="Idempotency-Key")) -> dict[str, Any]:
+        return workspace.create_action(context, {
+            "action_type": "update_pricing_policy", "target_id": payload.policy_id,
+            "reason": payload.reason, "risk_level": "high", "approval_required": True,
+            "approval_reference": payload.approval_reference, "idempotency_key": idempotency_key,
+        }, _request_meta(context, request))
+
+    @router.get("/notifications")
+    def list_notifications(context: ReadContext, limit: int = 100) -> dict[str, Any]:
+        return _workflow_items(context, "send_governed_notification", limit)
+
+    @router.post("/notifications", status_code=201)
+    def request_notification(payload: NotificationPayload, request: Request, context: ManageContext, idempotency_key: str = Header(default="", alias="Idempotency-Key")) -> dict[str, Any]:
+        return workspace.create_action(context, {
+            "action_type": "send_governed_notification", "target_id": payload.audience,
+            "reason": payload.message, "risk_level": "medium", "approval_required": True,
+            "idempotency_key": idempotency_key,
+        }, _request_meta(context, request))
+
+    @router.get("/handover")
+    def list_handovers(context: ReadContext, limit: int = 100) -> dict[str, Any]:
+        return _workflow_items(context, "record_shift_handover", limit)
+
+    @router.post("/handover", status_code=201)
+    def record_handover(payload: HandoverPayload, request: Request, context: ManageContext, idempotency_key: str = Header(default="", alias="Idempotency-Key")) -> dict[str, Any]:
+        return workspace.create_action(context, {
+            "action_type": "record_shift_handover", "target_id": payload.incoming_operator_id,
+            "reason": payload.summary, "risk_level": "low", "approval_required": False,
+            "idempotency_key": idempotency_key,
+        }, _request_meta(context, request))
 
     @router.post("/actions", status_code=201)
     def create_action(payload: ActionPayload, request: Request, context: ManageContext, idempotency_key: str = Header(default="", alias="Idempotency-Key")) -> dict[str, Any]:

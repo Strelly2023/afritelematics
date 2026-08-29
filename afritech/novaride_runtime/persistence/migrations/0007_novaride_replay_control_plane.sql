@@ -1,3 +1,49 @@
+-- NR-003 replay-plan authority compatibility guard
+--
+-- Migration 0005 historically created the event/rebuild replay-plan
+-- structure under ``novaride_replay_plans`` with ``replay_id TEXT``.
+--
+-- The runtime replay control plane introduced here owns the canonical
+-- ``novaride_replay_plans`` relation with ``id UUID``.
+--
+-- If an environment already applied the historical 0005 shape, move that
+-- legacy authority to ``novaride_event_replay_plans`` before creating the
+-- runtime control-plane relation. Never reinterpret replay_id as id.
+DO $$
+BEGIN
+    IF to_regclass(
+        'public.novaride_replay_plans'
+    ) IS NOT NULL
+    AND EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'novaride_replay_plans'
+          AND column_name = 'replay_id'
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'novaride_replay_plans'
+          AND column_name = 'id'
+    )
+    THEN
+        IF to_regclass(
+            'public.novaride_event_replay_plans'
+        ) IS NOT NULL
+        THEN
+            RAISE EXCEPTION
+                'novaride replay-plan authority collision: '
+                'legacy destination already exists';
+        END IF;
+
+        ALTER TABLE public.novaride_replay_plans
+            RENAME TO novaride_event_replay_plans;
+    END IF;
+END
+$$;
+
 CREATE TABLE IF NOT EXISTS novaride_replay_plans (
     id UUID PRIMARY KEY,
     tenant_id UUID NOT NULL,
@@ -126,36 +172,43 @@ ALTER TABLE novaride_runtime_idempotency FORCE ROW LEVEL SECURITY;
 ALTER TABLE novaride_runtime_audit ENABLE ROW LEVEL SECURITY;
 ALTER TABLE novaride_runtime_audit FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS novaride_replay_plan_tenant_isolation ON novaride_replay_plans;
 CREATE POLICY novaride_replay_plan_tenant_isolation
 ON novaride_replay_plans
 USING (tenant_id::text = current_setting('app.tenant_id', true))
 WITH CHECK (tenant_id::text = current_setting('app.tenant_id', true));
 
+DROP POLICY IF EXISTS novaride_replay_result_tenant_isolation ON novaride_replay_results;
 CREATE POLICY novaride_replay_result_tenant_isolation
 ON novaride_replay_results
 USING (tenant_id::text = current_setting('app.tenant_id', true))
 WITH CHECK (tenant_id::text = current_setting('app.tenant_id', true));
 
+DROP POLICY IF EXISTS novaride_replay_approval_tenant_isolation ON novaride_replay_approvals;
 CREATE POLICY novaride_replay_approval_tenant_isolation
 ON novaride_replay_approvals
 USING (tenant_id::text = current_setting('app.tenant_id', true))
 WITH CHECK (tenant_id::text = current_setting('app.tenant_id', true));
 
+DROP POLICY IF EXISTS novaride_replay_vote_tenant_isolation ON novaride_replay_approval_votes;
 CREATE POLICY novaride_replay_vote_tenant_isolation
 ON novaride_replay_approval_votes
 USING (tenant_id::text = current_setting('app.tenant_id', true))
 WITH CHECK (tenant_id::text = current_setting('app.tenant_id', true));
 
+DROP POLICY IF EXISTS novaride_replay_transition_tenant_isolation ON novaride_replay_transitions;
 CREATE POLICY novaride_replay_transition_tenant_isolation
 ON novaride_replay_transitions
 USING (tenant_id::text = current_setting('app.tenant_id', true))
 WITH CHECK (tenant_id::text = current_setting('app.tenant_id', true));
 
+DROP POLICY IF EXISTS novaride_runtime_idempotency_tenant_isolation ON novaride_runtime_idempotency;
 CREATE POLICY novaride_runtime_idempotency_tenant_isolation
 ON novaride_runtime_idempotency
 USING (tenant_id::text = current_setting('app.tenant_id', true))
 WITH CHECK (tenant_id::text = current_setting('app.tenant_id', true));
 
+DROP POLICY IF EXISTS novaride_runtime_audit_tenant_isolation ON novaride_runtime_audit;
 CREATE POLICY novaride_runtime_audit_tenant_isolation
 ON novaride_runtime_audit
 USING (tenant_id::text = current_setting('app.tenant_id', true))

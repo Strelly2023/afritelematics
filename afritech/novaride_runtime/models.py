@@ -451,6 +451,10 @@ class SupportCase(Aggregate):
     subject_id: str = ""
     case_type: str = "GENERAL"
     status: str = "OPEN"
+    actor_type: ActorType = ActorType.RIDER
+    actor_id: str = ""
+    trip_id: str | None = None
+    description: str = ""
 
 
 @dataclass(frozen=True, slots=True)

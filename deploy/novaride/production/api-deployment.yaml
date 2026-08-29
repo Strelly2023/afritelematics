@@ -20,6 +20,8 @@ spec:
         app: novaride-api
     spec:
       serviceAccountName: novaride-runtime
+      nodeSelector:
+        kubernetes.io/arch: amd64
       terminationGracePeriodSeconds: 45
       topologySpreadConstraints:
         - maxSkew: 1

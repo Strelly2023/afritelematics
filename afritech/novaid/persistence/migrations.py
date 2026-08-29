@@ -17,6 +17,7 @@ EXPECTED_REVISIONS = (
     "0008_novaid_governed_audit_replay.sql",
     "0009_canonical_identity_profile.sql",
     "0010_tenant_authorization.sql",
+    "0011_device_attestation_authority.sql",
 )
 
 MIGRATION_DIRECTORY = Path(__file__).with_name("migrations")
